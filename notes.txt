@@ -1,0 +1,67 @@
+Pages:
+
+Role:
+    - Student
+    - Student Officer 
+    - Teacher / Professor
+
+    Scenarios:
+    - Student can join classrooms and submit assignments
+    - Student officer (beadle) can initiate to create the classroom intially, but eventually once teacher arrive/join the classroom officer can give permssion to the Teacher for the classroom
+    - Or teacher/professor will create the classroom itself and will just invite a normal student which they can grant a student officer/beadle role (to create groups/assign tasks/etc)
+
+Officer(Student Beadle) / Teacher
+- Dashboard 
+    - List of classrooms (Card)
+        - Total Students
+        - Class descriptions
+    - Create new classroom button
+- Create classroom Page
+    - Form for class descriptions
+    - After creation, it will show the QR code and invite link
+- Classroom detailed Page
+    - Lists students enrolled
+    - Activites listed 
+    - Show invite link / qr code  (pop up)
+    - Configure a custom skill assesment form which students would answer in their onboarding 
+    - Optional: To create a one permanent groupings for the rest of the semester
+- Activity detailed Page (individually or groupings)
+    - if individually, just show who submitted, and acitivty descriptions
+    - if groupings:
+        - Acitivity descriptions
+        - Setting to configure rule for smart grouping mechanisms (how many groups to make, how many students per group, skills multiplier)
+        - Button to click the create groups (auto balancing) (will run greedy LPT algorithm - Students are sorted from **highest to lowest** overall skill score, then each student is placed into the group that currently has the **lowest total score** — a classic **greedy load balancing** approach.). After group creation, it will show preview/draft of group distribution which can be manually modified by the teacher / student officer
+        - List of groups made along with its members, and clickable for each group to view its detailed page. Also shows their submissions (e.g pdf file, link, or anything)
+- Group detailed page (view only)
+    - Task management page
+        - List all tasks (to do, in progress, done) assigned
+    - List student members
+    - Show estimated Time completion matrix (view only) (this is the result of the second algorithm for task assignment - For each group, the system repeatedly finds the **best overall pairing** of tasks and members (who still have time budget left), using the **Hungarian algorithm**, based on skill fit and hours from the **time estimate matrix**.)
+
+
+Student Side 
+- Onboarding Page (when students are first time to join a new classroom)
+    - Skill assesment form
+- Dashboard
+    - Join classroom (through classroom code)
+    - Classrooms joined (list as cards)
+    - Todos (acitivties dues), and Submitted
+- Classroom Detailed Page
+    - Shows listed activities
+- Acitivity detailed page 
+    - if individual, just show the description and their submission if they already submitted or missing if not
+    - if groupings
+        - shows which groups the student belong
+        - estimated time completion matrix (can edit their own rows for putting their own estimated time completion for whatever tasks their leader listed - not yet assigned). And a button beside it to click auto assign task which rans the Hungarian Algorithm
+            - if already assigned, it just show the view version of the estimated time completion matrix
+        - list down assigned tasks (Todos, done, in progress - students can modify the status of their own tasks assigned) - if auto assigned tasks algorithm were already ran
+
+    
+Scenarios:
+1. Teacher create a classroom -> shows qr code /invite link -> paste the link/qr code/ classroom code (messnger, teams, or anywhere)
+2. Students click the classroom link invite -> if they dont have account yet, they are redirected to sign up, then after sign up, redirected to onboarding which they do skill assesment -> joined 
+3. Teacher can configure skill assesment form used during onboarding to their classroom when student first time joined, t hey can add multiplier for specific skills for specific subjects. These skill (and multiplier) would be translated to numeric/metrics which would be use in the greedy auto balance group assignment (most likely just number metrics - feel free to suggest)
+4. Student sign up first then just joined through classroom code in their dashboard 
+5. Teacher have enough students, and created a group activity, they run the auto balanced groups -> created x number of groups -> For each group created, leaders(student) would be auto assigned per group.
+6. Leaders (student) can now lists down multiple tasks to finish a speicifc activity, and will show in the estimated time completion matrix, which they can click the button for auto assigned tasks once every students filled up all their own time estimated completion
+7. Feel free to suggest any other user stories, for MVP
