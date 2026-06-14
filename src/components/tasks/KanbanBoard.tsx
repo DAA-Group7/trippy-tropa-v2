@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { 
   DndContext, 
   closestCorners,
@@ -122,22 +122,33 @@ function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
 }
 
 export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacherOrOfficer, activityId, groupId, members }: any) {
+  // Optimization: useMemo to map profiles to avoid O(N^2) during re-renders
+  const serverTasksWithProfiles = useMemo(() => {
+    const memberMap = new Map()
+    members.forEach((m: any) => memberMap.set(m.user_id, m.profile))
+    return tasks.map((t: any) => ({
+      ...t,
+      assigned_profile: memberMap.get(t.assigned_to)
+    }))
+  }, [tasks, members])
+
   // Local state for optimistic UI updates
-  const [pendingRequests, setPendingRequests] = useState(0)
-  const [boardTasks, setBoardTasks] = useState(tasks.map((t: any) => {
-    const member = members.find((m: any) => m.user_id === t.assigned_to)
-    return { ...t, assigned_profile: member?.profile }
-  }))
+  const [optimisticIds, setOptimisticIds] = useState<Set<string>>(new Set())
+  const [boardTasks, setBoardTasks] = useState(serverTasksWithProfiles)
   const [activeTask, setActiveTask] = useState<any | null>(null)
 
   useEffect(() => {
-    if (pendingRequests === 0) {
-      setBoardTasks(tasks.map((t: any) => {
-        const member = members.find((m: any) => m.user_id === t.assigned_to)
-        return { ...t, assigned_profile: member?.profile }
-      }))
-    }
-  }, [tasks, members, pendingRequests])
+    setBoardTasks((prev: any[]) => {
+      if (optimisticIds.size > 0) {
+         return prev.map((localTask: any) => {
+           if (optimisticIds.has(localTask.id)) return localTask
+           const serverMatch = serverTasksWithProfiles.find((st: any) => st.id === localTask.id)
+           return serverMatch || localTask
+         })
+      }
+      return serverTasksWithProfiles
+    })
+  }, [serverTasksWithProfiles, optimisticIds])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -187,7 +198,7 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
       }
     }
 
-    const previousTasks = [...boardTasks]
+    setOptimisticIds(prev => new Set(prev).add(task.id))
 
     if (task.status !== targetStatus) {
       // Moving to different column
@@ -200,19 +211,39 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
         return newTasks
       })
 
-      setPendingRequests(p => p + 1)
       try {
         const res = await updateTaskStatusAction(task.id, targetStatus, activityId, groupId)
         if (res?.error) throw new Error(res.error)
       } catch (err: any) {
         alert(`Failed to update task: ${err.message}`)
-        setBoardTasks(previousTasks)
+        // Functional state update for rollback prevents stale closure issues
+        setBoardTasks((prev: any) => prev.map((t: any) => t.id === task.id ? { ...t, status: task.status } : t))
       } finally {
-        setPendingRequests(p => Math.max(0, p - 1))
+        setTimeout(() => {
+          setOptimisticIds(prev => {
+            const next = new Set(prev)
+            next.delete(task.id)
+            return next
+          })
+        }, 2000)
       }
     } else if (overIndex !== -1 && activeTaskIndex !== overIndex) {
       // Moving within the same column (optimistic only, since we don't save order to db)
       setBoardTasks((prev: any) => arrayMove(prev, activeTaskIndex, overIndex))
+      setTimeout(() => {
+        setOptimisticIds(prev => {
+          const next = new Set(prev)
+          next.delete(task.id)
+          return next
+        })
+      }, 500)
+    } else {
+      // Didn't move
+      setOptimisticIds(prev => {
+        const next = new Set(prev)
+        next.delete(task.id)
+        return next
+      })
     }
   }
 

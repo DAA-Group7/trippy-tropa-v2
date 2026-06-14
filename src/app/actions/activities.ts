@@ -319,12 +319,15 @@ export async function respondToTransferAction(
       
     if (ownerErr) return { error: ownerErr.message }
 
-    // Ensure new owner is a teacher role in classroom
+    // Ensure new owner is a teacher role in classroom. Use upsert in case they aren't a member yet.
     const { error: roleErr } = await supabase
       .from('classroom_members')
-      .update({ role: 'teacher' })
-      .eq('classroom_id', transfer.classroom_id)
-      .eq('user_id', user.id)
+      .upsert({ 
+        classroom_id: transfer.classroom_id,
+        user_id: user.id,
+        role: 'teacher',
+        has_completed_onboarding: true
+      }, { onConflict: 'classroom_id,user_id' })
 
     if (roleErr) return { error: roleErr.message }
     
@@ -335,7 +338,8 @@ export async function respondToTransferAction(
       .eq('classroom_id', transfer.classroom_id)
       .eq('user_id', transfer.from_user_id)
 
-    revalidatePath('/classroom/[id]', 'layout')
+    revalidatePath(`/classroom/${transfer.classroom_id}`, 'layout')
+    revalidatePath('/dashboard')
   }
 
   const { error: transferErr } = await supabase

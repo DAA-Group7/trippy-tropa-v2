@@ -195,13 +195,28 @@ export async function confirmAssignmentsAction(groupId: string, activityId: stri
   // Exclude dummy tasks/members
   const realAssignments = assignments.filter(a => !a.isDummyMember && !a.isDummyTask)
 
-  // Update each task with assigned_to in parallel
-  const updatePromises = realAssignments.map(a => 
-    supabase.from('tasks').update({ assigned_to: a.memberId }).eq('id', a.taskId)
-  )
-  const results = await Promise.all(updatePromises)
-  const errorResult = results.find(r => r.error)
-  if (errorResult?.error) return { error: errorResult.error.message }
+  // Fetch current tasks to satisfy any NOT NULL constraints on upsert
+  const { data: currentTasks, error: fetchErr } = await supabase
+    .from('tasks')
+    .select('*')
+    .in('id', realAssignments.map(a => a.taskId))
+
+  if (fetchErr) return { error: fetchErr.message }
+  if (!currentTasks) return { error: 'Failed to fetch tasks for bulk update' }
+
+  const upsertPayload = currentTasks.map(task => {
+    const assignment = realAssignments.find(a => a.taskId === task.id)
+    return {
+      ...task,
+      assigned_to: assignment?.memberId
+    }
+  })
+
+  const { error: upsertErr } = await supabase
+    .from('tasks')
+    .upsert(upsertPayload, { onConflict: 'id' })
+
+  if (upsertErr) return { error: upsertErr.message }
 
   // Set tasks_assigned = true on the activity
   const { error: actErr } = await supabase

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Plus, Trash2, Save, Loader2, Sparkles, MessageSquare, ShieldAlert } from 'lucide-react'
 import { upsertTimeEstimateAction, runHungarianAssignmentAction, confirmAssignmentsAction, deleteTaskAction, createTaskAction } from '@/app/actions/tasks'
 import { useRouter } from 'next/navigation'
@@ -16,7 +16,8 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
   const [newTaskDesc, setNewTaskDesc] = useState('')
 
   const [localEstimates, setLocalEstimates] = useState<Record<string, string>>({})
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRefs = useRef<Record<string, NodeJS.Timeout>>({})
+  const [activeCell, setActiveCell] = useState<string | null>(null)
 
   useEffect(() => {
     setLocalEstimates(prev => {
@@ -24,13 +25,13 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
       let changed = false
       estimates.forEach((est: any) => {
         const key = `${est.task_id}_${est.user_id}`
+        
+        // Skip overwriting local state if the user is actively typing in this specific cell
+        if (activeCell === key) return
+
         const localNum = parseFloat(next[key] || '0') || 0
         const serverNum = Number(est.estimated_hours)
         
-        // Only update local state if the numeric value actually differs.
-        // This prevents overwriting a local trailing decimal (like "12.") 
-        // with "12", and ignores stale server revalidations if the user 
-        // has typed a new valid number that hasn't synced yet.
         if (localNum !== serverNum && next[key] !== est.estimated_hours.toString()) {
           next[key] = est.estimated_hours.toString()
           changed = true
@@ -38,21 +39,23 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
       })
       return changed ? next : prev
     })
-  }, [estimates])
+  }, [estimates, activeCell])
 
   const handleEstimateChange = (taskId: string, userId: string, value: string) => {
     if (userId !== currentUserId) return // Only edit own
     
     const key = `${taskId}_${userId}`
     setLocalEstimates(prev => ({ ...prev, [key]: value }))
+    setActiveCell(key)
     
     const numValue = value === '' ? 0 : parseFloat(value)
     if (isNaN(numValue) || numValue < 0) return
 
-    // Debounce the server action
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(async () => {
+    // Per-cell debounce
+    if (timeoutRefs.current[key]) clearTimeout(timeoutRefs.current[key])
+    timeoutRefs.current[key] = setTimeout(async () => {
       await upsertTimeEstimateAction(taskId, numValue, activityId, groupId)
+      setActiveCell(prev => prev === key ? null : prev) // Clear active status if they haven't moved to another cell
     }, 500)
   }
 
@@ -95,33 +98,34 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
     setIsAssigning(false)
   }
 
-  // Calculate totals and progress
-  const totalCells = members.length * tasks.length
-  let filledCells = 0
-  
-  // Calculate member totals
-  const memberTotals: Record<string, number> = {}
-  // Calculate task totals
-  const taskTotals: Record<string, number> = {}
-  let grandTotal = 0
+  // Calculate totals and progress using useMemo for performance
+  const { totalCells, progressPercent, is100Percent, taskTotals, memberTotals, grandTotal } = useMemo(() => {
+    const totalCells = members.length * tasks.length
+    let filledCells = 0
+    const memberTotals: Record<string, number> = {}
+    const taskTotals: Record<string, number> = {}
+    let grandTotal = 0
 
-  members.forEach((m: any) => {
-    let total = 0
-    tasks.forEach((t: any) => {
-      const strVal = localEstimates[`${t.id}_${m.user_id}`]
-      const val = strVal ? parseFloat(strVal) : 0
-      if (!isNaN(val) && val > 0) {
-        total += val
-        filledCells++
-        taskTotals[t.id] = (taskTotals[t.id] || 0) + val
-      }
+    members.forEach((m: any) => {
+      let total = 0
+      tasks.forEach((t: any) => {
+        const strVal = localEstimates[`${t.id}_${m.user_id}`]
+        const val = strVal ? parseFloat(strVal) : 0
+        if (!isNaN(val) && val > 0) {
+          total += val
+          filledCells++
+          taskTotals[t.id] = (taskTotals[t.id] || 0) + val
+        }
+      })
+      memberTotals[m.user_id] = total
+      grandTotal += total
     })
-    memberTotals[m.user_id] = total
-    grandTotal += total
-  })
 
-  const progressPercent = totalCells === 0 ? 0 : Math.round((filledCells / totalCells) * 100)
-  const is100Percent = progressPercent === 100 && totalCells > 0
+    const progressPercent = totalCells === 0 ? 0 : Math.round((filledCells / totalCells) * 100)
+    const is100Percent = progressPercent === 100 && totalCells > 0
+    
+    return { totalCells, progressPercent, is100Percent, taskTotals, memberTotals, grandTotal }
+  }, [members, tasks, localEstimates])
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
