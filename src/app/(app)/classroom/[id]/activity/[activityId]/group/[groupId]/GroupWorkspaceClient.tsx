@@ -88,6 +88,8 @@ export default function GroupWorkspaceClient({
           estimates={estimates}
           currentUserId={currentUserId}
           isLeader={isLeader}
+          isTeacherOrOfficer={isTeacherOrOfficer}
+          isAssigned={activity.tasks_assigned}
           groupId={group.id}
           activityId={activity.id}
         />

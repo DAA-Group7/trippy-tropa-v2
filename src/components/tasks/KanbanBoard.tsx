@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   DndContext, 
   closestCorners,
@@ -9,7 +9,8 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
-  defaultDropAnimationSideEffects
+  defaultDropAnimationSideEffects,
+  useDroppable
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -86,8 +87,10 @@ function SortableTaskCard({ task, isDraggingOverlay = false, estimates }: any) {
 }
 
 function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
+  const { setNodeRef } = useDroppable({ id })
+
   return (
-    <div className="flex flex-col gap-4 bg-surface-container-lowest/30 rounded-2xl p-4 border border-white/5 min-h-[500px]">
+    <div ref={setNodeRef} className="flex flex-col gap-4 bg-surface-container-lowest/30 rounded-2xl p-4 border border-white/5 min-h-[500px]">
       <div className="flex items-center justify-between mb-2 px-2">
         <div className="flex items-center gap-2">
           <Icon className={`w-5 h-5 ${
@@ -120,11 +123,17 @@ function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
 export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacherOrOfficer, activityId, groupId, members }: any) {
   // Local state for optimistic UI updates
   const [boardTasks, setBoardTasks] = useState(tasks.map((t: any) => {
-    // Attach member profile to task object for easy rendering
     const member = members.find((m: any) => m.user_id === t.assigned_to)
     return { ...t, assigned_profile: member?.profile }
   }))
   const [activeTask, setActiveTask] = useState<any | null>(null)
+
+  useEffect(() => {
+    setBoardTasks(tasks.map((t: any) => {
+      const member = members.find((m: any) => m.user_id === t.assigned_to)
+      return { ...t, assigned_profile: member?.profile }
+    }))
+  }, [tasks, members])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -174,13 +183,22 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
     }
 
     if (task.status !== targetStatus) {
+      // Save old state for rollback
+      const previousTasks = [...boardTasks]
+      
       // Optimistic update
       setBoardTasks((prev: any) => 
         prev.map((t: any) => t.id === task.id ? { ...t, status: targetStatus } : t)
       )
 
-      // Server update
-      await updateTaskStatusAction(task.id, targetStatus, activityId, groupId)
+      try {
+        // Server update
+        const res = await updateTaskStatusAction(task.id, targetStatus, activityId, groupId)
+        if (res?.error) throw new Error(res.error)
+      } catch (err: any) {
+        alert(`Failed to update task: ${err.message}`)
+        setBoardTasks(previousTasks) // Rollback
+      }
     }
   }
 

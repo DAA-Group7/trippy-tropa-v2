@@ -24,7 +24,7 @@ export async function createTaskAction(groupId: string, activityId: string, payl
     .single()
 
   if (error) return { error: error.message }
-  revalidatePath(`/classroom/[id]/activity/${activityId}/group/${groupId}`, 'page')
+  revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { task: data }
 }
 
@@ -36,7 +36,7 @@ export async function deleteTaskAction(taskId: string, activityId: string, group
     .eq('id', taskId)
 
   if (error) return { error: error.message }
-  revalidatePath(`/classroom/[id]/activity/${activityId}/group/${groupId}`, 'page')
+  revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { success: true }
 }
 
@@ -48,7 +48,7 @@ export async function updateTaskStatusAction(taskId: string, status: string, act
     .eq('id', taskId)
 
   if (error) return { error: error.message }
-  revalidatePath(`/classroom/[id]/activity/${activityId}/group/${groupId}`, 'page')
+  revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { success: true }
 }
 
@@ -70,7 +70,7 @@ export async function upsertTimeEstimateAction(taskId: string, estimatedHours: n
     }, { onConflict: 'task_id,user_id' })
 
   if (error) return { error: error.message }
-  revalidatePath(`/classroom/[id]/activity/${activityId}/group/${groupId}`, 'page')
+  revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { success: true }
 }
 
@@ -149,18 +149,22 @@ export async function confirmAssignmentsAction(groupId: string, activityId: stri
 
   // Update each task with assigned_to
   for (const a of realAssignments) {
-    await supabase
+    const { error: updErr } = await supabase
       .from('tasks')
       .update({ assigned_to: a.memberId })
       .eq('id', a.taskId)
+    
+    if (updErr) return { error: updErr.message }
   }
 
   // Set tasks_assigned = true on the activity
-  await supabase
+  const { error: actErr } = await supabase
     .from('activities')
     .update({ tasks_assigned: true })
     .eq('id', activityId)
 
-  revalidatePath(`/classroom/[id]/activity/${activityId}/group/${groupId}`, 'page')
+  if (actErr) return { error: actErr.message }
+
+  revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { success: true }
 }

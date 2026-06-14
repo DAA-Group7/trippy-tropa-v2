@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, Loader2, Sparkles, MessageSquare, ShieldAlert } from 'lucide-react'
 import { upsertTimeEstimateAction, runHungarianAssignmentAction, confirmAssignmentsAction, deleteTaskAction, createTaskAction } from '@/app/actions/tasks'
 import { useRouter } from 'next/navigation'
 
-export default function EstimationMatrix({ members, tasks, estimates, currentUserId, isLeader, groupId, activityId }: any) {
+export default function EstimationMatrix({ members, tasks, estimates, currentUserId, isLeader, groupId, activityId, isAssigned, isTeacherOrOfficer }: any) {
   const router = useRouter()
   const [isAssigning, setIsAssigning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -15,13 +15,16 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskDesc, setNewTaskDesc] = useState('')
 
-  // Local state for estimates to allow rapid typing without waiting for server response
-  const [localEstimates, setLocalEstimates] = useState<Record<string, number>>(
-    estimates.reduce((acc: any, est: any) => {
-      acc[`${est.task_id}_${est.user_id}`] = Number(est.estimated_hours)
-      return acc
-    }, {})
-  )
+  const [localEstimates, setLocalEstimates] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    setLocalEstimates(
+      estimates.reduce((acc: any, est: any) => {
+        acc[`${est.task_id}_${est.user_id}`] = Number(est.estimated_hours)
+        return acc
+      }, {})
+    )
+  }, [estimates])
 
   const handleEstimateChange = async (taskId: string, userId: string, value: string) => {
     if (userId !== currentUserId) return // Only edit own
@@ -37,7 +40,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
   }
 
   const handleDeleteTask = async (taskId: string) => {
-    if (!isLeader) return
+    if (!isLeader || isAssigned) return
     if (!confirm('Are you sure you want to delete this task?')) return
     await deleteTaskAction(taskId, activityId, groupId)
   }
@@ -112,7 +115,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
           <p className="text-on-surface-variant mt-1">Define work distribution and estimated hours for your group project.</p>
         </div>
         <div className="flex gap-3">
-          {isLeader && is100Percent && (
+          {isLeader && is100Percent && !isAssigned && (
             <button 
               onClick={handleAutoAssign}
               disabled={isAssigning}
@@ -133,24 +136,26 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
       )}
 
       {/* Task Creation Form (Inline) */}
-      <form onSubmit={handleCreateTask} className="bg-surface/50 border border-white/5 p-4 rounded-xl flex gap-3 items-center backdrop-blur-md">
-        <input 
-          type="text"
-          value={newTaskTitle}
-          onChange={e => setNewTaskTitle(e.target.value)}
-          placeholder="New Task Title..."
-          className="bg-surface-container border border-outline-variant rounded-lg px-4 py-2 text-sm text-on-surface focus:border-secondary outline-none flex-1"
-          required
-        />
-        <button 
-          type="submit"
-          disabled={isCreating}
-          className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
-        >
-          {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-          Add Task
-        </button>
-      </form>
+      {!isAssigned && !isTeacherOrOfficer && (
+        <form onSubmit={handleCreateTask} className="bg-surface/50 border border-white/5 p-4 rounded-xl flex gap-3 items-center backdrop-blur-md">
+          <input 
+            type="text"
+            value={newTaskTitle}
+            onChange={e => setNewTaskTitle(e.target.value)}
+            placeholder="New Task Title..."
+            className="bg-surface-container border border-outline-variant rounded-lg px-4 py-2 text-sm text-on-surface focus:border-secondary outline-none flex-1"
+            required
+          />
+          <button 
+            type="submit"
+            disabled={isCreating}
+            className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
+          >
+            {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            Add Task
+          </button>
+        </form>
+      )}
 
       {/* Progress Bar */}
       <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-white/5">
@@ -176,7 +181,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                 <th key={t.id} className="p-4 border-b border-white/10 font-bold text-xs uppercase tracking-wider text-on-surface-variant group relative">
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate max-w-[120px]" title={t.title}>{t.title}</span>
-                    {isLeader && (
+                    {isLeader && !isAssigned && (
                       <button 
                         onClick={() => handleDeleteTask(t.id)}
                         className="opacity-0 group-hover:opacity-100 p-1 hover:bg-error/20 text-error rounded transition-all"
@@ -225,9 +230,11 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                   
                   {tasks.map((t: any) => {
                     const val = localEstimates[`${t.id}_${m.user_id}`] || ''
+                    const isCellAssigned = isAssigned && t.assigned_to === m.user_id
+
                     return (
-                      <td key={t.id} className="p-4 border-r border-white/5 last:border-none">
-                        {isMe ? (
+                      <td key={t.id} className={`p-4 border-r border-white/5 last:border-none ${isCellAssigned ? 'bg-secondary/20 border-secondary/50' : ''}`}>
+                        {isMe && !isAssigned && !isTeacherOrOfficer ? (
                           <input
                             type="number"
                             min="0"
@@ -238,7 +245,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                             className="w-16 bg-surface-container-lowest border border-white/10 rounded px-2 py-1 text-center text-secondary font-bold focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
                           />
                         ) : (
-                          <span className="w-16 inline-block text-center text-on-surface-variant font-medium opacity-60">
+                          <span className={`w-16 inline-block text-center font-medium ${isCellAssigned ? 'text-secondary font-black' : 'text-on-surface-variant opacity-60'}`}>
                             {val || '—'}
                           </span>
                         )}

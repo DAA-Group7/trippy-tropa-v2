@@ -128,16 +128,20 @@ export async function generateGroupsAction(activityId: string) {
   if (!members || members.length === 0) return { error: 'No students in classroom' }
 
   // Get skills for weighting
-  const { data: skills } = await supabase
+  const { data: skills, error: skillsErr } = await supabase
     .from('skills')
     .select('*')
     .eq('classroom_id', activity.classroom_id)
 
+  if (skillsErr) return { error: skillsErr.message }
+
   // Get student skill ratings
-  const { data: studentSkills } = await supabase
+  const { data: studentSkills, error: studentSkillsErr } = await supabase
     .from('student_skills')
     .select('*')
     .eq('classroom_id', activity.classroom_id)
+
+  if (studentSkillsErr) return { error: studentSkillsErr.message }
 
   // Compute skill scores for each student
   const students: Student[] = members.map((m: any) => {
@@ -183,7 +187,8 @@ export async function confirmGroupsAction(
   if (!activity) return { error: 'Activity not found' }
 
   // Delete existing groups if re-generating
-  await supabase.from('groups').delete().eq('activity_id', activityId)
+  const { error: delErr } = await supabase.from('groups').delete().eq('activity_id', activityId)
+  if (delErr) return { error: delErr.message }
 
   // Insert groups and members
   for (const draftGroup of draftGroups) {
@@ -206,17 +211,20 @@ export async function confirmGroupsAction(
     }))
 
     if (memberInserts.length > 0) {
-      await supabase.from('group_members').insert(memberInserts)
+      const { error: memErr } = await supabase.from('group_members').insert(memberInserts)
+      if (memErr) return { error: memErr.message }
     }
   }
 
   // Mark groups_created = true
-  await supabase
+  const { error: updErr } = await supabase
     .from('activities')
     .update({ groups_created: true })
     .eq('id', activityId)
 
-  revalidatePath(`/classroom/${activity.classroom_id}`)
+  if (updErr) return { error: updErr.message }
+
+  revalidatePath('/classroom/[id]', 'layout')
   return { success: true }
 }
 
@@ -282,20 +290,23 @@ export async function respondToTransferAction(
     .eq('id', transferId)
 
   if (response === 'accepted') {
-    await supabase
+    const { error: ownerErr } = await supabase
       .from('classrooms')
       .update({ owner_id: user.id })
       .eq('id', transfer.classroom_id)
+      
+    if (ownerErr) return { error: ownerErr.message }
 
     // Ensure new owner is a teacher role in classroom
-    await supabase
+    const { error: roleErr } = await supabase
       .from('classroom_members')
       .update({ role: 'teacher' })
       .eq('classroom_id', transfer.classroom_id)
       .eq('user_id', user.id)
 
-    revalidatePath(`/classroom/${transfer.classroom_id}`)
-    revalidatePath(`/classroom/${transfer.classroom_id}/settings`)
+    if (roleErr) return { error: roleErr.message }
+
+    revalidatePath('/classroom/[id]', 'layout')
   }
 
   return { success: true }
