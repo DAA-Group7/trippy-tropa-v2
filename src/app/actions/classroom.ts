@@ -83,10 +83,7 @@ export async function joinClassroomAction(state: any, formData: FormData) {
   if (!user) return { error: 'Unauthorized' }
 
   const { data: classroom, error: findError } = await supabase
-    .from('classrooms')
-    .select('id')
-    .eq('invite_code', code.toUpperCase())
-    .single()
+    .rpc('get_classroom_by_invite_code', { invite_code_arg: code.toUpperCase() })
 
   if (findError || !classroom) {
     return { error: 'Invalid invite code or classroom not found.' }

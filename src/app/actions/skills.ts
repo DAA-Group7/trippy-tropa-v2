@@ -101,11 +101,15 @@ export async function submitSkillRatingsAction(classroomId: string, ratings: { s
   if (insertError) return { error: insertError.message }
 
   // Set onboarding complete
-  await supabase
-    .from('classroom_members')
-    .update({ has_completed_onboarding: true })
-    .eq('classroom_id', classroomId)
-    .eq('user_id', user.id)
+  const { error: completeError } = await supabase.rpc('complete_onboarding', { 
+    class_id: classroomId,
+    target_user_id: user.id
+  })
+  
+  if (completeError) {
+    console.error('Failed to mark onboarding complete:', completeError)
+    return { error: 'Database update failed. Please make sure you ran the latest SQL snippet in Supabase! ' + completeError.message }
+  }
 
   revalidatePath(`/classroom/${classroomId}`)
   return { success: true }

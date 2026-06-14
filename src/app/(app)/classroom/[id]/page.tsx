@@ -22,14 +22,22 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
   }
 
   // Prevent onboarding bypass for students
-  if (member.role === 'student' && !member.has_completed_onboarding) {
-    const { count } = await supabase
-      .from('skills')
+  if (member.role === 'student') {
+    const { count: ratedCount } = await supabase
+      .from('student_skills')
       .select('id', { count: 'exact', head: true })
       .eq('classroom_id', id)
+      .eq('user_id', user.id)
 
-    if (count && count > 0) {
-      redirect(`/onboarding/${id}`)
+    if (!ratedCount || ratedCount === 0) {
+      const { count: totalSkills } = await supabase
+        .from('skills')
+        .select('id', { count: 'exact', head: true })
+        .eq('classroom_id', id)
+
+      if (totalSkills && totalSkills > 0) {
+        redirect(`/onboarding/${id}`)
+      }
     }
   }
 
@@ -120,6 +128,7 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
       userRole={member.role}
       stats={stats}
       activities={activities || []}
+      hasSkills={skills && skills.length > 0}
     />
   )
 }

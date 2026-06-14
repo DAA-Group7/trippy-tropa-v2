@@ -59,7 +59,7 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
   )
 }
 
-export default function ClassroomClient({ classroom, members, userRole, stats, activities }: any) {
+export default function ClassroomClient({ classroom, members, userRole, stats, activities, hasSkills }: any) {
   const [activeTab, setActiveTab] = useState('STUDENTS')
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
@@ -97,13 +97,25 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
 
         {canManage && (
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsInviteModalOpen(true)}
-              className="bg-gradient-to-r from-primary-container to-secondary px-6 py-2.5 rounded-lg text-on-primary font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(70,234,229,0.2)] transition-all active:scale-95"
-            >
-              <UserPlus className="w-5 h-5" />
-              <span className="hidden sm:inline">+ Invite Students</span>
-            </button>
+            <div className="relative group">
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                disabled={!hasSkills}
+                className={`px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-all ${
+                  hasSkills 
+                    ? 'bg-gradient-to-r from-primary-container to-secondary text-on-primary hover:shadow-[0_0_20px_rgba(70,234,229,0.2)] active:scale-95' 
+                    : 'bg-surface-container-highest text-on-surface-variant opacity-50 cursor-not-allowed'
+                }`}
+              >
+                <UserPlus className="w-5 h-5" />
+                <span className="hidden sm:inline">+ Invite Students</span>
+              </button>
+              {!hasSkills && (
+                <div className="absolute top-full mt-2 right-0 w-48 p-2 bg-surface-container-highest border border-white/10 rounded-lg text-xs text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl">
+                  Set up the skill assessment in Settings first!
+                </div>
+              )}
+            </div>
             <Link href={`/classroom/${classroom.id}/settings`} className="glass-card p-2.5 rounded-lg text-on-surface hover:bg-white/10 transition-colors">
               <Settings className="w-5 h-5" />
             </Link>

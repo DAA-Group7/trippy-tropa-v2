@@ -21,7 +21,13 @@ export default async function OnboardingPage({ params }: { params: Promise<{ cla
   if (!member) redirect('/dashboard')
   
   // If already completed onboarding, redirect to classroom
-  if (member.has_completed_onboarding) {
+  const { count: ratedCount } = await supabase
+    .from('student_skills')
+    .select('id', { count: 'exact', head: true })
+    .eq('classroom_id', classroomId)
+    .eq('user_id', user.id)
+
+  if (ratedCount && ratedCount > 0) {
     redirect(`/classroom/${classroomId}`)
   }
 
@@ -43,11 +49,10 @@ export default async function OnboardingPage({ params }: { params: Promise<{ cla
 
   if (!skills || skills.length === 0) {
     // If no skills to assess, auto-complete onboarding
-    await supabase
-      .from('classroom_members')
-      .update({ has_completed_onboarding: true })
-      .eq('classroom_id', classroomId)
-      .eq('user_id', user.id)
+    await supabase.rpc('complete_onboarding', { 
+      class_id: classroomId,
+      target_user_id: user.id
+    })
       
     redirect(`/classroom/${classroomId}`)
   }

@@ -17,12 +17,9 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
     redirect(`/signup?next=/join/${code}`)
   }
 
-  // 1. Find classroom by code
+  // 1. Find classroom by code securely using RPC
   const { data: classroom, error: findError } = await supabase
-    .from('classrooms')
-    .select('id, name')
-    .eq('invite_code', code.toUpperCase())
-    .single()
+    .rpc('get_classroom_by_invite_code', { invite_code_arg: code.toUpperCase() })
 
   if (findError || !classroom) {
     return (
