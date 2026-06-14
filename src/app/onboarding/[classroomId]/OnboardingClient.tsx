@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { School, CheckCircle, Terminal, Rocket, Palette, BrainCircuit, Forum } from 'lucide-react'
+import { School, CheckCircle, Terminal, Rocket, Palette, BrainCircuit, MessageSquare } from 'lucide-react'
 import { submitSkillRatingsAction } from '@/app/actions/skills'
 
 export default function OnboardingClient({ classroomId, classroomName, skills }: any) {
@@ -43,7 +43,7 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
     if (l.includes('design') || l.includes('ui')) return <Palette className="w-6 h-6" />
     if (l.includes('code') || l.includes('python') || l.includes('algo') || l.includes('dev')) return <Terminal className="w-6 h-6" />
     if (l.includes('data') || l.includes('brain') || l.includes('math')) return <BrainCircuit className="w-6 h-6" />
-    return <Forum className="w-6 h-6" />
+    return <MessageSquare className="w-6 h-6" />
   }
 
   return (

@@ -9,7 +9,6 @@ export default async function ClassroomSettingsPage({ params }: { params: Promis
 
   const { id } = await params
 
-  // Verify membership and role
   const { data: member } = await supabase
     .from('classroom_members')
     .select('role')
@@ -21,7 +20,6 @@ export default async function ClassroomSettingsPage({ params }: { params: Promis
     redirect(`/classroom/${id}`)
   }
 
-  // Fetch classroom details
   const { data: classroom } = await supabase
     .from('classrooms')
     .select('*')
@@ -30,17 +28,46 @@ export default async function ClassroomSettingsPage({ params }: { params: Promis
 
   if (!classroom) redirect('/dashboard')
 
-  // Fetch skills
   const { data: skills } = await supabase
     .from('skills')
     .select('*')
     .eq('classroom_id', id)
     .order('order_index', { ascending: true })
 
+  // For ownership transfer: fetch teachers in the classroom (not the current owner)
+  const isOwner = classroom.owner_id === user.id
+  let teachers: any[] = []
+  let pendingTransfer: any = null
+
+  if (isOwner && member.role === 'student_officer') {
+    // Get all teachers in the classroom
+    const { data: teacherMembers } = await supabase
+      .from('classroom_members')
+      .select('user_id, profiles:user_id(id, full_name, email)')
+      .eq('classroom_id', id)
+      .eq('role', 'teacher')
+    teachers = (teacherMembers || []).map((m: any) => m.profiles).filter(Boolean)
+
+    // Check for pending transfer
+    const { data: transfer } = await supabase
+      .from('ownership_transfers')
+      .select('*, to_profile:to_user_id(full_name, email)')
+      .eq('classroom_id', id)
+      .eq('from_user_id', user.id)
+      .eq('status', 'pending')
+      .single()
+    pendingTransfer = transfer
+  }
+
   return (
     <SettingsClient 
       classroom={classroom}
       initialSkills={skills || []}
+      isOwner={isOwner}
+      userRole={member.role}
+      teachers={teachers}
+      pendingTransfer={pendingTransfer}
     />
   )
 }
+

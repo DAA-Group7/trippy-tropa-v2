@@ -76,12 +76,24 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
     }
   })
 
-  // Mocked stats for Phase 2
+  // Mocked stats — will be computed from real data in later phases
+  const studentCount = formattedMembers.filter((m: any) => m.role === 'student').length
+  const avgScore = studentCount > 0
+    ? (formattedMembers.filter((m: any) => m.role === 'student').reduce((s: number, m: any) => s + (m.skillScore || 0), 0) / studentCount).toFixed(1)
+    : '—'
+
   const stats = {
-    avgScore: '84.2%',
-    atRisk: 3,
-    activeGroups: 8
+    avgScore: studentCount > 0 ? `${avgScore} pts` : '—',
+    atRisk: 0,
+    activeGroups: 0
   }
+
+  // Fetch activities
+  const { data: activities } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('classroom_id', id)
+    .order('created_at', { ascending: false })
 
   return (
     <ClassroomClient 
@@ -89,6 +101,7 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
       members={formattedMembers} 
       userRole={member.role}
       stats={stats}
+      activities={activities || []}
     />
   )
 }

@@ -1,11 +1,64 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, UserPlus, Settings, MoreVertical, Activity, AlertTriangle, Users } from 'lucide-react'
+import {
+  ArrowLeft, UserPlus, Settings, MoreVertical, Activity, AlertTriangle,
+  Users, Plus, User, Clock, CheckCircle, BookOpen
+} from 'lucide-react'
 import Link from 'next/link'
 import { InviteStudentsModal } from '@/components/classroom/InviteStudentsModal'
 
-export default function ClassroomClient({ classroom, members, userRole, stats }: any) {
+function ActivityCard({ activity, classroomId }: { activity: any; classroomId: string }) {
+  const isGroup = activity.type === 'group'
+  const isOverdue = activity.due_date && new Date(activity.due_date) < new Date()
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+  return (
+    <Link href={`/classroom/${classroomId}/activity/${activity.id}`}>
+      <div className="glass-card p-5 rounded-xl hover:-translate-y-1 transition-all group cursor-pointer border border-white/10 hover:border-primary/30">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+              isGroup
+                ? 'bg-secondary/10 text-secondary border-secondary/30'
+                : 'bg-primary/10 text-primary border-primary/30'
+            }`}>
+              {isGroup ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
+              {isGroup ? 'Group' : 'Individual'}
+            </span>
+            {activity.groups_created && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                <CheckCircle className="w-3 h-3" /> Groups Set
+              </span>
+            )}
+          </div>
+          {activity.due_date && (
+            <span className={`flex items-center gap-1 text-[10px] font-bold whitespace-nowrap ${
+              isOverdue ? 'text-error' : 'text-on-surface-variant'
+            }`}>
+              <Clock className="w-3 h-3" />
+              {isOverdue ? 'Overdue · ' : ''}{formatDate(activity.due_date)}
+            </span>
+          )}
+        </div>
+        <h4 className="font-bold text-on-surface text-base group-hover:text-secondary transition-colors">{activity.title}</h4>
+        {activity.description && (
+          <p className="text-xs text-on-surface-variant mt-1 line-clamp-2 opacity-70">{activity.description}</p>
+        )}
+        {isGroup && activity.num_groups && (
+          <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {activity.num_groups} groups planned
+          </p>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+export default function ClassroomClient({ classroom, members, userRole, stats, activities }: any) {
   const [activeTab, setActiveTab] = useState('STUDENTS')
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 
@@ -13,7 +66,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Header Section */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
           <Link href="/dashboard" className="text-secondary text-sm flex items-center hover:underline w-fit">
@@ -25,10 +78,10 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
             {classroom.description || 'No description provided.'}
           </p>
         </div>
-        
+
         {canManage && (
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setIsInviteModalOpen(true)}
               className="bg-gradient-to-r from-primary-container to-secondary px-6 py-2.5 rounded-lg text-on-primary font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(70,234,229,0.2)] transition-all active:scale-95"
             >
@@ -42,10 +95,10 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
         )}
       </div>
 
-      {/* Tabs Section */}
+      {/* Tabs */}
       <div className="flex gap-8 border-b border-white/10">
         {['STUDENTS', 'ACTIVITIES', 'RESOURCES'].map((tab) => (
-          <button 
+          <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`relative py-4 font-bold text-xs tracking-wider transition-colors ${
@@ -54,13 +107,13 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
           >
             {tab}
             {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary rounded-t-full shadow-[0_0_10px_rgba(70,234,229,0.5)]"></div>
+              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary rounded-t-full shadow-[0_0_10px_rgba(70,234,229,0.5)]" />
             )}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
+      {/* STUDENTS TAB */}
       {activeTab === 'STUDENTS' && (
         <>
           <div className="glass-card rounded-xl overflow-hidden">
@@ -75,7 +128,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
                 <div key={member.id} className="grid grid-cols-12 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
                   <div className="col-span-5 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary font-bold overflow-hidden shrink-0">
-                       {member.name.charAt(0)}
+                      {member.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
                       <h4 className="font-bold text-on-surface truncate">{member.name}</h4>
@@ -110,9 +163,8 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
             </div>
           </div>
 
-          {/* Footer Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
               <div className="p-3 bg-secondary/10 rounded-lg text-secondary">
                 <Activity className="w-6 h-6" />
               </div>
@@ -121,7 +173,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
                 <h3 className="text-2xl font-bold text-on-surface">{stats.avgScore}</h3>
               </div>
             </div>
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer border border-error/20">
+            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform border border-error/20">
               <div className="p-3 bg-error/10 rounded-lg text-error">
                 <AlertTriangle className="w-6 h-6" />
               </div>
@@ -130,7 +182,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
                 <h3 className="text-2xl font-bold text-error">{stats.atRisk}</h3>
               </div>
             </div>
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
               <div className="p-3 bg-primary/10 rounded-lg text-primary">
                 <Users className="w-6 h-6" />
               </div>
@@ -143,20 +195,61 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
         </>
       )}
 
+      {/* ACTIVITIES TAB */}
       {activeTab === 'ACTIVITIES' && (
-        <div className="glass-card rounded-xl p-12 text-center text-on-surface-variant">
-          No activities yet. (Phase 4)
+        <div className="space-y-5">
+          {canManage && (
+            <div className="flex justify-end">
+              <Link
+                href={`/classroom/${classroom.id}/activity/create`}
+                className="bg-gradient-to-r from-primary-container to-secondary text-white font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Create Activity
+              </Link>
+            </div>
+          )}
+
+          {activities && activities.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {activities.map((activity: any) => (
+                <ActivityCard key={activity.id} activity={activity} classroomId={classroom.id} />
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card rounded-xl p-16 text-center border-dashed border-2 border-white/10 flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <BookOpen className="w-8 h-8 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-on-surface mb-1">No activities yet</h3>
+                <p className="text-sm text-on-surface-variant">
+                  {canManage ? 'Create your first activity to get started.' : 'No activities have been created yet.'}
+                </p>
+              </div>
+              {canManage && (
+                <Link
+                  href={`/classroom/${classroom.id}/activity/create`}
+                  className="bg-gradient-to-r from-primary-container to-secondary text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Activity
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       )}
+
       {activeTab === 'RESOURCES' && (
         <div className="glass-card rounded-xl p-12 text-center text-on-surface-variant">
           No resources uploaded yet.
         </div>
       )}
 
-      <InviteStudentsModal 
-        isOpen={isInviteModalOpen} 
-        onClose={() => setIsInviteModalOpen(false)} 
+      <InviteStudentsModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
         inviteCode={classroom.invite_code}
       />
     </div>
