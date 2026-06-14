@@ -41,12 +41,7 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
         id,
         role,
         joined_at,
-        profiles:user_id(
-          id,
-          full_name,
-          email,
-          avatar_url
-        )
+        user_id
       )
     `)
     .eq('id', id)
@@ -64,11 +59,19 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
     .select('*')
     .eq('classroom_id', id)
 
+  const userIds = classroom?.members?.map((m: any) => m.user_id) || []
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, full_name, email, avatar_url')
+    .in('id', userIds)
+
   const formattedMembers = classroom.members.map((m: any) => {
     let score = 0
     let rawSkills: any[] = []
+    const profile = profiles?.find(p => p.id === m.user_id)
+
     if (m.role === 'student' && skills && studentSkills) {
-      const mySkills = studentSkills.filter(ss => ss.user_id === m.profiles?.id)
+      const mySkills = studentSkills.filter(ss => ss.user_id === m.user_id)
       mySkills.forEach(ss => {
         const skill = skills.find(s => s.id === ss.skill_id)
         if (skill) {
@@ -80,12 +83,12 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
 
     return {
       id: m.id,
-      userId: m.profiles?.id,
+      userId: m.user_id,
       role: m.role,
       joinedAt: m.joined_at,
-      name: m.profiles?.full_name || 'Unknown User',
-      email: m.profiles?.email || '',
-      avatarUrl: m.profiles?.avatar_url,
+      name: profile?.full_name || 'Unknown User',
+      email: profile?.email || '',
+      avatarUrl: profile?.avatar_url,
       skillScore: score,
       rawSkills
     }

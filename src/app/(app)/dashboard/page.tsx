@@ -29,14 +29,14 @@ export default async function DashboardPage() {
     .from('classrooms')
     .select(`
       *,
-      members:classroom_members(count)
+      members:classroom_members(role)
     `)
     .in('id', classroomIds)
     .order('created_at', { ascending: false })
 
   const formattedClassrooms = classrooms?.map(c => ({
     ...c,
-    studentCount: c.members[0].count
+    studentCount: c.members?.filter((m: any) => m.role === 'student').length || 0
   })) || []
 
   const isTeacher = profile?.role === 'teacher'
