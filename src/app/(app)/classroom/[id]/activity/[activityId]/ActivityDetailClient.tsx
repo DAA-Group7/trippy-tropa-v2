@@ -262,7 +262,7 @@ export default function ActivityDetailClient({
                   const leader = group.members?.find((m: any) => m.is_leader)
                   const others = group.members?.filter((m: any) => !m.is_leader) || []
                   return (
-                    <div key={group.id} className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden hover:-translate-y-1 transition-all group cursor-pointer">
+                    <Link href={`/classroom/${classroomId}/activity/${activity.id}/group/${group.id}`} key={group.id} className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden hover:-translate-y-1 transition-all group cursor-pointer block">
                       <div className="h-1 bg-gradient-to-r from-primary-container to-secondary" />
                       <div className="p-6 space-y-4">
                         <div className="flex justify-between items-start">
@@ -297,7 +297,7 @@ export default function ActivityDetailClient({
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   )
                 })}
               </div>
@@ -341,9 +341,15 @@ export default function ActivityDetailClient({
                       ))}
                     </div>
                   </div>
-                  <div className="bg-[rgba(18,18,42,0.5)] border border-white/5 rounded-xl p-6 text-center">
-                    <p className="text-white/40 text-sm">Task board will be available in Phase 5.</p>
-                  </div>
+                  <Link 
+                    href={`/classroom/${classroomId}/activity/${activity.id}/group/${myGroup.id}`}
+                    className="block bg-secondary/10 hover:bg-secondary/20 border border-secondary/30 hover:border-secondary/50 rounded-xl p-6 text-center transition-all group"
+                  >
+                    <p className="text-secondary font-bold text-lg group-hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                      Enter Group Workspace
+                      <ChevronRight className="w-5 h-5" />
+                    </p>
+                  </Link>
                 </>
               ) : (
                 <PlaceholderCard message="You have not been assigned to a group yet." />
