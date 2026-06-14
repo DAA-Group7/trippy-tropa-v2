@@ -132,17 +132,33 @@ export async function generateGroupsAction(activityId: string) {
     return { error: 'Unauthorized: must be teacher or officer' }
   }
 
-  // Get all students in the classroom with their skill scores
-  const { data: members } = await supabase
+  // Get all students in the classroom
+  const { data: members, error: membersErr } = await supabase
     .from('classroom_members')
-    .select(`
-      user_id,
-      profiles:user_id(id, full_name, email)
-    `)
+    .select('user_id')
     .eq('classroom_id', activity.classroom_id)
     .eq('role', 'student')
 
-  if (!members || members.length === 0) return { error: 'No students in classroom' }
+  if (membersErr) {
+    console.error('Error fetching members:', membersErr)
+    return { error: 'Database error fetching members' }
+  }
+
+  if (!members || members.length === 0) {
+    console.log('No student members found for classroom:', activity.classroom_id)
+    return { error: 'No students in classroom' }
+  }
+
+  // Fetch profiles manually to bypass missing foreign key issue
+  const userIds = members.map(m => m.user_id)
+  const { data: profiles, error: profilesErr } = await supabase
+    .from('profiles')
+    .select('id, full_name, email')
+    .in('id', userIds)
+
+  if (profilesErr) {
+    console.error('Error fetching profiles:', profilesErr)
+  }
 
   // Get skills for weighting
   const { data: skills, error: skillsErr } = await supabase
@@ -183,10 +199,12 @@ export async function generateGroupsAction(activityId: string) {
       score += ss.rating * multiplier
     })
     
+    const profile = profiles?.find(p => p.id === m.user_id)
+    
     return {
       id: m.user_id,
-      name: (m.profiles as any)?.full_name || 'Unknown',
-      email: (m.profiles as any)?.email || '',
+      name: profile?.full_name || 'Unknown',
+      email: profile?.email || '',
       skillScore: score,
     }
   })

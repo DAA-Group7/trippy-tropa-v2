@@ -38,12 +38,33 @@ export default async function ActivityDetailPage({
       .select(`
         id, name,
         members:group_members(
-          id, is_leader,
-          profile:user_id(id, full_name, email, avatar_url)
+          id, is_leader, user_id
         )
       `)
       .eq('activity_id', activityId)
-    groups = groupsData || []
+
+    if (groupsData) {
+      // Collect all user IDs from all groups
+      const userIds = new Set<string>()
+      groupsData.forEach(g => {
+        g.members?.forEach((m: any) => userIds.add(m.user_id))
+      })
+
+      // Fetch profiles manually
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url')
+        .in('id', Array.from(userIds))
+
+      // Stitch profiles into the groups data
+      groups = groupsData.map(g => ({
+        ...g,
+        members: g.members?.map((m: any) => ({
+          ...m,
+          profile: profiles?.find(p => p.id === m.user_id) || null
+        }))
+      }))
+    }
   }
 
   // If student, find their group
