@@ -23,6 +23,20 @@ export default async function AppLayout({
     .eq('id', user.id)
     .single()
 
+  // Fetch classrooms for sidebar
+  const { data: myMemberships } = await supabase
+    .from('classroom_members')
+    .select('classroom_id')
+    .eq('user_id', user.id)
+
+  const classroomIds = myMemberships?.map(m => m.classroom_id) || []
+
+  const { data: classrooms } = await supabase
+    .from('classrooms')
+    .select('id, name')
+    .in('id', classroomIds)
+    .order('created_at', { ascending: false })
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#0a0a1a]">
       {/* Sidebar */}
@@ -46,10 +60,21 @@ export default async function AppLayout({
               My Classrooms
             </h3>
             <div className="flex flex-col gap-1">
-              {/* Classroom links will go here later */}
-              <div className="px-3 py-2 text-sm text-white/40 italic">
-                No classrooms yet
-              </div>
+              {classrooms && classrooms.length > 0 ? (
+                classrooms.map(c => (
+                  <Link 
+                    key={c.id} 
+                    href={`/classroom/${c.id}`}
+                    className="px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors truncate"
+                  >
+                    {c.name}
+                  </Link>
+                ))
+              ) : (
+                <div className="px-3 py-2 text-sm text-white/40 italic">
+                  No classrooms yet
+                </div>
+              )}
             </div>
           </div>
         </nav>
