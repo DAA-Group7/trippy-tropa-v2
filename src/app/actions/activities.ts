@@ -160,16 +160,29 @@ export async function generateGroupsAction(activityId: string) {
 
   if (studentSkillsErr) return { error: studentSkillsErr.message }
 
+  // Optimization: Pre-compute dictionaries to prevent O(N^2) lookup overhead
+  const skillMultipliers = new Map<string, number>()
+  if (skills) {
+    skills.forEach((s: any) => skillMultipliers.set(s.id, Number(s.multiplier)))
+  }
+
+  const studentRatings = new Map<string, Array<{ skill_id: string, rating: number }>>()
+  if (studentSkills) {
+    studentSkills.forEach((ss: any) => {
+      if (!studentRatings.has(ss.user_id)) studentRatings.set(ss.user_id, [])
+      studentRatings.get(ss.user_id)!.push({ skill_id: ss.skill_id, rating: ss.rating })
+    })
+  }
+
   // Compute skill scores for each student
   const students: Student[] = members.map((m: any) => {
     let score = 0
-    if (skills && studentSkills) {
-      const myRatings = studentSkills.filter((ss: any) => ss.user_id === m.user_id)
-      myRatings.forEach((ss: any) => {
-        const skill = skills.find((s: any) => s.id === ss.skill_id)
-        if (skill) score += ss.rating * Number(skill.multiplier)
-      })
-    }
+    const myRatings = studentRatings.get(m.user_id) || []
+    myRatings.forEach((ss) => {
+      const multiplier = skillMultipliers.get(ss.skill_id) || 0
+      score += ss.rating * multiplier
+    })
+    
     return {
       id: m.user_id,
       name: (m.profiles as any)?.full_name || 'Unknown',

@@ -33,7 +33,14 @@ function SignUpForm() {
         </div>
       )}
 
-      <form action={formAction} className="flex flex-col gap-6">
+      <form action={formAction} onSubmit={(e) => {
+        const p1 = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value
+        const p2 = (e.currentTarget.elements.namedItem('confirm_password') as HTMLInputElement).value
+        if (p1 !== p2) {
+          e.preventDefault()
+          alert('Passwords do not match!')
+        }
+      }} className="flex flex-col gap-6">
         {nextParam && <input type="hidden" name="next" value={nextParam} />}
         {/* Role Selector */}
         <div className="grid grid-cols-2 gap-4">
@@ -41,14 +48,14 @@ function SignUpForm() {
             <input className="sr-only peer" name="role" type="radio" value="student" defaultChecked />
             <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-white/10 bg-white/5 peer-checked:border-[#c6bfff] peer-checked:bg-[#6c5ce7]/20 transition-all duration-300">
               <School className="w-8 h-8 mb-2 peer-checked:text-[#c6bfff]" />
-              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">I'm a Student</span>
+              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">🎓 I'm a Student</span>
             </div>
           </label>
           <label className="cursor-pointer relative group">
             <input className="sr-only peer" name="role" type="radio" value="teacher" />
             <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-white/10 bg-white/5 peer-checked:border-[#c6bfff] peer-checked:bg-[#6c5ce7]/20 transition-all duration-300">
               <UserSquare2 className="w-8 h-8 mb-2 peer-checked:text-[#c6bfff]" />
-              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">I'm a Teacher</span>
+              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">👨‍🏫 I'm a Teacher</span>
             </div>
           </label>
         </div>

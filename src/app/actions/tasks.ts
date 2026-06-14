@@ -166,14 +166,18 @@ export async function runHungarianAssignmentAction(groupId: string) {
   const memberIds = members.map(m => m.user_id)
   const taskIds = tasks.map(t => t.id)
 
+  // Optimization: O(1) lookup Map for estimates
+  const estimatesMap = new Map<string, number>()
+  estimates.forEach(e => estimatesMap.set(`${e.user_id}_${e.task_id}`, Number(e.estimated_hours)))
+
   // Build matrix: [memberIndex][taskIndex]
   const matrix: number[][] = []
   for (let i = 0; i < memberIds.length; i++) {
     matrix[i] = []
     for (let j = 0; j < taskIds.length; j++) {
-      const est = estimates.find(e => e.user_id === memberIds[i] && e.task_id === taskIds[j])
-      // If missing estimate, treat as high cost so it's avoided (though PRD says require 100% full)
-      matrix[i][j] = est ? Number(est.estimated_hours) : 9999
+      const estHours = estimatesMap.get(`${memberIds[i]}_${taskIds[j]}`)
+      // If missing estimate, treat as high cost so it's avoided
+      matrix[i][j] = estHours !== undefined ? estHours : 9999
     }
   }
 
@@ -186,14 +190,36 @@ export async function confirmAssignmentsAction(groupId: string, activityId: stri
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  // AuthZ check: must be teacher or officer
-  const { data: activity } = await supabase.from('activities').select('classroom_id').eq('id', activityId).single()
-  if (!activity) return { error: 'Activity not found' }
-  const { data: classMember } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
-  if (!classMember || classMember.role === 'student') return { error: 'Unauthorized: must be teacher or officer' }
+  // AuthZ check: must be group leader OR teacher/officer
+  let authorized = false
+  const { data: groupMember } = await supabase.from('group_members').select('is_leader').eq('group_id', groupId).eq('user_id', user.id).single()
   
+  if (groupMember?.is_leader) {
+    authorized = true
+  } else {
+    const { data: activity } = await supabase.from('activities').select('classroom_id').eq('id', activityId).single()
+    if (activity) {
+      const { data: classMember } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+      if (classMember && ['teacher', 'student_officer'].includes(classMember.role)) authorized = true
+    }
+  }
+
+  if (!authorized) return { error: 'Unauthorized: must be group leader or teacher' }
   // Exclude dummy tasks/members
   const realAssignments = assignments.filter(a => !a.isDummyMember && !a.isDummyTask)
+
+  if (realAssignments.length === 0) {
+    // Set tasks_assigned = true on the activity
+    const { error: actErr } = await supabase
+      .from('activities')
+      .update({ tasks_assigned: true })
+      .eq('id', activityId)
+
+    if (actErr) return { error: actErr.message }
+
+    revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
+    return { success: true }
+  }
 
   // Fetch current tasks to satisfy any NOT NULL constraints on upsert
   const { data: currentTasks, error: fetchErr } = await supabase

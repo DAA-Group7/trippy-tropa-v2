@@ -79,54 +79,54 @@ export function runHungarianAssignment(
 ): Assignment[] {
   const numMembers = members.length;
   const numTasks = tasks.length;
-  const n = Math.max(numMembers, numTasks);
+  if (numMembers === 0 || numTasks === 0) return [];
 
-  if (n === 0) return [];
+  // Determine duplication factor if tasks > members
+  const maxTasksPerMember = Math.ceil(numTasks / numMembers);
+  
+  // Create expanded members and matrix
+  const expandedMembers: string[] = [];
+  const expandedMatrix: number[][] = [];
+  
+  for (let i = 0; i < numMembers; i++) {
+    for (let k = 0; k < maxTasksPerMember; k++) {
+      expandedMembers.push(members[i]);
+      expandedMatrix.push(timeEstimatesMatrix[i]);
+    }
+  }
+  
+  const n = Math.max(expandedMembers.length, numTasks);
 
   // Pad the matrix to be N x N
   const paddedMatrix: number[][] = [];
   for (let i = 0; i < n; i++) {
     paddedMatrix[i] = [];
     for (let j = 0; j < n; j++) {
-      if (i < numMembers && j < numTasks) {
-        paddedMatrix[i][j] = timeEstimatesMatrix[i][j];
+      if (i < expandedMembers.length && j < numTasks) {
+        paddedMatrix[i][j] = expandedMatrix[i][j];
       } else {
-        // Dummy member or dummy task
-        // We use 0 as the cost so it doesn't inflate the real assignment sum
+        // Dummy task (or dummy member if expanded length < numTasks)
         paddedMatrix[i][j] = 0;
       }
     }
   }
 
-  // Get assignments: array where index is row (member), value is col (task)
-  const assignmentArr = hungarian(paddedMatrix);
+  const assignmentArray = hungarian(paddedMatrix);
 
   const results: Assignment[] = [];
-
   for (let i = 0; i < n; i++) {
-    const j = assignmentArr[i];
-    const isDummyMember = i >= numMembers;
+    const j = assignmentArray[i]; // Member i is assigned Task j
+    
+    const isDummyMember = i >= expandedMembers.length;
     const isDummyTask = j >= numTasks;
 
     if (!isDummyMember && !isDummyTask) {
       results.push({
-        memberId: members[i],
+        memberId: expandedMembers[i],
         taskId: tasks[j],
-        estimatedHours: timeEstimatesMatrix[i][j],
-      });
-    } else if (!isDummyMember && isDummyTask) {
-      results.push({
-        memberId: members[i],
-        taskId: `dummy_task_${j}`,
-        estimatedHours: 0,
-        isDummyTask: true,
-      });
-    } else if (isDummyMember && !isDummyTask) {
-      results.push({
-        memberId: `dummy_member_${i}`,
-        taskId: tasks[j],
-        estimatedHours: 0,
-        isDummyMember: true,
+        estimatedHours: expandedMatrix[i][j],
+        isDummyMember: false,
+        isDummyTask: false
       });
     }
   }

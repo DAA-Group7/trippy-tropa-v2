@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { 
   DndContext, 
   closestCorners,
@@ -22,7 +22,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Clock, CheckCircle2, CircleDashed, Loader2 } from 'lucide-react'
 import { updateTaskStatusAction } from '@/app/actions/tasks'
 
-function SortableTaskCard({ task, isDraggingOverlay = false, estimates }: any) {
+const SortableTaskCard = React.memo(function SortableTaskCard({ task, isDraggingOverlay = false }: any) {
   const {
     attributes,
     listeners,
@@ -44,10 +44,9 @@ function SortableTaskCard({ task, isDraggingOverlay = false, estimates }: any) {
     opacity: isDragging ? 0.4 : 1,
   }
 
-  // Find assigned member
   const member = task.assigned_profile
   // Find estimate
-  const est = estimates.find((e: any) => e.task_id === task.id && e.user_id === task.assigned_to)
+  const est = task.estimate
 
   return (
     <div 
@@ -85,9 +84,9 @@ function SortableTaskCard({ task, isDraggingOverlay = false, estimates }: any) {
       </div>
     </div>
   )
-}
+})
 
-function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
+const KanbanColumn = React.memo(function KanbanColumn({ id, title, tasks, icon: Icon }: any) {
   const { setNodeRef } = useDroppable({ id })
 
   return (
@@ -108,7 +107,7 @@ function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
       <SortableContext items={tasks.map((t: any) => t.id)} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-3 min-h-[200px] h-full rounded-xl">
           {tasks.map((task: any) => (
-            <SortableTaskCard key={task.id} task={task} estimates={estimates} />
+            <SortableTaskCard key={task.id} task={task} />
           ))}
           {tasks.length === 0 && (
             <div className="h-full flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl p-6">
@@ -119,18 +118,23 @@ function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
       </SortableContext>
     </div>
   )
-}
+})
 
 export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacherOrOfficer, activityId, groupId, members }: any) {
-  // Optimization: useMemo to map profiles to avoid O(N^2) during re-renders
+  // Optimization: useMemo to map profiles and estimates to avoid O(N^2) during re-renders
   const serverTasksWithProfiles = useMemo(() => {
     const memberMap = new Map()
     members.forEach((m: any) => memberMap.set(m.user_id, m.profile))
+    
+    const estimatesMap = new Map()
+    estimates.forEach((e: any) => estimatesMap.set(`${e.task_id}_${e.user_id}`, e))
+
     return tasks.map((t: any) => ({
       ...t,
-      assigned_profile: memberMap.get(t.assigned_to)
+      assigned_profile: memberMap.get(t.assigned_to),
+      estimate: estimatesMap.get(`${t.id}_${t.assigned_to}`)
     }))
-  }, [tasks, members])
+  }, [tasks, members, estimates])
 
   // Local state for optimistic UI updates
   const [optimisticIds, setOptimisticIds] = useState<Set<string>>(new Set())
@@ -140,10 +144,12 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
   useEffect(() => {
     setBoardTasks((prev: any[]) => {
       if (optimisticIds.size > 0) {
-         return prev.map((localTask: any) => {
-           if (optimisticIds.has(localTask.id)) return localTask
-           const serverMatch = serverTasksWithProfiles.find((st: any) => st.id === localTask.id)
-           return serverMatch || localTask
+         return serverTasksWithProfiles.map((serverTask: any) => {
+           if (optimisticIds.has(serverTask.id)) {
+             const localMatch = prev.find((pt: any) => pt.id === serverTask.id)
+             return localMatch || serverTask
+           }
+           return serverTask
          })
       }
       return serverTasksWithProfiles

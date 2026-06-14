@@ -19,6 +19,8 @@ export type DraftGroup = {
  * group with the minimum current total score. Leader = highest scorer per group.
  */
 export function greedyLPT(students: Student[], numGroups: number): DraftGroup[] {
+  if (numGroups <= 0) return []
+  
   // 1. Sort students DESCENDING by skill score
   const sorted = [...students].sort((a, b) => b.skillScore - a.skillScore)
 

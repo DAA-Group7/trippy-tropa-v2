@@ -54,8 +54,15 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
     // Per-cell debounce
     if (timeoutRefs.current[key]) clearTimeout(timeoutRefs.current[key])
     timeoutRefs.current[key] = setTimeout(async () => {
-      await upsertTimeEstimateAction(taskId, numValue, activityId, groupId)
-      setActiveCell(prev => prev === key ? null : prev) // Clear active status if they haven't moved to another cell
+      const res = await upsertTimeEstimateAction(taskId, numValue, activityId, groupId)
+      if (res?.error) {
+        setError(res.error)
+      }
+      
+      // Delay clearing active cell to prevent UI flicker while waiting for server props
+      setTimeout(() => {
+        setActiveCell(prev => prev === key ? null : prev)
+      }, 2000)
     }, 500)
   }
 
