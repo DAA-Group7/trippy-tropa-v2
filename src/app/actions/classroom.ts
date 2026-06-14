@@ -33,10 +33,12 @@ export async function createClassroomAction(state: any, formData: FormData) {
     .single()
 
   const inviteCode = generateInviteCode()
+  const newClassroomId = crypto.randomUUID()
 
-  const { data: classroom, error: classroomError } = await supabase
+  const { error: classroomError } = await supabase
     .from('classrooms')
     .insert({
+      id: newClassroomId,
       name,
       description,
       invite_code: inviteCode,
@@ -44,15 +46,13 @@ export async function createClassroomAction(state: any, formData: FormData) {
       created_by_role: profile?.role || 'teacher',
       has_permanent_groups: permanentGroups,
     })
-    .select()
-    .single()
 
   if (classroomError) return { error: classroomError.message }
 
   const { error: memberError } = await supabase
     .from('classroom_members')
     .insert({
-      classroom_id: classroom.id,
+      classroom_id: newClassroomId,
       user_id: user.id,
       role: profile?.role === 'teacher' ? 'teacher' : 'student_officer',
     })
@@ -63,7 +63,14 @@ export async function createClassroomAction(state: any, formData: FormData) {
   
   return { 
     success: true, 
-    classroom 
+    classroom: { 
+      id: newClassroomId,
+      name,
+      invite_code: inviteCode,
+      description,
+      has_permanent_groups: permanentGroups,
+      owner_id: user.id
+    }
   }
 }
 
