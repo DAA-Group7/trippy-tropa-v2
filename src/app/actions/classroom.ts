@@ -115,3 +115,34 @@ export async function joinClassroomAction(state: any, formData: FormData) {
     hasSkills
   }
 }
+
+export async function promoteMemberAction(classroomId: string, targetUserId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // Check if current user is teacher
+  const { data: member } = await supabase
+    .from('classroom_members')
+    .select('role')
+    .eq('classroom_id', classroomId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!member || member.role !== 'teacher') {
+    return { error: 'Only teachers can promote students to officers' }
+  }
+
+  // Update target user to student_officer
+  const { error } = await supabase
+    .from('classroom_members')
+    .update({ role: 'student_officer' })
+    .eq('classroom_id', classroomId)
+    .eq('user_id', targetUserId)
+    .eq('role', 'student')
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/classroom/[id]', 'layout')
+  return { success: true }
+}

@@ -19,7 +19,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { saveClassroomSettingsAction } from '@/app/actions/skills'
-import { requestOwnershipTransferAction } from '@/app/actions/activities'
+import { requestOwnershipTransferAction, respondToTransferAction } from '@/app/actions/activities'
 
 
 function SortableSkillItem({ skill, onUpdate, onDelete }: any) {
@@ -68,7 +68,7 @@ function SortableSkillItem({ skill, onUpdate, onDelete }: any) {
   )
 }
 
-export default function SettingsClient({ classroom, initialSkills, isOwner, userRole, teachers, pendingTransfer }: any) {
+export default function SettingsClient({ classroom, initialSkills, isOwner, userRole, teachers, pendingTransfer, receivedTransfer }: any) {
   const [name, setName] = useState(classroom.name || '')
   const [description, setDescription] = useState(classroom.description || '')
   const [skills, setSkills] = useState<any[]>(
@@ -89,6 +89,20 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
     setIsTransferring(false)
     setShowTransferConfirm(false)
     if (result.error) { setTransferError(result.error) } else { setTransferSuccess(true) }
+  }
+
+  const [isResponding, setIsResponding] = useState(false)
+  
+  const handleRespond = async (response: 'accepted' | 'rejected') => {
+    if (!confirm(`Are you sure you want to ${response} this transfer?`)) return
+    setIsResponding(true)
+    const result = await respondToTransferAction(receivedTransfer.id, response)
+    setIsResponding(false)
+    if (result.error) {
+      alert(result.error)
+    } else {
+      window.location.reload()
+    }
   }
 
   const sensors = useSensors(
@@ -260,6 +274,37 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
               Delete Classroom
             </button>
           </section>
+
+          {/* RECEIVED TRANSFER — only for teachers who have a pending transfer request */}
+          {receivedTransfer && (
+            <section className="bg-surface/70 backdrop-blur-xl border border-secondary/50 p-6 rounded-xl shadow-md shadow-secondary/10">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-1.5 bg-secondary/20 rounded-lg text-secondary flex items-center justify-center">
+                  <Crown className="w-5 h-5" />
+                </div>
+                <h2 className="text-xl font-semibold text-secondary">Classroom Ownership Transfer</h2>
+              </div>
+              <p className="text-sm text-on-surface mb-6">
+                <strong>{receivedTransfer.from_profile?.full_name || receivedTransfer.from_profile?.email}</strong> has requested to transfer ownership of this classroom to you.
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleRespond('accepted')}
+                  disabled={isResponding}
+                  className="flex-1 bg-secondary text-on-secondary py-3 rounded-lg text-xs font-bold hover:bg-secondary/90 transition-all shadow-lg disabled:opacity-50"
+                >
+                  Accept Transfer
+                </button>
+                <button
+                  onClick={() => handleRespond('rejected')}
+                  disabled={isResponding}
+                  className="flex-1 border border-white/10 text-on-surface-variant py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all disabled:opacity-50"
+                >
+                  Decline
+                </button>
+              </div>
+            </section>
+          )}
 
           {/* OWNERSHIP TRANSFER — only for student officers who own the classroom */}
           {isOwner && userRole === 'student_officer' && (

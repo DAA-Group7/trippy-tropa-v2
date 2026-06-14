@@ -59,6 +59,15 @@ export default async function ClassroomSettingsPage({ params }: { params: Promis
     pendingTransfer = transfer
   }
 
+  // Check for received transfer
+  const { data: receivedTransfer } = await supabase
+    .from('ownership_transfers')
+    .select('*, from_profile:from_user_id(full_name, email)')
+    .eq('classroom_id', id)
+    .eq('to_user_id', user.id)
+    .eq('status', 'pending')
+    .single()
+
   return (
     <SettingsClient 
       classroom={classroom}
@@ -67,6 +76,7 @@ export default async function ClassroomSettingsPage({ params }: { params: Promis
       userRole={member.role}
       teachers={teachers}
       pendingTransfer={pendingTransfer}
+      receivedTransfer={receivedTransfer}
     />
   )
 }

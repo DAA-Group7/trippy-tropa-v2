@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { InviteStudentsModal } from '@/components/classroom/InviteStudentsModal'
+import { promoteMemberAction } from '@/app/actions/classroom'
 
 function ActivityCard({ activity, classroomId }: { activity: any; classroomId: string }) {
   const isGroup = activity.type === 'group'
@@ -61,6 +62,21 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
 export default function ClassroomClient({ classroom, members, userRole, stats, activities }: any) {
   const [activeTab, setActiveTab] = useState('STUDENTS')
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
+  const [openSkillPopoverId, setOpenSkillPopoverId] = useState<string | null>(null)
+  const [isPromoting, setIsPromoting] = useState(false)
+
+  const handlePromote = async (userId: string) => {
+    if (!confirm('Are you sure you want to promote this student to Student Officer?')) return
+    setIsPromoting(true)
+    const result = await promoteMemberAction(classroom.id, userId)
+    if (result.error) {
+      alert(result.error)
+    } else {
+      setOpenDropdownId(null)
+    }
+    setIsPromoting(false)
+  }
 
   const canManage = userRole === 'teacher' || userRole === 'student_officer'
 
@@ -146,16 +162,56 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                   </div>
                   <div className="col-span-4 hidden md:flex items-center gap-4">
                     {member.role === 'student' ? (
-                      <span className="text-sm font-bold text-secondary">{member.skillScore?.toFixed(1) || '0.0'} pts</span>
+                      <div className="relative">
+                        <button 
+                          onClick={() => setOpenSkillPopoverId(openSkillPopoverId === member.id ? null : member.id)}
+                          className="text-sm font-bold text-secondary hover:text-secondary-container transition-colors cursor-pointer border-b border-dashed border-secondary/50 pb-0.5"
+                        >
+                          {member.skillScore?.toFixed(1) || '0.0'} pts
+                        </button>
+                        {openSkillPopoverId === member.id && (
+                          <div className="absolute top-8 left-0 z-50 w-64 bg-surface-container-highest border border-white/10 rounded-xl shadow-2xl p-4 cursor-default">
+                            <h5 className="text-xs uppercase tracking-wider font-bold text-on-surface-variant mb-3 border-b border-white/5 pb-2">Skill Breakdown</h5>
+                            {member.rawSkills && member.rawSkills.length > 0 ? (
+                              <ul className="space-y-2">
+                                {member.rawSkills.map((rs: any, i: number) => (
+                                  <li key={i} className="flex justify-between items-center text-sm">
+                                    <span className="text-on-surface truncate pr-2" title={rs.name}>{rs.name}</span>
+                                    <span className="text-secondary font-bold shrink-0">{rs.rating} <span className="text-on-surface-variant text-[10px] opacity-50">×{rs.multiplier}</span></span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-xs text-on-surface-variant italic">No skills assessed yet.</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <span className="text-xs text-on-surface-variant">-</span>
                     )}
                   </div>
-                  <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right">
-                    {canManage && member.role === 'student' && (
-                      <button className="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
-                        <MoreVertical className="w-5 h-5" />
-                      </button>
+                  <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right relative">
+                    {userRole === 'teacher' && member.role === 'student' && (
+                      <>
+                        <button 
+                          onClick={() => setOpenDropdownId(openDropdownId === member.id ? null : member.id)}
+                          className="p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+                        >
+                          <MoreVertical className="w-5 h-5" />
+                        </button>
+                        {openDropdownId === member.id && (
+                          <div className="absolute right-0 top-10 mt-2 w-48 bg-surface-container-high border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                            <button
+                              onClick={() => handlePromote(member.user_id || member.id)}
+                              disabled={isPromoting}
+                              className="w-full text-left px-4 py-3 text-sm text-secondary hover:bg-white/5 font-semibold transition-colors disabled:opacity-50"
+                            >
+                              Promote to Officer
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

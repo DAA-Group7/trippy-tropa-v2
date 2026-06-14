@@ -54,12 +54,14 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
 
   const formattedMembers = classroom.members.map((m: any) => {
     let score = 0
+    let rawSkills: any[] = []
     if (m.role === 'student' && skills && studentSkills) {
       const mySkills = studentSkills.filter(ss => ss.user_id === m.profiles?.id)
       mySkills.forEach(ss => {
         const skill = skills.find(s => s.id === ss.skill_id)
         if (skill) {
           score += ss.rating * Number(skill.multiplier)
+          rawSkills.push({ name: skill.name, rating: ss.rating, multiplier: skill.multiplier })
         }
       })
     }
@@ -72,7 +74,8 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
       name: m.profiles?.full_name || 'Unknown User',
       email: m.profiles?.email || '',
       avatarUrl: m.profiles?.avatar_url,
-      skillScore: score
+      skillScore: score,
+      rawSkills
     }
   })
 
