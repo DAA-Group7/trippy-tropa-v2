@@ -2,8 +2,8 @@
 
 import { useState, useActionState, useEffect } from 'react'
 import { createClassroomAction } from '@/app/actions/classroom'
-import { X, CheckCircle, Copy, Link as LinkIcon } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
+import { X, CheckCircle, Copy, Link as LinkIcon, Download } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
 
 interface Props {
   isOpen: boolean
@@ -37,6 +37,18 @@ export function CreateClassroomModal({ isOpen, onClose }: Props) {
     }
   }
 
+  const handleDownloadQR = () => {
+    const canvas = document.getElementById('create-qr-code') as HTMLCanvasElement
+    if (!canvas || !state?.classroom) return
+    const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream')
+    const downloadLink = document.createElement('a')
+    downloadLink.href = pngUrl
+    downloadLink.download = `invite-qr-${state.classroom.invite_code}.png`
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    document.body.removeChild(downloadLink)
+  }
+
   if (success && state?.classroom) {
     const inviteLink = `${window.location.origin}/join/${state.classroom.invite_code}`
     
@@ -59,8 +71,9 @@ export function CreateClassroomModal({ isOpen, onClose }: Props) {
               Your new learning space is ready. Invite your students to join the trip.
             </p>
 
-            <div className="p-4 bg-white rounded-xl mb-6 shadow-lg shadow-secondary/10 relative group">
-              <QRCodeSVG 
+            <div className="p-4 bg-white rounded-xl mb-4 shadow-lg shadow-secondary/10 relative group">
+              <QRCodeCanvas 
+                id="create-qr-code"
                 value={inviteLink} 
                 size={180} 
                 bgColor={"#ffffff"} 
@@ -68,6 +81,14 @@ export function CreateClassroomModal({ isOpen, onClose }: Props) {
                 level={"H"} 
               />
             </div>
+
+            <button 
+              onClick={handleDownloadQR}
+              className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-white/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors mb-6 text-on-surface"
+            >
+              <Download size={16} />
+              Download QR
+            </button>
 
             <div className="w-full mb-6">
               <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Invite Code</p>

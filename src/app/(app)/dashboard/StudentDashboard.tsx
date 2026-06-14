@@ -2,10 +2,11 @@
 
 import { useActionState, useEffect } from 'react'
 import { joinClassroomAction } from '@/app/actions/classroom'
-import { Search, ChevronRight, School } from 'lucide-react'
+import { Search, ChevronRight, School, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { format } from 'date-fns'
 
-export default function StudentDashboard({ classrooms }: { classrooms: any[] }) {
+export default function StudentDashboard({ classrooms, profile, upcomingActivities }: { classrooms: any[], profile: any, upcomingActivities: any[] }) {
   const [state, formAction, isPending] = useActionState(joinClassroomAction, null)
 
   useEffect(() => {
@@ -20,6 +21,34 @@ export default function StudentDashboard({ classrooms }: { classrooms: any[] }) 
 
   return (
     <div className="flex flex-col gap-10">
+      <div className="mb-2">
+        <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight">Welcome, {profile?.full_name?.split(' ')[0] || 'Student'}</h3>
+        <p className="text-[14px] sm:text-[15px] text-on-surface-variant max-w-xl opacity-80">
+          Here are your enrolled classes and upcoming assignments.
+        </p>
+      </div>
+
+      {/* Upcoming Activities Section */}
+      {upcomingActivities && upcomingActivities.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2"><Calendar className="w-6 h-6 text-primary" /> Upcoming Activities</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {upcomingActivities.map((activity: any) => (
+              <Link key={activity.id} href={`/classroom/${activity.classroom_id}/activity/${activity.id}`}>
+                <div className="glass-card p-4 rounded-xl border border-white/10 hover:border-primary/50 transition-colors group">
+                  <h4 className="font-bold text-on-surface group-hover:text-primary transition-colors">{activity.title}</h4>
+                  <p className="text-xs text-on-surface-variant mt-1 mb-3">{activity.classroom?.name}</p>
+                  <div className="flex items-center gap-1 text-xs font-semibold text-secondary bg-secondary/10 w-fit px-2 py-1 rounded">
+                    <Clock className="w-3 h-3" />
+                    {format(new Date(activity.due_date), 'MMM d, h:mm a')}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Join Classroom Section */}
       <section>
         <h2 className="text-2xl font-bold mb-4">Join a Classroom</h2>

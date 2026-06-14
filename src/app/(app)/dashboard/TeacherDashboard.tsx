@@ -5,7 +5,7 @@ import { Plus, Users, Terminal, Palette, BrainCircuit } from 'lucide-react'
 import { CreateClassroomModal } from '@/components/classroom/CreateClassroomModal'
 import Link from 'next/link'
 
-export default function TeacherDashboard({ classrooms }: { classrooms: any[] }) {
+export default function TeacherDashboard({ classrooms, profile }: { classrooms: any[], profile: any }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Use some alternating icons based on classroom index for visual flavor
@@ -18,9 +18,9 @@ export default function TeacherDashboard({ classrooms }: { classrooms: any[] }) 
       {/* HEADER SECTION WITH ACTION */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
         <div>
-          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight">Active Classrooms</h3>
+          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight">Welcome, {profile?.full_name?.split(' ')[0] || 'Teacher'}</h3>
           <p className="text-[14px] sm:text-[15px] text-on-surface-variant max-w-xl opacity-80">
-            Oversee your current sessions and student metrics at a glance.
+            Oversee your current sessions and active classrooms at a glance.
           </p>
         </div>
         <button 
@@ -41,9 +41,10 @@ export default function TeacherDashboard({ classrooms }: { classrooms: any[] }) 
           <p className="text-white/60 max-w-sm mb-6">Create your first classroom to invite students and start running smart grouping algorithms.</p>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-lg font-medium transition-colors"
+            className="relative group bg-surface-container hover:bg-surface-container-high border border-primary/30 px-6 py-3 rounded-lg font-medium transition-colors"
           >
-            Create Your First Classroom
+            <div className="absolute inset-0 bg-primary/30 blur-xl opacity-50 group-hover:opacity-100 transition-opacity animate-pulse rounded-lg" />
+            <span className="relative z-10 text-primary font-bold">Create Your First Classroom</span>
           </button>
         </div>
       ) : (

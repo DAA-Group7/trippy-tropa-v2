@@ -1,13 +1,17 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useState, Suspense } from 'react'
 import { signUpAction } from '@/app/actions/auth'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { School, UserSquare2, User, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 
-export default function SignUpPage() {
+function SignUpForm() {
   const [state, formAction, isPending] = useActionState(signUpAction, null)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const searchParams = useSearchParams()
+  const nextParam = searchParams.get('next')
 
   return (
     <div className="glass-card p-8 rounded-xl shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-700">
@@ -30,6 +34,7 @@ export default function SignUpPage() {
       )}
 
       <form action={formAction} className="flex flex-col gap-6">
+        {nextParam && <input type="hidden" name="next" value={nextParam} />}
         {/* Role Selector */}
         <div className="grid grid-cols-2 gap-4">
           <label className="cursor-pointer relative group">
@@ -100,6 +105,28 @@ export default function SignUpPage() {
               </button>
             </div>
           </div>
+          <div className="flex flex-col gap-1 relative">
+            <label className="text-xs font-semibold text-white/60 ml-1" htmlFor="confirm_password">CONFIRM PASSWORD</label>
+            <div className="relative group">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 w-5 h-5 group-focus-within:text-[#46eae5] transition-colors" />
+              <input 
+                className="w-full bg-[#050510] border border-white/10 rounded-lg py-2 pl-12 pr-12 text-white focus:outline-none focus:ring-0 focus:border-[#46eae5] input-glow transition-all" 
+                id="confirm_password" 
+                name="confirm_password"
+                placeholder="••••••••" 
+                type={showConfirmPassword ? 'text' : 'password'} 
+                required 
+                minLength={6}
+              />
+              <button 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors" 
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                type="button"
+              >
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* CTA Button */}
@@ -121,5 +148,13 @@ export default function SignUpPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+      <SignUpForm />
+    </Suspense>
   )
 }

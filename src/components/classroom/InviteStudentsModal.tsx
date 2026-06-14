@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { X, CheckCircle, Copy, Link as LinkIcon } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
+import { X, CheckCircle, Copy, Link as LinkIcon, Download } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
 
 interface Props {
   isOpen: boolean
@@ -23,6 +23,18 @@ export function InviteStudentsModal({ isOpen, onClose, inviteCode }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleDownloadQR = () => {
+    const canvas = document.getElementById('invite-qr-code') as HTMLCanvasElement
+    if (!canvas) return
+    const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream')
+    const downloadLink = document.createElement('a')
+    downloadLink.href = pngUrl
+    downloadLink.download = `invite-qr-${inviteCode}.png`
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    document.body.removeChild(downloadLink)
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
       <div className="w-full max-w-md bg-surface border border-white/10 rounded-2xl p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
@@ -39,8 +51,9 @@ export function InviteStudentsModal({ isOpen, onClose, inviteCode }: Props) {
             Share this code or QR code with your students so they can join the classroom.
           </p>
 
-          <div className="p-4 bg-white rounded-xl mb-6 shadow-lg shadow-secondary/10 relative group">
-            <QRCodeSVG 
+          <div className="p-4 bg-white rounded-xl mb-4 shadow-lg shadow-secondary/10 relative group">
+            <QRCodeCanvas 
+              id="invite-qr-code"
               value={inviteLink} 
               size={180} 
               bgColor={"#ffffff"} 
@@ -48,6 +61,14 @@ export function InviteStudentsModal({ isOpen, onClose, inviteCode }: Props) {
               level={"H"} 
             />
           </div>
+
+          <button 
+            onClick={handleDownloadQR}
+            className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-white/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors mb-6 text-on-surface"
+          >
+            <Download size={16} />
+            Download QR
+          </button>
 
           <div className="w-full mb-6">
             <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Invite Code</p>

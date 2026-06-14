@@ -12,13 +12,25 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
   // Verify membership and get role
   const { data: member } = await supabase
     .from('classroom_members')
-    .select('role')
+    .select('role, has_completed_onboarding')
     .eq('classroom_id', id)
     .eq('user_id', user.id)
     .single()
 
   if (!member) {
     redirect('/dashboard') // Not a member
+  }
+
+  // Prevent onboarding bypass for students
+  if (member.role === 'student' && !member.has_completed_onboarding) {
+    const { count } = await supabase
+      .from('skills')
+      .select('id', { count: 'exact', head: true })
+      .eq('classroom_id', id)
+
+    if (count && count > 0) {
+      redirect(`/onboarding/${id}`)
+    }
   }
 
   const { data: classroom } = await supabase

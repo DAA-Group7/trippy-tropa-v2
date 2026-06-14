@@ -1,13 +1,16 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useState, Suspense } from 'react'
 import { loginAction } from '@/app/actions/auth'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
   const [showPassword, setShowPassword] = useState(false)
+  const searchParams = useSearchParams()
+  const nextParam = searchParams.get('next')
 
   return (
     <div className="glass-card p-8 rounded-xl shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-700">
@@ -30,6 +33,7 @@ export default function LoginPage() {
       )}
 
       <form action={formAction} className="flex flex-col gap-6">
+        {nextParam && <input type="hidden" name="next" value={nextParam} />}
         {/* Input Fields */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -88,5 +92,13 @@ export default function LoginPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

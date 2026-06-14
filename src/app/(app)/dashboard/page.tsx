@@ -13,7 +13,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, full_name')
     .eq('id', user.id)
     .single()
 
@@ -41,12 +41,24 @@ export default async function DashboardPage() {
 
   const isTeacher = profile?.role === 'teacher'
 
+  let upcomingActivities: any[] = []
+  if (!isTeacher && classroomIds.length > 0) {
+    const { data } = await supabase
+      .from('activities')
+      .select('id, title, due_date, classroom_id, classroom:classrooms(name)')
+      .in('classroom_id', classroomIds)
+      .gt('due_date', new Date().toISOString())
+      .order('due_date', { ascending: true })
+      .limit(5)
+    upcomingActivities = data || []
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
       {isTeacher ? (
-        <TeacherDashboard classrooms={formattedClassrooms} />
+        <TeacherDashboard classrooms={formattedClassrooms} profile={profile} />
       ) : (
-        <StudentDashboard classrooms={formattedClassrooms} />
+        <StudentDashboard classrooms={formattedClassrooms} profile={profile} upcomingActivities={upcomingActivities} />
       )}
     </div>
   )
