@@ -140,7 +140,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
               <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right pr-2">Action</div>
             </div>
             <div className="divide-y divide-white/5">
-              {members.map((member: any) => (
+              {members.filter((m: any) => m.role !== 'teacher').map((member: any) => (
                 <div key={member.id} className="grid grid-cols-12 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
                   <div className="col-span-5 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary font-bold overflow-hidden shrink-0">

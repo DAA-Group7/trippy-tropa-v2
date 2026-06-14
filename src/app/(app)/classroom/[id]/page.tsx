@@ -62,7 +62,7 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
   const userIds = classroom?.members?.map((m: any) => m.user_id) || []
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('id, full_name, email, avatar_url')
+    .select('id, full_name, avatar_url')
     .in('id', userIds)
 
   const formattedMembers = classroom.members.map((m: any) => {
@@ -87,7 +87,7 @@ export default async function ClassroomPage({ params }: { params: Promise<{ id: 
       role: m.role,
       joinedAt: m.joined_at,
       name: profile?.full_name || 'Unknown User',
-      email: profile?.email || '',
+      email: '',
       avatarUrl: profile?.avatar_url,
       skillScore: score,
       rawSkills
