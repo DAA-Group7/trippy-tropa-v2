@@ -71,7 +71,7 @@ export default async function ActivityDetailPage({
   let myGroup: any = null
   if (member.role === 'student' && groups.length > 0) {
     myGroup = groups.find((g: any) =>
-      g.members?.some((m: any) => m.profile?.id === user.id)
+      g.members?.some((m: any) => m.user_id === user.id)
     )
   }
 

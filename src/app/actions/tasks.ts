@@ -118,16 +118,27 @@ export async function getTimeMatrixAction(groupId: string) {
   }
 
   // Fetch group members
-  const { data: members, error: mError } = await supabase
+  const { data: rawMembers, error: mError } = await supabase
     .from('group_members')
-    .select(`
-      user_id,
-      is_leader,
-      profile:user_id(id, full_name, email, avatar_url)
-    `)
+    .select('user_id, is_leader')
     .eq('group_id', groupId)
 
   if (mError) return { error: mError.message }
+
+  let members: any[] = []
+  if (rawMembers && rawMembers.length > 0) {
+    const userIds = rawMembers.map(m => m.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, email, avatar_url')
+      .in('id', userIds)
+
+    members = rawMembers.map(m => ({
+      user_id: m.user_id,
+      is_leader: m.is_leader,
+      profile: profiles?.find(p => p.id === m.user_id) || null
+    }))
+  }
 
   // Fetch tasks
   const { data: tasks, error: tError } = await supabase
@@ -209,13 +220,14 @@ export async function confirmAssignmentsAction(groupId: string, activityId: stri
   const realAssignments = assignments.filter(a => !a.isDummyMember && !a.isDummyTask)
 
   if (realAssignments.length === 0) {
-    // Set tasks_assigned = true on the activity
+    // Set tasks_assigned = true on the activity via RPC (bypasses RLS for students)
     const { error: actErr } = await supabase
-      .from('activities')
-      .update({ tasks_assigned: true })
-      .eq('id', activityId)
+      .rpc('mark_tasks_assigned', { activity_id_arg: activityId })
 
-    if (actErr) return { error: actErr.message }
+    if (actErr) {
+      console.error('mark_tasks_assigned RPC error:', actErr)
+      return { error: actErr.message }
+    }
 
     revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
     return { success: true }
@@ -244,13 +256,14 @@ export async function confirmAssignmentsAction(groupId: string, activityId: stri
 
   if (upsertErr) return { error: upsertErr.message }
 
-  // Set tasks_assigned = true on the activity
+  // Set tasks_assigned = true on the activity via RPC (bypasses RLS for students)
   const { error: actErr } = await supabase
-    .from('activities')
-    .update({ tasks_assigned: true })
-    .eq('id', activityId)
+    .rpc('mark_tasks_assigned', { activity_id_arg: activityId })
 
-  if (actErr) return { error: actErr.message }
+  if (actErr) {
+    console.error('mark_tasks_assigned RPC error:', actErr)
+    return { error: actErr.message }
+  }
 
   revalidatePath('/classroom/[id]/activity/[activityId]/group/[groupId]', 'page')
   return { success: true }
