@@ -137,10 +137,16 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
 
   const handleSave = async () => {
     setIsSaving(true)
+    
+    const cleanedSkills = skills.map((s, i) => {
+      const { _tempId, ...rest } = s
+      return { ...rest, order_index: i }
+    })
+
     const result = await saveClassroomSettingsAction(classroom.id, {
       name,
       description,
-      skills: skills.map((s, i) => ({ ...s, order_index: i })) // Ensure order index matches array
+      skills: cleanedSkills
     })
     setIsSaving(false)
     if (result.error) {

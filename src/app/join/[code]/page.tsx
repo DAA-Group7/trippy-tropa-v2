@@ -14,7 +14,7 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect(`/signup?next=/join/${code}`)
   }
 
   // 1. Find classroom by code
@@ -45,12 +45,26 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
   }
 
   // 2. Check if already a member
-  const { data: existingMember } = await supabase
+  const { data: existingMember, error: memErr } = await supabase
     .from('classroom_members')
     .select('id')
     .eq('classroom_id', classroom.id)
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
+
+  if (memErr) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center p-6 text-center">
+        <div className="glass-card max-w-md p-8 rounded-2xl border border-white/10 space-y-4">
+          <h1 className="text-xl font-bold text-error">Database Error</h1>
+          <p className="text-on-surface-variant">Could not verify membership. Please try again later.</p>
+          <Link href="/dashboard" className="text-secondary font-bold hover:underline">
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   if (existingMember) {
     redirect(`/classroom/${classroom.id}`)

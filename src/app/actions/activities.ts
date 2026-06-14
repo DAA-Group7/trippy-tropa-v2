@@ -311,11 +311,6 @@ export async function respondToTransferAction(
 
   if (!transfer) return { error: 'Transfer not found or already resolved.' }
 
-  await supabase
-    .from('ownership_transfers')
-    .update({ status: response })
-    .eq('id', transferId)
-
   if (response === 'accepted') {
     const { error: ownerErr } = await supabase
       .from('classrooms')
@@ -332,9 +327,23 @@ export async function respondToTransferAction(
       .eq('user_id', user.id)
 
     if (roleErr) return { error: roleErr.message }
+    
+    // Demote old owner to student_officer (optional but good practice)
+    await supabase
+      .from('classroom_members')
+      .update({ role: 'student_officer' })
+      .eq('classroom_id', transfer.classroom_id)
+      .eq('user_id', transfer.from_user_id)
 
     revalidatePath('/classroom/[id]', 'layout')
   }
+
+  const { error: transferErr } = await supabase
+    .from('ownership_transfers')
+    .update({ status: response })
+    .eq('id', transferId)
+
+  if (transferErr) return { error: transferErr.message }
 
   return { success: true }
 }

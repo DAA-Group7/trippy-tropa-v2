@@ -15,7 +15,8 @@ import {
 import {
   SortableContext,
   verticalListSortingStrategy,
-  useSortable
+  useSortable,
+  arrayMove
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Clock, CheckCircle2, CircleDashed, Loader2 } from 'lucide-react'
@@ -122,6 +123,7 @@ function KanbanColumn({ id, title, tasks, icon: Icon, estimates }: any) {
 
 export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacherOrOfficer, activityId, groupId, members }: any) {
   // Local state for optimistic UI updates
+  const [pendingRequests, setPendingRequests] = useState(0)
   const [boardTasks, setBoardTasks] = useState(tasks.map((t: any) => {
     const member = members.find((m: any) => m.user_id === t.assigned_to)
     return { ...t, assigned_profile: member?.profile }
@@ -129,11 +131,13 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
   const [activeTask, setActiveTask] = useState<any | null>(null)
 
   useEffect(() => {
-    setBoardTasks(tasks.map((t: any) => {
-      const member = members.find((m: any) => m.user_id === t.assigned_to)
-      return { ...t, assigned_profile: member?.profile }
-    }))
-  }, [tasks, members])
+    if (pendingRequests === 0) {
+      setBoardTasks(tasks.map((t: any) => {
+        const member = members.find((m: any) => m.user_id === t.assigned_to)
+        return { ...t, assigned_profile: member?.profile }
+      }))
+    }
+  }, [tasks, members, pendingRequests])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -170,8 +174,8 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
       return
     }
 
-    // Determine target status
     let targetStatus = task.status
+    let overIndex = -1
     
     if (['todo', 'in_progress', 'done'].includes(overId)) {
       targetStatus = overId
@@ -179,26 +183,36 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
       const overTask = boardTasks.find((t: any) => t.id === overId)
       if (overTask) {
         targetStatus = overTask.status
+        overIndex = boardTasks.findIndex((t: any) => t.id === overTask.id)
       }
     }
 
-    if (task.status !== targetStatus) {
-      // Save old state for rollback
-      const previousTasks = [...boardTasks]
-      
-      // Optimistic update
-      setBoardTasks((prev: any) => 
-        prev.map((t: any) => t.id === task.id ? { ...t, status: targetStatus } : t)
-      )
+    const previousTasks = [...boardTasks]
 
+    if (task.status !== targetStatus) {
+      // Moving to different column
+      setBoardTasks((prev: any) => {
+        const newTasks = prev.map((t: any) => t.id === task.id ? { ...t, status: targetStatus } : t)
+        if (overIndex !== -1) {
+          const activeIndex = newTasks.findIndex((t: any) => t.id === task.id)
+          return arrayMove(newTasks, activeIndex, overIndex)
+        }
+        return newTasks
+      })
+
+      setPendingRequests(p => p + 1)
       try {
-        // Server update
         const res = await updateTaskStatusAction(task.id, targetStatus, activityId, groupId)
         if (res?.error) throw new Error(res.error)
       } catch (err: any) {
         alert(`Failed to update task: ${err.message}`)
-        setBoardTasks(previousTasks) // Rollback
+        setBoardTasks(previousTasks)
+      } finally {
+        setPendingRequests(p => Math.max(0, p - 1))
       }
+    } else if (overIndex !== -1 && activeTaskIndex !== overIndex) {
+      // Moving within the same column (optimistic only, since we don't save order to db)
+      setBoardTasks((prev: any) => arrayMove(prev, activeTaskIndex, overIndex))
     }
   }
 

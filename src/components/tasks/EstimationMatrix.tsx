@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Plus, Trash2, Save, Loader2, Sparkles, MessageSquare, ShieldAlert } from 'lucide-react'
 import { upsertTimeEstimateAction, runHungarianAssignmentAction, confirmAssignmentsAction, deleteTaskAction, createTaskAction } from '@/app/actions/tasks'
 import { useRouter } from 'next/navigation'
@@ -15,28 +15,45 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskDesc, setNewTaskDesc] = useState('')
 
-  const [localEstimates, setLocalEstimates] = useState<Record<string, number>>({})
+  const [localEstimates, setLocalEstimates] = useState<Record<string, string>>({})
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    setLocalEstimates(
-      estimates.reduce((acc: any, est: any) => {
-        acc[`${est.task_id}_${est.user_id}`] = Number(est.estimated_hours)
-        return acc
-      }, {})
-    )
+    setLocalEstimates(prev => {
+      const next = { ...prev }
+      let changed = false
+      estimates.forEach((est: any) => {
+        const key = `${est.task_id}_${est.user_id}`
+        const localNum = parseFloat(next[key] || '0') || 0
+        const serverNum = Number(est.estimated_hours)
+        
+        // Only update local state if the numeric value actually differs.
+        // This prevents overwriting a local trailing decimal (like "12.") 
+        // with "12", and ignores stale server revalidations if the user 
+        // has typed a new valid number that hasn't synced yet.
+        if (localNum !== serverNum && next[key] !== est.estimated_hours.toString()) {
+          next[key] = est.estimated_hours.toString()
+          changed = true
+        }
+      })
+      return changed ? next : prev
+    })
   }, [estimates])
 
-  const handleEstimateChange = async (taskId: string, userId: string, value: string) => {
+  const handleEstimateChange = (taskId: string, userId: string, value: string) => {
     if (userId !== currentUserId) return // Only edit own
+    
+    const key = `${taskId}_${userId}`
+    setLocalEstimates(prev => ({ ...prev, [key]: value }))
     
     const numValue = value === '' ? 0 : parseFloat(value)
     if (isNaN(numValue) || numValue < 0) return
 
-    const key = `${taskId}_${userId}`
-    setLocalEstimates(prev => ({ ...prev, [key]: numValue }))
-
-    // Trigger server action in background
-    await upsertTimeEstimateAction(taskId, numValue, activityId, groupId)
+    // Debounce the server action
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(async () => {
+      await upsertTimeEstimateAction(taskId, numValue, activityId, groupId)
+    }, 500)
   }
 
   const handleDeleteTask = async (taskId: string) => {
@@ -91,8 +108,9 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
   members.forEach((m: any) => {
     let total = 0
     tasks.forEach((t: any) => {
-      const val = localEstimates[`${t.id}_${m.user_id}`]
-      if (val !== undefined && val > 0) {
+      const strVal = localEstimates[`${t.id}_${m.user_id}`]
+      const val = strVal ? parseFloat(strVal) : 0
+      if (!isNaN(val) && val > 0) {
         total += val
         filledCells++
         taskTotals[t.id] = (taskTotals[t.id] || 0) + val
