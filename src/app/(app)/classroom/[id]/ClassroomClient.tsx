@@ -35,9 +35,9 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
               <UserPlus className="w-5 h-5" />
               <span className="hidden sm:inline">+ Invite Students</span>
             </button>
-            <button className="glass-card p-2.5 rounded-lg text-on-surface hover:bg-white/10 transition-colors">
+            <Link href={`/classroom/${classroom.id}/settings`} className="glass-card p-2.5 rounded-lg text-on-surface hover:bg-white/10 transition-colors">
               <Settings className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         )}
       </div>
@@ -67,7 +67,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
             <div className="grid grid-cols-12 px-6 py-4 border-b border-white/10 text-on-surface-variant font-bold text-xs uppercase tracking-wider bg-white/5">
               <div className="col-span-5">Student</div>
               <div className="col-span-2 hidden sm:block">Role</div>
-              <div className="col-span-4 hidden md:block">Skill Progress (Mocked)</div>
+              <div className="col-span-4 hidden md:block">Skill Score</div>
               <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right pr-2">Action</div>
             </div>
             <div className="divide-y divide-white/5">
@@ -92,10 +92,11 @@ export default function ClassroomClient({ classroom, members, userRole, stats }:
                     </span>
                   </div>
                   <div className="col-span-4 hidden md:flex items-center gap-4">
-                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-primary-container to-secondary" style={{ width: '85%' }}></div>
-                    </div>
-                    <span className="text-sm font-bold text-secondary">85%</span>
+                    {member.role === 'student' ? (
+                      <span className="text-sm font-bold text-secondary">{member.skillScore?.toFixed(1) || '0.0'} pts</span>
+                    ) : (
+                      <span className="text-xs text-on-surface-variant">-</span>
+                    )}
                   </div>
                   <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right">
                     {canManage && member.role === 'student' && (

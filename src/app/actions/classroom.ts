@@ -100,10 +100,18 @@ export async function joinClassroomAction(state: any, formData: FormData) {
     return { error: joinError.message }
   }
 
+  const { count } = await supabase
+    .from('skills')
+    .select('id', { count: 'exact', head: true })
+    .eq('classroom_id', classroom.id)
+
+  const hasSkills = count ? count > 0 : false
+
   revalidatePath('/dashboard')
   
   return { 
     success: true, 
-    classroomId: classroom.id 
+    classroomId: classroom.id,
+    hasSkills
   }
 }

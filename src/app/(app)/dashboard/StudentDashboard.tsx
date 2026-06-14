@@ -10,7 +10,11 @@ export default function StudentDashboard({ classrooms }: { classrooms: any[] }) 
 
   useEffect(() => {
     if (state?.success && state.classroomId) {
-      window.location.href = `/classroom/${state.classroomId}`
+      if (state.hasSkills) {
+        window.location.href = `/onboarding/${state.classroomId}`
+      } else {
+        window.location.href = `/classroom/${state.classroomId}`
+      }
     }
   }, [state])
 
