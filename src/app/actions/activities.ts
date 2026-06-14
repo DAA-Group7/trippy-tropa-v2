@@ -56,6 +56,11 @@ export async function createActivityAction(
 
 export async function getActivitiesAction(classroomId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  
+  const { data: member } = await supabase.from('classroom_members').select('id').eq('classroom_id', classroomId).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: not enrolled' }
 
   const { data: activities, error } = await supabase
     .from('activities')
@@ -71,6 +76,8 @@ export async function getActivitiesAction(classroomId: string) {
 
 export async function getActivityDetailAction(activityId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
 
   const { data: activity, error } = await supabase
     .from('activities')
@@ -79,6 +86,9 @@ export async function getActivityDetailAction(activityId: string) {
     .single()
 
   if (error) return { error: error.message }
+  
+  const { data: member } = await supabase.from('classroom_members').select('id').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: not enrolled' }
 
   let groups = null
   if (activity.groups_created) {
@@ -104,6 +114,8 @@ export async function getActivityDetailAction(activityId: string) {
 
 export async function generateGroupsAction(activityId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
 
   // Get activity details
   const { data: activity, error: actErr } = await supabase
@@ -114,6 +126,11 @@ export async function generateGroupsAction(activityId: string) {
 
   if (actErr || !activity) return { error: 'Activity not found' }
   if (activity.type !== 'group') return { error: 'Not a group activity' }
+
+  const { data: member } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+  if (!member || !['teacher', 'student_officer'].includes(member.role)) {
+    return { error: 'Unauthorized: must be teacher or officer' }
+  }
 
   // Get all students in the classroom with their skill scores
   const { data: members } = await supabase
@@ -186,34 +203,44 @@ export async function confirmGroupsAction(
 
   if (!activity) return { error: 'Activity not found' }
 
+  // AuthZ Check
+  const { data: member } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+  if (!member || !['teacher', 'student_officer'].includes(member.role)) {
+    return { error: 'Unauthorized: must be teacher or officer' }
+  }
+
   // Delete existing groups if re-generating
   const { error: delErr } = await supabase.from('groups').delete().eq('activity_id', activityId)
   if (delErr) return { error: delErr.message }
 
-  // Insert groups and members
-  for (const draftGroup of draftGroups) {
-    const { data: group, error: groupErr } = await supabase
-      .from('groups')
-      .insert({
-        activity_id: activityId,
-        classroom_id: activity.classroom_id,
-        name: draftGroup.name,
+  // Insert all groups at once
+  const { data: insertedGroups, error: groupErr } = await supabase
+    .from('groups')
+    .insert(draftGroups.map(g => ({
+      activity_id: activityId,
+      classroom_id: activity.classroom_id,
+      name: g.name
+    })))
+    .select()
+
+  if (groupErr || !insertedGroups) return { error: groupErr?.message || 'Failed to insert groups' }
+
+  // Insert all members at once
+  const memberInserts: any[] = []
+  for (let i = 0; i < draftGroups.length; i++) {
+    const groupId = insertedGroups[i].id
+    for (const m of draftGroups[i].members) {
+      memberInserts.push({
+        group_id: groupId,
+        user_id: m.id,
+        is_leader: m.isLeader
       })
-      .select()
-      .single()
-
-    if (groupErr || !group) continue
-
-    const memberInserts = draftGroup.members.map(m => ({
-      group_id: group.id,
-      user_id: m.id,
-      is_leader: m.isLeader,
-    }))
-
-    if (memberInserts.length > 0) {
-      const { error: memErr } = await supabase.from('group_members').insert(memberInserts)
-      if (memErr) return { error: memErr.message }
     }
+  }
+
+  if (memberInserts.length > 0) {
+    const { error: memErr } = await supabase.from('group_members').insert(memberInserts)
+    if (memErr) return { error: memErr.message }
   }
 
   // Mark groups_created = true

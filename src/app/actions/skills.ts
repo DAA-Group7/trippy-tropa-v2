@@ -25,6 +25,12 @@ export async function saveClassroomSettingsAction(classroomId: string, data: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
+  // AuthZ check
+  const { data: member } = await supabase.from('classroom_members').select('role').eq('classroom_id', classroomId).eq('user_id', user.id).single()
+  if (!member || (member.role !== 'teacher' && member.role !== 'student_officer')) {
+    return { error: 'Unauthorized: must be teacher or officer' }
+  }
+
   // 1. Update classroom details
   const { error: updateError } = await supabase
     .from('classrooms')
@@ -47,22 +53,23 @@ export async function saveClassroomSettingsAction(classroomId: string, data: {
     await supabase.from('skills').delete().in('id', toDelete)
   }
 
-  for (let i = 0; i < data.skills.length; i++) {
-    const skill = data.skills[i]
-    if (skill.id && existingIds.has(skill.id)) {
-      await supabase.from('skills').update({
-        name: skill.name,
-        multiplier: skill.multiplier,
-        order_index: i
-      }).eq('id', skill.id)
-    } else {
-      await supabase.from('skills').insert({
-        classroom_id: classroomId,
-        name: skill.name,
-        multiplier: skill.multiplier,
-        order_index: i
-      })
+  const upsertData = data.skills.map((skill: any, i: number) => {
+    const payload: any = {
+      classroom_id: classroomId,
+      name: skill.name,
+      multiplier: skill.multiplier,
+      order_index: i
     }
+    // Only include real IDs
+    if (skill.id && !skill.id.toString().startsWith('temp-')) {
+      payload.id = skill.id
+    }
+    return payload
+  })
+
+  if (upsertData.length > 0) {
+    const { error: upsertError } = await supabase.from('skills').upsert(upsertData)
+    if (upsertError) return { error: upsertError.message }
   }
 
   revalidatePath(`/classroom/${classroomId}/settings`)
@@ -75,6 +82,10 @@ export async function submitSkillRatingsAction(classroomId: string, ratings: { s
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
+
+  // AuthZ check
+  const { data: member } = await supabase.from('classroom_members').select('id').eq('classroom_id', classroomId).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: must be a member of the classroom' }
 
   const inserts = ratings.map(r => ({
     classroom_id: classroomId,

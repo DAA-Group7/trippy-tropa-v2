@@ -11,6 +11,10 @@ export async function createTaskAction(groupId: string, activityId: string, payl
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // AuthZ check
+  const { data: member } = await supabase.from('group_members').select('id').eq('group_id', groupId).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: must be a member of the group' }
+
   const { data, error } = await supabase
     .from('tasks')
     .insert({
@@ -30,6 +34,21 @@ export async function createTaskAction(groupId: string, activityId: string, payl
 
 export async function deleteTaskAction(taskId: string, activityId: string, groupId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // AuthZ check: must be leader or teacher
+  const { data: groupMember } = await supabase.from('group_members').select('is_leader').eq('group_id', groupId).eq('user_id', user.id).single()
+  if (!groupMember?.is_leader) {
+    const { data: activity } = await supabase.from('activities').select('classroom_id').eq('id', activityId).single()
+    if (activity) {
+      const { data: classMember } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+      if (!classMember || classMember.role === 'student') return { error: 'Unauthorized: must be group leader or teacher' }
+    } else {
+      return { error: 'Activity not found' }
+    }
+  }
+
   const { error } = await supabase
     .from('tasks')
     .delete()
@@ -42,6 +61,13 @@ export async function deleteTaskAction(taskId: string, activityId: string, group
 
 export async function updateTaskStatusAction(taskId: string, status: string, activityId: string, groupId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // AuthZ check
+  const { data: member } = await supabase.from('group_members').select('id').eq('group_id', groupId).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: must be a member of the group' }
+
   const { error } = await supabase
     .from('tasks')
     .update({ status })
@@ -58,6 +84,10 @@ export async function upsertTimeEstimateAction(taskId: string, estimatedHours: n
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
+
+  // AuthZ check
+  const { data: member } = await supabase.from('group_members').select('id').eq('group_id', groupId).eq('user_id', user.id).single()
+  if (!member) return { error: 'Unauthorized: must be a member of the group' }
 
   // Use upsert matching task_id and user_id (the unique constraint)
   const { error } = await supabase
@@ -76,6 +106,16 @@ export async function upsertTimeEstimateAction(taskId: string, estimatedHours: n
 
 export async function getTimeMatrixAction(groupId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // AuthZ check: user must be in classroom
+  const { data: group } = await supabase.from('groups').select('activity:activity_id(classroom_id)').eq('id', groupId).single()
+  const classroomId = (group?.activity as any)?.classroom_id
+  if (classroomId) {
+    const { data: classMember } = await supabase.from('classroom_members').select('id').eq('classroom_id', classroomId).eq('user_id', user.id).single()
+    if (!classMember) return { error: 'Unauthorized: not a member of this classroom' }
+  }
 
   // Fetch group members
   const { data: members, error: mError } = await supabase
@@ -143,19 +183,25 @@ export async function runHungarianAssignmentAction(groupId: string) {
 
 export async function confirmAssignmentsAction(groupId: string, activityId: string, assignments: any[]): Promise<{ error?: string, success?: boolean }> {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // AuthZ check: must be teacher or officer
+  const { data: activity } = await supabase.from('activities').select('classroom_id').eq('id', activityId).single()
+  if (!activity) return { error: 'Activity not found' }
+  const { data: classMember } = await supabase.from('classroom_members').select('role').eq('classroom_id', activity.classroom_id).eq('user_id', user.id).single()
+  if (!classMember || classMember.role === 'student') return { error: 'Unauthorized: must be teacher or officer' }
   
   // Exclude dummy tasks/members
   const realAssignments = assignments.filter(a => !a.isDummyMember && !a.isDummyTask)
 
-  // Update each task with assigned_to
-  for (const a of realAssignments) {
-    const { error: updErr } = await supabase
-      .from('tasks')
-      .update({ assigned_to: a.memberId })
-      .eq('id', a.taskId)
-    
-    if (updErr) return { error: updErr.message }
-  }
+  // Update each task with assigned_to in parallel
+  const updatePromises = realAssignments.map(a => 
+    supabase.from('tasks').update({ assigned_to: a.memberId }).eq('id', a.taskId)
+  )
+  const results = await Promise.all(updatePromises)
+  const errorResult = results.find(r => r.error)
+  if (errorResult?.error) return { error: errorResult.error.message }
 
   // Set tasks_assigned = true on the activity
   const { error: actErr } = await supabase
