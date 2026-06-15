@@ -1,12 +1,304 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 import { joinClassroomAction } from '@/app/actions/classroom'
-import { Search, ChevronRight, School, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { School, ChevronRight, Users, Clock, BookOpen, ArrowUpRight, AlertTriangle } from 'lucide-react'
 
-export default function StudentDashboard({ classrooms, profile, upcomingActivities }: { classrooms: any[], profile: any, upcomingActivities: any[] }) {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Classroom {
+  id: string
+  name: string
+  description?: string
+  studentCount: number
+}
+
+interface Activity {
+  id: string
+  title: string
+  due_date: string
+  classroom_id: string
+  classroom: { name: string } | null
+}
+
+interface Props {
+  classrooms: Classroom[]
+  profile: { full_name?: string; role?: string } | null
+  upcomingActivities: Activity[]
+}
+
+// ─── Classroom Card ───────────────────────────────────────────────────────────
+
+const CLASSROOM_ICON_COLORS = [
+  { bg: 'rgba(108,92,231,0.15)', text: '#c6bfff' },
+  { bg: 'rgba(0,206,201,0.15)', text: '#46eae5' },
+  { bg: 'rgba(172,93,0,0.15)',  text: '#ffb77d' },
+]
+
+function ClassroomCard({ classroom, index }: { classroom: Classroom; index: number }) {
+  const color = CLASSROOM_ICON_COLORS[index % CLASSROOM_ICON_COLORS.length]
+
+  return (
+    <Link href={`/classroom/${classroom.id}`} className="block h-full">
+      <div
+        className="flex flex-col h-64 p-5 rounded-2xl transition-all duration-300 group cursor-pointer"
+        style={{
+          background: 'rgba(18,18,42,0.7)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+        onMouseEnter={e => {
+          const el = e.currentTarget
+          el.style.boxShadow = '0 0 24px rgba(198,191,255,0.15)'
+          el.style.borderColor = 'rgba(198,191,255,0.25)'
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget
+          el.style.boxShadow = 'none'
+          el.style.borderColor = 'rgba(255,255,255,0.08)'
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            style={{ backgroundColor: color.bg }}
+          >
+            <School className="w-5 h-5" style={{ color: color.text }} />
+          </div>
+          <span
+            className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border"
+            style={{
+              backgroundColor: 'rgba(70,234,229,0.1)',
+              borderColor: 'rgba(70,234,229,0.25)',
+              color: '#46eae5',
+            }}
+          >
+            Active
+          </span>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1">
+          <h3
+            className="text-[17px] font-semibold leading-snug mb-1.5 transition-colors duration-200"
+            style={{ color: '#e5e0ed' }}
+          >
+            {classroom.name}
+          </h3>
+          <p
+            className="text-sm line-clamp-2 leading-relaxed"
+            style={{ color: '#c8c4d7', opacity: 0.75 }}
+          >
+            {classroom.description || 'No description provided.'}
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div
+          className="flex items-center justify-between pt-3 mt-auto"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div className="flex items-center gap-1.5" style={{ color: '#c8c4d7' }}>
+            <Users className="w-3.5 h-3.5" style={{ opacity: 0.6 }} />
+            <span className="text-[11px]" style={{ opacity: 0.7 }}>
+              {classroom.studentCount} student{classroom.studentCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <ArrowUpRight
+            className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{ color: '#c6bfff' }}
+          />
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// ─── Activity Feed Item ────────────────────────────────────────────────────────
+
+function ActivityItem({ activity }: { activity: Activity }) {
+  const dueDate = new Date(activity.due_date)
+  const now = new Date()
+  const isOverdue = dueDate < now
+  const diffMs = dueDate.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  const isSoon = !isOverdue && diffDays <= 1
+
+  let statusLabel = 'Upcoming'
+  let statusColor = '#c6bfff'
+  let borderColor = '#c6bfff'
+  let bgColor = 'rgba(108,92,231,0.08)'
+
+  if (isOverdue) {
+    statusLabel = 'Overdue'
+    statusColor = '#ffb4ab'
+    borderColor = '#ffb4ab'
+    bgColor = 'rgba(255,180,171,0.08)'
+  } else if (isSoon) {
+    statusLabel = 'Due Soon'
+    statusColor = '#ffb77d'
+    borderColor = '#ffb77d'
+    bgColor = 'rgba(255,183,125,0.08)'
+  }
+
+  const dateLabel = isOverdue
+    ? `Due ${format(dueDate, 'MMM d')}`
+    : diffDays === 0
+    ? 'Today'
+    : diffDays === 1
+    ? 'Tomorrow'
+    : format(dueDate, 'MMM d')
+
+  return (
+    <Link href={`/classroom/${activity.classroom_id}/activity/${activity.id}`}>
+      <div
+        className="p-3.5 rounded-xl border-l-4 transition-all duration-200 cursor-pointer"
+        style={{
+          backgroundColor: bgColor,
+          borderLeftColor: borderColor,
+        }}
+        onMouseEnter={e => (e.currentTarget.style.backgroundColor = bgColor.replace('0.08', '0.13'))}
+        onMouseLeave={e => (e.currentTarget.style.backgroundColor = bgColor)}
+      >
+        <div className="flex justify-between items-start mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: statusColor }}>
+            {isOverdue && <AlertTriangle className="w-3 h-3 inline mr-1" />}
+            {statusLabel}
+          </p>
+          <p className="text-[10px]" style={{ color: 'rgba(200,196,215,0.6)' }}>{dateLabel}</p>
+        </div>
+        <h4 className="text-sm font-semibold leading-snug mb-0.5" style={{ color: '#e5e0ed' }}>
+          {activity.title}
+        </h4>
+        <p className="text-[11px]" style={{ color: 'rgba(200,196,215,0.65)' }}>
+          {activity.classroom?.name}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+// ─── Join Classroom Form ───────────────────────────────────────────────────────
+
+function JoinClassroomCard({
+  formAction,
+  isPending,
+  error,
+}: {
+  formAction: (payload: FormData) => void
+  isPending: boolean
+  error?: string | null
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <section
+      className="relative overflow-hidden rounded-2xl p-6"
+      style={{
+        background: 'rgba(18,18,42,0.7)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      {/* Ambient blob */}
+      <div
+        className="absolute -right-16 -top-16 w-56 h-56 rounded-full pointer-events-none"
+        style={{ background: 'rgba(108,92,231,0.08)', filter: 'blur(80px)' }}
+      />
+
+      <div className="relative z-10">
+        <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#e5e0ed' }}>
+          <BookOpen className="w-5 h-5" style={{ color: '#c6bfff' }} />
+          Join a Classroom
+        </h2>
+        <p className="text-sm mb-5" style={{ color: 'rgba(200,196,215,0.65)' }}>
+          Enter the 6-character code provided by your instructor.
+        </p>
+
+        <form action={formAction} className="flex gap-3 max-w-lg">
+          <input
+            ref={inputRef}
+            type="text"
+            name="code"
+            maxLength={6}
+            required
+            placeholder="Ex: TROP24"
+            className="flex-1 text-center font-black tracking-[0.4em] text-xl uppercase outline-none transition-all duration-200 rounded-xl px-5 py-3"
+            style={{
+              backgroundColor: 'rgba(14,13,21,0.8)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#e5e0ed',
+            }}
+            onInput={e => {
+              const el = e.currentTarget
+              el.value = el.value.toUpperCase()
+              if (el.value.length === 6) {
+                el.style.borderColor = '#c6bfff'
+                el.style.color = '#c6bfff'
+              } else {
+                el.style.borderColor = 'rgba(255,255,255,0.1)'
+                el.style.color = '#e5e0ed'
+              }
+            }}
+            onFocus={e => (e.currentTarget.style.boxShadow = '0 0 0 2px rgba(198,191,255,0.3)')}
+            onBlur={e => (e.currentTarget.style.boxShadow = 'none')}
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="font-bold px-7 rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50"
+            style={{
+              backgroundColor: '#c6bfff',
+              color: '#2900a0',
+              boxShadow: '0 4px 20px rgba(198,191,255,0.2)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 28px rgba(198,191,255,0.4)')}
+            onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(198,191,255,0.2)')}
+          >
+            {isPending ? 'Joining…' : 'Join'}
+          </button>
+        </form>
+
+        {error && (
+          <p className="mt-3 text-sm font-medium" style={{ color: '#ffb4ab' }}>
+            {error}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+function EmptyClassrooms() {
+  return (
+    <div
+      className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-2xl border-2 border-dashed"
+      style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(18,18,42,0.4)' }}
+    >
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+        style={{ backgroundColor: 'rgba(108,92,231,0.12)' }}
+      >
+        <School className="w-7 h-7" style={{ color: '#c6bfff' }} />
+      </div>
+      <h3 className="text-base font-semibold mb-1" style={{ color: '#e5e0ed' }}>
+        No classrooms yet
+      </h3>
+      <p className="text-sm" style={{ color: 'rgba(200,196,215,0.55)' }}>
+        Use an invite code above to join your first class.
+      </p>
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function StudentDashboard({ classrooms, profile, upcomingActivities }: Props) {
   const [state, formAction, isPending] = useActionState(joinClassroomAction, null)
 
   useEffect(() => {
@@ -19,103 +311,98 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
     }
   }, [state])
 
+  const firstName = profile?.full_name?.split(' ')[0] || 'Student'
+
   return (
-    <div className="flex flex-col gap-10">
-      <div className="mb-2">
-        <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight">Welcome, {profile?.full_name?.split(' ')[0] || 'Student'}</h3>
-        <p className="text-[14px] sm:text-[15px] text-on-surface-variant max-w-xl opacity-80">
-          Here are your enrolled classes and upcoming assignments.
-        </p>
+    <div className="flex gap-6 min-h-full p-6 md:p-8">
+      {/* ── Left / Main Content ── */}
+      <div className="flex-1 space-y-8 max-w-4xl">
+        {/* Greeting */}
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
+            Welcome back, {firstName} 👋
+          </h2>
+          <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
+            Here&apos;s what&apos;s happening across your enrolled classrooms.
+          </p>
+        </div>
+
+        {/* Join Classroom */}
+        <JoinClassroomCard formAction={formAction} isPending={isPending} error={state?.error} />
+
+        {/* Classrooms Grid */}
+        <section>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-semibold" style={{ color: '#e5e0ed' }}>
+              Your Classrooms
+            </h3>
+            <button
+              className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200"
+              style={{ color: '#c6bfff' }}
+            >
+              View All <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {classrooms.length === 0 ? (
+            <EmptyClassrooms />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {classrooms.map((c, i) => (
+                <ClassroomCard key={c.id} classroom={c} index={i} />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
 
-      {/* Upcoming Activities Section */}
-      {upcomingActivities && upcomingActivities.length > 0 && (
-        <section>
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2"><Calendar className="w-6 h-6 text-primary" /> Upcoming Activities</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcomingActivities.map((activity: any) => (
-              <Link key={activity.id} href={`/classroom/${activity.classroom_id}/activity/${activity.id}`}>
-                <div className="glass-card p-4 rounded-xl border border-white/10 hover:border-primary/50 transition-colors group">
-                  <h4 className="font-bold text-on-surface group-hover:text-primary transition-colors">{activity.title}</h4>
-                  <p className="text-xs text-on-surface-variant mt-1 mb-3">{activity.classroom?.name}</p>
-                  <div className="flex items-center gap-1 text-xs font-semibold text-secondary bg-secondary/10 w-fit px-2 py-1 rounded">
-                    <Clock className="w-3 h-3" />
-                    {format(new Date(activity.due_date), 'MMM d, h:mm a')}
-                  </div>
-                </div>
-              </Link>
-            ))}
+      {/* ── Right Sidebar ── */}
+      <aside className="w-80 flex-shrink-0 hidden xl:flex flex-col gap-5">
+        <div
+          className="flex-1 flex flex-col rounded-2xl p-5 overflow-hidden"
+          style={{
+            background: 'rgba(18,18,42,0.7)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-base font-semibold" style={{ color: '#e5e0ed' }}>
+              Activity Feed
+            </h3>
+            <Clock className="w-4 h-4" style={{ color: 'rgba(200,196,215,0.4)' }} />
           </div>
-        </section>
-      )}
 
-      {/* Join Classroom Section */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Join a Classroom</h2>
-        <div className="glass-card p-6 rounded-xl border border-white/10 max-w-xl">
-          <p className="text-sm text-on-surface-variant mb-4">Enter the 6-character invite code provided by your teacher.</p>
-          <form action={formAction} className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant opacity-50" />
-              <input 
-                type="text" 
-                name="code"
-                placeholder="e.g. XK7M2P" 
-                className="w-full bg-surface-container-lowest border border-white/10 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50 transition-all uppercase placeholder:normal-case font-mono"
-                maxLength={6}
-                required
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={isPending}
-              className="bg-gradient-to-r from-primary-container to-secondary text-on-primary px-6 py-2 rounded-lg font-bold hover:shadow-[0_0_15px_rgba(108,92,231,0.4)] transition-all active:scale-95 disabled:opacity-50"
-            >
-              {isPending ? 'Joining...' : 'Join'}
-            </button>
-          </form>
-          {state?.error && (
-             <p className="mt-3 text-sm text-error font-medium">{state.error}</p>
-          )}
+          {/* Feed */}
+          <div className="flex-1 overflow-y-auto space-y-3 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#474554 transparent' }}>
+            {upcomingActivities.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <BookOpen className="w-8 h-8 mb-3" style={{ color: 'rgba(200,196,215,0.25)' }} />
+                <p className="text-sm" style={{ color: 'rgba(200,196,215,0.45)' }}>
+                  No upcoming activities
+                </p>
+              </div>
+            ) : (
+              upcomingActivities.map(a => <ActivityItem key={a.id} activity={a} />)
+            )}
+          </div>
+
+          {/* Footer button */}
+          <Link
+            href="/dashboard"
+            className="mt-5 w-full py-2.5 text-center text-sm font-semibold rounded-xl transition-all duration-200"
+            style={{
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'rgba(200,196,215,0.8)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            View All Activities
+          </Link>
         </div>
-      </section>
-
-      {/* My Classrooms */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">My Enrolled Classes</h2>
-        {classrooms.length === 0 ? (
-          <div className="glass-card rounded-xl p-10 flex flex-col items-center justify-center text-center border-dashed border-2 border-white/10">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-               <School className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">You haven't joined any classes</h3>
-            <p className="text-sm text-on-surface-variant max-w-sm">Use an invite code above to join a classroom.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {classrooms.map(c => (
-              <Link href={`/classroom/${c.id}`} key={c.id}>
-                 <div className="glass-card p-6 rounded-xl hover:-translate-y-1 transition-transform cursor-pointer group h-full flex flex-col justify-between">
-                   <div>
-                     <div className="flex items-start justify-between mb-4">
-                       <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                         <School size={20} />
-                       </div>
-                       <ChevronRight size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-                     </div>
-                     <h4 className="text-[18px] font-semibold mb-1 group-hover:text-primary transition-colors leading-6">{c.name}</h4>
-                     <p className="text-[13px] text-on-surface-variant mb-4 line-clamp-2">{c.description || 'No description'}</p>
-                   </div>
-                   <div className="pt-3 border-t border-white/5 flex items-center gap-2">
-                     <span className="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">Members:</span>
-                     <span className="text-[12px] font-bold text-on-surface">{c.studentCount}</span>
-                   </div>
-                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      </aside>
     </div>
   )
 }
