@@ -96,25 +96,26 @@ export default function ActivityDetailClient({
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-32">
-      {/* Header */}
-      <div className="space-y-4">
-        <Link
-          href={`/classroom/${classroomId}`}
-          className="inline-flex items-center gap-1.5 text-secondary text-sm hover:underline"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Classroom
-        </Link>
+    <div className="min-h-full p-6 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500 pb-32">
+        {/* Header */}
+        <div className="space-y-4">
+          <Link
+            href={`/classroom/${classroomId}`}
+            className="inline-flex items-center gap-1.5 text-[#c6bfff] text-sm hover:underline"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Classroom
+          </Link>
 
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-3xl md:text-4xl font-bold text-white">{activity.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-[#e5e0ed]">{activity.title}</h1>
               <span className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 ${
                 isGroup
-                  ? 'bg-secondary/10 text-secondary border-secondary/30'
-                  : 'bg-primary/10 text-primary border-primary/30'
+                  ? 'bg-[#46eae5]/10 text-[#46eae5] border-[#46eae5]/30'
+                  : 'bg-[#c6bfff]/10 text-[#c6bfff] border-[#c6bfff]/30'
               }`}>
                 {isGroup ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
                 {isGroup ? 'Group Activity' : 'Individual'}
@@ -358,6 +359,7 @@ export default function ActivityDetailClient({
           )}
         </>
       )}
+      </div>
     </div>
   )
 }

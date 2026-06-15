@@ -73,6 +73,9 @@ export default async function ActivityDetailPage({
     myGroup = groups.find((g: any) =>
       g.members?.some((m: any) => m.user_id === user.id)
     )
+    if (myGroup) {
+      redirect(`/classroom/${classroomId}/activity/${activityId}/group/${myGroup.id}`)
+    }
   }
 
   // Count students for planning display
