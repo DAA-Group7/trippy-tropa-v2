@@ -23,7 +23,16 @@ interface Props {
   mySubmission?: any
 }
 
-function StatusBadge({ dueDate }: { dueDate: string | null }) {
+function StatusBadge({ dueDate, isSubmitted }: { dueDate: string | null; isSubmitted?: boolean }) {
+  if (isSubmitted) {
+    return (
+      <span className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full border bg-[#46eae5]/10 text-[#46eae5] border-[#46eae5]/30">
+        <CheckCircle className="w-3 h-3" />
+        Submitted
+      </span>
+    )
+  }
+
   if (!dueDate) return null
   const due = new Date(dueDate)
   const now = new Date()
@@ -123,7 +132,7 @@ export default function ActivityDetailClient({
                 {isGroup ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
                 {isGroup ? 'Group Activity' : 'Individual'}
               </span>
-              <StatusBadge dueDate={activity.due_date} />
+              <StatusBadge dueDate={activity.due_date} isSubmitted={!!mySubmission} />
             </div>
 
             {activity.description && (

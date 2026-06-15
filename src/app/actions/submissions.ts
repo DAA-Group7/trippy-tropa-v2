@@ -20,7 +20,7 @@ export async function submitWorkAction(
   // Check activity due date to determine is_late
   const { data: activity, error: actErr } = await supabase
     .from('activities')
-    .select('due_date, classroom_id')
+    .select('due_date, classroom_id, title')
     .eq('id', activityId)
     .single()
 
@@ -54,8 +54,32 @@ export async function submitWorkAction(
 
   revalidatePath(`/classroom/${activity.classroom_id}/activity/${activityId}`)
   
-  // also create notification for teacher? 
-  // skipping teacher notification for now unless requested
+  // Also create notification for the student or group members
+  if (data.groupId) {
+    const { data: groupMembers } = await supabase
+      .from('group_members')
+      .select('user_id')
+      .eq('group_id', data.groupId)
+      
+    if (groupMembers) {
+      const notifs = groupMembers.map((m: any) => ({
+        user_id: m.user_id,
+        type: 'activity',
+        title: 'Group Work Submitted',
+        message: `Your group's work for "${activity.title}" has been submitted.`,
+        link: `/classroom/${activity.classroom_id}/activity/${activityId}/group/${data.groupId}`
+      }))
+      await supabase.from('notifications').insert(notifs)
+    }
+  } else {
+    await supabase.from('notifications').insert({
+      user_id: user.id,
+      type: 'activity',
+      title: 'Work Submitted',
+      message: `Your work for "${activity.title}" has been successfully submitted.`,
+      link: `/classroom/${activity.classroom_id}/activity/${activityId}`
+    })
+  }
 
   return { success: true, submission }
 }

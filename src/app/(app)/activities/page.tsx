@@ -60,10 +60,24 @@ export default async function ActivitiesPage() {
     }
   }
 
+  let submittedActIds = new Set<string>()
+
+  if (activities && activities.length > 0) {
+    const actIds = activities.map(a => a.id)
+    const { data: subs } = await supabase
+      .from('submissions')
+      .select('activity_id')
+      .eq('user_id', user.id)
+      .in('activity_id', actIds)
+
+    submittedActIds = new Set(subs?.map((s: any) => s.activity_id) || [])
+  }
+
   const formattedActivities = (activities || []).map(a => ({
     ...a,
     classroom: Array.isArray(a.classroom) ? a.classroom[0] ?? null : a.classroom,
     myGroup: myGroupMap[a.id] || null,
+    isSubmitted: submittedActIds.has(a.id)
   }))
 
   return <ActivitiesClient activities={formattedActivities} userId={user.id} />

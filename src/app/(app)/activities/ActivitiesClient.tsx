@@ -15,6 +15,7 @@ interface Activity {
   classroom_id: string
   classroom: { id: string; name: string } | null
   myGroup: { id: string; name: string } | null
+  isSubmitted?: boolean
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -26,6 +27,10 @@ function getStatusInfo(activity: Activity) {
 
   const due = new Date(due_date)
   const now = new Date()
+
+  if (activity.isSubmitted) {
+    return { label: 'Submitted', color: '#46eae5', bg: 'rgba(70,234,229,0.08)', border: 'rgba(70,234,229,0.2)' }
+  }
 
   if (isPast(due)) {
     return { label: 'Overdue', color: '#ffb4ab', bg: 'rgba(255,180,171,0.08)', border: 'rgba(255,180,171,0.2)' }
@@ -146,20 +151,18 @@ function ActivityCard({ activity }: { activity: Activity }) {
           <div className="flex flex-col items-end gap-2 flex-shrink-0">
             {/* Status badge */}
             <span
-              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"
               style={{
-                color: status.color,
                 backgroundColor: status.bg,
-                border: `1px solid ${status.border}`,
+                color: status.color,
+                border: `1px solid ${status.border}`
               }}
             >
-              {isPast(new Date(activity.due_date || 0)) && activity.due_date && (
-                <AlertTriangle className="w-3 h-3 inline mr-1" />
-              )}
+              {activity.isSubmitted ? <CheckCircle className="w-3 h-3" /> : (isPast(new Date(activity.due_date!)) ? <AlertTriangle className="w-3 h-3" /> : <Clock className="w-3 h-3" />)}
               {status.label}
             </span>
 
-            {/* Due date */}
+            {/* Date */}
             {dateLabel && (
               <div
                 className="flex items-center gap-1 text-[11px]"
