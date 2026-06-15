@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef } from 'react'
 import { joinClassroomAction } from '@/app/actions/classroom'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { School, ChevronRight, Users, Clock, BookOpen, ArrowUpRight, AlertTriangle } from 'lucide-react'
+import { School, ChevronRight, Users, BookOpen, ArrowUpRight, AlertTriangle, Clock } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -314,95 +314,138 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
   const firstName = profile?.full_name?.split(' ')[0] || 'Student'
 
   return (
-    <div className="flex gap-6 min-h-full p-6 md:p-8">
-      {/* ── Left / Main Content ── */}
-      <div className="flex-1 space-y-8 max-w-4xl">
-        {/* Greeting */}
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
-            Welcome back, {firstName} 👋
-          </h2>
-          <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
-            Here&apos;s what&apos;s happening across your enrolled classrooms.
-          </p>
-        </div>
+    <div className="min-h-full p-6 md:p-8">
+      <div className="flex gap-7 max-w-6xl mx-auto">
 
-        {/* Join Classroom */}
-        <JoinClassroomCard formAction={formAction} isPending={isPending} error={state?.error} />
-
-        {/* Classrooms Grid */}
-        <section>
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-lg font-semibold" style={{ color: '#e5e0ed' }}>
-              Your Classrooms
-            </h3>
-            <button
-              className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200"
-              style={{ color: '#c6bfff' }}
-            >
-              View All <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+        {/* ── Main Content ── */}
+        <div className="flex-1 min-w-0 space-y-8">
+          {/* Greeting */}
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
+              Welcome back, {firstName} 👋
+            </h2>
+            <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
+              Here&apos;s what&apos;s happening across your enrolled classrooms.
+            </p>
           </div>
 
-          {classrooms.length === 0 ? (
-            <EmptyClassrooms />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {classrooms.map((c, i) => (
-                <ClassroomCard key={c.id} classroom={c} index={i} />
-              ))}
+          {/* Join Classroom */}
+          <JoinClassroomCard formAction={formAction} isPending={isPending} error={state?.error} />
+
+          {/* Classrooms Grid */}
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-semibold" style={{ color: '#e5e0ed' }}>
+                Your Classrooms
+              </h3>
             </div>
-          )}
-        </section>
-      </div>
 
-      {/* ── Right Sidebar ── */}
-      <aside className="w-80 flex-shrink-0 hidden xl:flex flex-col gap-5">
-        <div
-          className="flex-1 flex flex-col rounded-2xl p-5 overflow-hidden"
-          style={{
-            background: 'rgba(18,18,42,0.7)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-base font-semibold" style={{ color: '#e5e0ed' }}>
-              Activity Feed
-            </h3>
-            <Clock className="w-4 h-4" style={{ color: 'rgba(200,196,215,0.4)' }} />
-          </div>
-
-          {/* Feed */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#474554 transparent' }}>
-            {upcomingActivities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <BookOpen className="w-8 h-8 mb-3" style={{ color: 'rgba(200,196,215,0.25)' }} />
-                <p className="text-sm" style={{ color: 'rgba(200,196,215,0.45)' }}>
-                  No upcoming activities
-                </p>
-              </div>
+            {classrooms.length === 0 ? (
+              <EmptyClassrooms />
             ) : (
-              upcomingActivities.map(a => <ActivityItem key={a.id} activity={a} />)
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {classrooms.map((c, i) => (
+                  <ClassroomCard key={c.id} classroom={c} index={i} />
+                ))}
+              </div>
             )}
-          </div>
-
-          {/* Footer button */}
-          <Link
-            href="/dashboard"
-            className="mt-5 w-full py-2.5 text-center text-sm font-semibold rounded-xl transition-all duration-200"
-            style={{
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(200,196,215,0.8)',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-          >
-            View All Activities
-          </Link>
+          </section>
         </div>
-      </aside>
+
+        {/* ── Right Sidebar ── */}
+        <aside className="w-72 flex-shrink-0 hidden xl:flex flex-col gap-5">
+          <div
+            className="flex-1 flex flex-col rounded-2xl p-5 overflow-hidden"
+            style={{
+              background: 'rgba(18,18,42,0.7)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              maxHeight: 'calc(100vh - 160px)',
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-sm font-semibold" style={{ color: '#e5e0ed' }}>Activity Feed</h3>
+              <Clock className="w-4 h-4" style={{ color: 'rgba(200,196,215,0.4)' }} />
+            </div>
+
+            {/* Feed */}
+            <div
+              className="flex-1 overflow-y-auto space-y-3 pr-1"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#474554 transparent' }}
+            >
+              {upcomingActivities.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <BookOpen className="w-7 h-7 mb-3" style={{ color: 'rgba(200,196,215,0.2)' }} />
+                  <p className="text-xs" style={{ color: 'rgba(200,196,215,0.4)' }}>No upcoming activities</p>
+                </div>
+              ) : (
+                upcomingActivities.map((a: any) => {
+                  const due = new Date(a.due_date)
+                  const now = new Date()
+                  const isOverdue = due < now
+                  const diffDays = Math.ceil((due.getTime() - now.getTime()) / 86400000)
+
+                  let statusLabel = 'Upcoming'
+                  let statusColor = '#c6bfff'
+                  let borderColor = 'rgba(198,191,255,0.4)'
+                  let bgColor = 'rgba(198,191,255,0.06)'
+
+                  if (isOverdue) {
+                    statusLabel = 'Overdue'
+                    statusColor = '#ffb4ab'
+                    borderColor = 'rgba(255,180,171,0.4)'
+                    bgColor = 'rgba(255,180,171,0.06)'
+                  } else if (diffDays <= 1) {
+                    statusLabel = 'Due Soon'
+                    statusColor = '#ffb77d'
+                    borderColor = 'rgba(255,183,125,0.4)'
+                    bgColor = 'rgba(255,183,125,0.06)'
+                  }
+
+                  return (
+                    <Link key={a.id} href={`/classroom/${a.classroom_id}/activity/${a.id}`}>
+                      <div
+                        className="p-3 rounded-xl border-l-4 transition-all duration-200 cursor-pointer"
+                        style={{ backgroundColor: bgColor, borderLeftColor: borderColor }}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: statusColor }}>
+                            {isOverdue && <AlertTriangle className="w-3 h-3 inline mr-0.5" />}
+                            {statusLabel}
+                          </p>
+                          <p className="text-[10px]" style={{ color: 'rgba(200,196,215,0.5)' }}>
+                            {format(due, 'MMM d')}
+                          </p>
+                        </div>
+                        <h4 className="text-xs font-semibold leading-snug" style={{ color: '#e5e0ed' }}>
+                          {a.title}
+                        </h4>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'rgba(200,196,215,0.55)' }}>
+                          {a.classroom?.name}
+                        </p>
+                      </div>
+                    </Link>
+                  )
+                })
+              )}
+            </div>
+
+            {/* Footer */}
+            <Link
+              href="/activities"
+              className="mt-4 w-full py-2.5 text-center text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5"
+              style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(200,196,215,0.8)' }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              View All Activities <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </aside>
+      </div>
     </div>
   )
 }

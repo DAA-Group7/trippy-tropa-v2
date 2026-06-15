@@ -112,37 +112,6 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
             />
           ))}
 
-          {/* Classrooms list */}
-          <div className="pt-5">
-            <p
-              className="px-3 text-[10px] font-semibold uppercase tracking-widest mb-2"
-              style={{ color: 'rgba(200,196,215,0.45)' }}
-            >
-              My Classrooms
-            </p>
-            <div className="space-y-0.5">
-              {classrooms.length > 0 ? (
-                classrooms.map(c => (
-                  <Link
-                    key={c.id}
-                    href={`/classroom/${c.id}`}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 group"
-                    style={{ color: '#c8c4d7' }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: '#6c5ce7' }}
-                    />
-                    <span className="truncate group-hover:text-white transition-colors">{c.name}</span>
-                  </Link>
-                ))
-              ) : (
-                <p className="px-3 py-2 text-sm italic" style={{ color: 'rgba(200,196,215,0.35)' }}>
-                  No classrooms yet
-                </p>
-              )}
-            </div>
-          </div>
         </nav>
 
         {/* User footer */}

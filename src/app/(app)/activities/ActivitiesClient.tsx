@@ -1,0 +1,296 @@
+'use client'
+
+import Link from 'next/link'
+import { format, isPast, isToday, isTomorrow, differenceInDays } from 'date-fns'
+import { BookOpen, Users, User, Clock, CheckCircle, AlertTriangle, ChevronRight, Crown } from 'lucide-react'
+
+interface Activity {
+  id: string
+  title: string
+  description?: string
+  type: 'individual' | 'group'
+  due_date?: string
+  groups_created: boolean
+  tasks_assigned: boolean
+  classroom_id: string
+  classroom: { id: string; name: string } | null
+  myGroup: { id: string; name: string } | null
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getStatusInfo(activity: Activity) {
+  const { due_date, type, groups_created, tasks_assigned, myGroup } = activity
+
+  if (!due_date) return { label: 'No Due Date', color: 'rgba(200,196,215,0.6)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' }
+
+  const due = new Date(due_date)
+  const now = new Date()
+
+  if (isPast(due)) {
+    return { label: 'Overdue', color: '#ffb4ab', bg: 'rgba(255,180,171,0.08)', border: 'rgba(255,180,171,0.2)' }
+  }
+  if (isToday(due)) {
+    return { label: 'Due Today', color: '#ffb77d', bg: 'rgba(255,183,125,0.08)', border: 'rgba(255,183,125,0.2)' }
+  }
+  if (isTomorrow(due)) {
+    return { label: 'Due Tomorrow', color: '#ffb77d', bg: 'rgba(255,183,125,0.06)', border: 'rgba(255,183,125,0.15)' }
+  }
+  const days = differenceInDays(due, now)
+  if (days <= 7) {
+    return { label: `${days}d left`, color: '#c6bfff', bg: 'rgba(198,191,255,0.06)', border: 'rgba(198,191,255,0.15)' }
+  }
+  return { label: 'Upcoming', color: 'rgba(200,196,215,0.6)', bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)' }
+}
+
+function formatDueDate(dateStr?: string) {
+  if (!dateStr) return null
+  const d = new Date(dateStr)
+  if (isToday(d)) return 'Today'
+  if (isTomorrow(d)) return 'Tomorrow'
+  return format(d, 'MMM d, yyyy · h:mm a')
+}
+
+// ─── Activity Card ────────────────────────────────────────────────────────────
+
+function ActivityCard({ activity }: { activity: Activity }) {
+  const status = getStatusInfo(activity)
+  const isGroup = activity.type === 'group'
+  const dateLabel = formatDueDate(activity.due_date)
+
+  const href = activity.myGroup
+    ? `/classroom/${activity.classroom_id}/activity/${activity.id}/group/${activity.myGroup.id}`
+    : `/classroom/${activity.classroom_id}/activity/${activity.id}`
+
+  return (
+    <Link href={href} className="block group">
+      <div
+        className="p-5 rounded-2xl transition-all duration-200 cursor-pointer"
+        style={{
+          backgroundColor: status.bg,
+          border: `1px solid ${status.border}`,
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(198,191,255,0.1)'
+          e.currentTarget.style.borderColor = 'rgba(198,191,255,0.25)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.boxShadow = 'none'
+          e.currentTarget.style.borderColor = status.border
+        }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          {/* Left */}
+          <div className="flex items-start gap-4 flex-1 min-w-0">
+            {/* Icon */}
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
+              style={{ backgroundColor: isGroup ? 'rgba(70,234,229,0.12)' : 'rgba(198,191,255,0.12)' }}
+            >
+              {isGroup
+                ? <Users className="w-5 h-5" style={{ color: '#46eae5' }} />
+                : <User className="w-5 h-5" style={{ color: '#c6bfff' }} />}
+            </div>
+
+            {/* Content */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider"
+                  style={{ color: isGroup ? '#46eae5' : '#c6bfff' }}
+                >
+                  {isGroup ? 'Group' : 'Individual'}
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '10px' }}>·</span>
+                <span className="text-[10px]" style={{ color: 'rgba(200,196,215,0.5)' }}>
+                  {activity.classroom?.name}
+                </span>
+              </div>
+
+              <h3
+                className="text-base font-semibold leading-snug truncate transition-colors duration-200 group-hover:text-[#c6bfff]"
+                style={{ color: '#e5e0ed' }}
+              >
+                {activity.title}
+              </h3>
+
+              {activity.description && (
+                <p className="text-sm mt-1 line-clamp-1" style={{ color: 'rgba(200,196,215,0.6)' }}>
+                  {activity.description}
+                </p>
+              )}
+
+              {/* Group info */}
+              {isGroup && activity.myGroup && (
+                <div
+                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
+                  style={{ backgroundColor: 'rgba(70,234,229,0.08)', color: '#46eae5', border: '1px solid rgba(70,234,229,0.2)' }}
+                >
+                  <Crown className="w-3 h-3" />
+                  {activity.myGroup.name}
+                </div>
+              )}
+
+              {isGroup && activity.groups_created && !activity.myGroup && (
+                <div
+                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px]"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'rgba(200,196,215,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Not yet assigned to a group
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right */}
+          <div className="flex flex-col items-end gap-2 flex-shrink-0">
+            {/* Status badge */}
+            <span
+              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+              style={{
+                color: status.color,
+                backgroundColor: status.bg,
+                border: `1px solid ${status.border}`,
+              }}
+            >
+              {isPast(new Date(activity.due_date || 0)) && activity.due_date && (
+                <AlertTriangle className="w-3 h-3 inline mr-1" />
+              )}
+              {status.label}
+            </span>
+
+            {/* Due date */}
+            {dateLabel && (
+              <div
+                className="flex items-center gap-1 text-[11px]"
+                style={{ color: 'rgba(200,196,215,0.5)' }}
+              >
+                <Clock className="w-3 h-3" />
+                {dateLabel}
+              </div>
+            )}
+
+            {/* Tasks done indicator */}
+            {activity.tasks_assigned && (
+              <div className="flex items-center gap-1 text-[11px]" style={{ color: '#46eae5' }}>
+                <CheckCircle className="w-3 h-3" />
+                Tasks assigned
+              </div>
+            )}
+
+            <ChevronRight
+              className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ color: '#c6bfff' }}
+            />
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+function EmptyState() {
+  return (
+    <div
+      className="flex flex-col items-center justify-center text-center py-24 rounded-2xl border-2 border-dashed"
+      style={{ borderColor: 'rgba(255,255,255,0.07)', backgroundColor: 'rgba(18,18,42,0.4)' }}
+    >
+      <div
+        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+        style={{ backgroundColor: 'rgba(108,92,231,0.1)' }}
+      >
+        <BookOpen className="w-8 h-8" style={{ color: '#c6bfff' }} />
+      </div>
+      <h3 className="text-lg font-semibold mb-2" style={{ color: '#e5e0ed' }}>No activities yet</h3>
+      <p className="text-sm max-w-xs" style={{ color: 'rgba(200,196,215,0.5)' }}>
+        Join a classroom and your activities will appear here.
+      </p>
+    </div>
+  )
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+type FilterType = 'all' | 'individual' | 'group'
+type FilterStatus = 'all' | 'overdue' | 'upcoming'
+
+export default function ActivitiesClient({ activities, userId }: { activities: Activity[]; userId: string }) {
+  const now = new Date()
+
+  // Split by status for summary
+  const overdue = activities.filter(a => a.due_date && isPast(new Date(a.due_date)))
+  const upcoming = activities.filter(a => !a.due_date || !isPast(new Date(a.due_date)))
+  const groupActs = activities.filter(a => a.type === 'group')
+  const individualActs = activities.filter(a => a.type === 'individual')
+
+  return (
+    <div className="min-h-full p-6 md:p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
+            All Activities
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
+            Your individual and group activities across all enrolled classrooms.
+          </p>
+        </div>
+
+        {/* Stats row */}
+        {activities.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: 'Total', value: activities.length, color: '#c6bfff' },
+              { label: 'Overdue', value: overdue.length, color: '#ffb4ab' },
+              { label: 'Group', value: groupActs.length, color: '#46eae5' },
+              { label: 'Individual', value: individualActs.length, color: '#c6bfff' },
+            ].map(s => (
+              <div
+                key={s.label}
+                className="rounded-xl p-4 text-center"
+                style={{ backgroundColor: 'rgba(18,18,42,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}
+              >
+                <div className="text-2xl font-bold mb-0.5" style={{ color: s.color }}>{s.value}</div>
+                <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(200,196,215,0.5)' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Activity list */}
+        {activities.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div className="space-y-3">
+            {overdue.length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ffb4ab' }}>
+                  <AlertTriangle className="w-3.5 h-3.5" /> Overdue
+                </p>
+                <div className="space-y-3">
+                  {overdue.map(a => <ActivityCard key={a.id} activity={a} />)}
+                </div>
+              </div>
+            )}
+
+            {upcoming.length > 0 && (
+              <div className={overdue.length > 0 ? 'mt-6' : ''}>
+                {overdue.length > 0 && (
+                  <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'rgba(200,196,215,0.5)' }}>
+                    Upcoming
+                  </p>
+                )}
+                <div className="space-y-3">
+                  {upcoming.map(a => <ActivityCard key={a.id} activity={a} />)}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
