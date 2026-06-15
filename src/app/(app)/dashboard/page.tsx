@@ -47,9 +47,8 @@ export default async function DashboardPage() {
       .from('activities')
       .select('id, title, due_date, classroom_id, classroom:classrooms(name)')
       .in('classroom_id', classroomIds)
-      .gt('due_date', new Date().toISOString())
-      .order('due_date', { ascending: true })
-      .limit(5)
+      .order('due_date', { ascending: true, nullsFirst: false })
+      .limit(8)
     upcomingActivities = data || []
   }
 

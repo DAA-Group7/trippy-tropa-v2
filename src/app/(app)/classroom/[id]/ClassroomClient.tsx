@@ -125,7 +125,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
 
       {/* Tabs */}
       <div className="flex gap-8 border-b border-white/10">
-        {['STUDENTS', 'ACTIVITIES', 'RESOURCES'].map((tab) => (
+              {['STUDENTS', 'ACTIVITIES'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -231,35 +231,37 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
-              <div className="p-3 bg-secondary/10 rounded-lg text-secondary">
-                <Activity className="w-6 h-6" />
+                    {canManage && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
+                <div className="p-3 bg-secondary/10 rounded-lg text-secondary">
+                  <Activity className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Class Avg Score</p>
+                  <h3 className="text-2xl font-bold text-on-surface">{stats.avgScore}</h3>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Class Avg Score</p>
-                <h3 className="text-2xl font-bold text-on-surface">{stats.avgScore}</h3>
+              <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform border border-error/20">
+                <div className="p-3 bg-error/10 rounded-lg text-error">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">At Risk Students</p>
+                  <h3 className="text-2xl font-bold text-error">{stats.atRisk}</h3>
+                </div>
+              </div>
+              <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Users className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Active Groups</p>
+                  <h3 className="text-2xl font-bold text-on-surface">{stats.activeGroups}</h3>
+                </div>
               </div>
             </div>
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform border border-error/20">
-              <div className="p-3 bg-error/10 rounded-lg text-error">
-                <AlertTriangle className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">At Risk Students</p>
-                <h3 className="text-2xl font-bold text-error">{stats.atRisk}</h3>
-              </div>
-            </div>
-            <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform">
-              <div className="p-3 bg-primary/10 rounded-lg text-primary">
-                <Users className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Active Groups</p>
-                <h3 className="text-2xl font-bold text-on-surface">{stats.activeGroups}</h3>
-              </div>
-            </div>
-          </div>
+          )}
         </>
       )}
 
