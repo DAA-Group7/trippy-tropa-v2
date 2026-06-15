@@ -65,3 +65,9 @@ Scenarios:
 5. Teacher have enough students, and created a group activity, they run the auto balanced groups -> created x number of groups -> For each group created, leaders(student) would be auto assigned per group.
 6. Leaders (student) can now lists down multiple tasks to finish a speicifc activity, and will show in the estimated time completion matrix, which they can click the button for auto assigned tasks once every students filled up all their own time estimated completion
 7. Feel free to suggest any other user stories, for MVP
+
+teacher
+aaron@gmail.com
+aaron123
+
+aaron

@@ -9,9 +9,9 @@ import {
   ClipboardList,
   Settings,
   LogOut,
-  Bell,
   ChevronRight,
 } from 'lucide-react'
+import { NotificationsPopup } from './NotificationsPopup'
 
 interface AppShellProps {
   profile: { full_name?: string; role?: string; avatar_url?: string } | null
@@ -171,14 +171,7 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
 
           {/* Right controls */}
           <div className="flex items-center gap-4">
-            <button
-              className="relative transition-colors"
-              style={{ color: 'rgba(200,196,215,0.6)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#c6bfff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(200,196,215,0.6)')}
-            >
-              <Bell className="w-5 h-5" />
-            </button>
+            <NotificationsPopup />
 
             <div className="flex items-center gap-2.5">
               <div className="text-right hidden sm:block">

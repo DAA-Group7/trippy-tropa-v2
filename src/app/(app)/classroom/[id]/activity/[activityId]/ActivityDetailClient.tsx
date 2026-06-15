@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import GroupDraftBoard from '@/components/activities/GroupDraftBoard'
 import { generateGroupsAction, confirmGroupsAction } from '@/app/actions/activities'
+import { SubmissionForm } from '@/components/activity/SubmissionForm'
 
 interface Props {
   activity: any
@@ -18,6 +19,8 @@ interface Props {
   groups: any[]
   myGroup: any
   studentCount: number
+  submissions?: any[]
+  mySubmission?: any
 }
 
 function StatusBadge({ dueDate }: { dueDate: string | null }) {
@@ -48,7 +51,7 @@ function PlaceholderCard({ message }: { message: string }) {
 }
 
 export default function ActivityDetailClient({
-  activity, classroomId, userRole, userId, groups: initialGroups, myGroup, studentCount
+  activity, classroomId, userRole, userId, groups: initialGroups, myGroup, studentCount, submissions, mySubmission
 }: Props) {
   const router = useRouter()
   const [isGenerating, setIsGenerating] = useState(false)
@@ -158,12 +161,38 @@ export default function ActivityDetailClient({
           {canManage ? (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">Submissions</h2>
-              <PlaceholderCard message="Submission tracking will be available in Phase 6." />
+              {submissions && submissions.length > 0 ? (
+                <div className="space-y-4">
+                  {submissions.map((sub: any) => (
+                    <div key={sub.id} className="p-4 bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-white">{sub.profiles?.full_name || 'Unknown'}</p>
+                        <p className="text-xs text-white/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
+                        {sub.is_late && <span className="text-xs text-error font-bold mt-1 block">LATE</span>}
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {sub.file_url && (
+                          <a href={sub.file_url} target="_blank" rel="noreferrer" className="text-secondary hover:underline text-sm font-bold flex items-center gap-1">
+                            View File
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <PlaceholderCard message="No submissions yet." />
+              )}
             </div>
           ) : (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">Your Submission</h2>
-              <PlaceholderCard message="Submission portal will be available in Phase 6." />
+              <SubmissionForm 
+                activityId={activity.id} 
+                existingSubmission={mySubmission} 
+                isLate={activity.due_date ? new Date() > new Date(activity.due_date) : false}
+                onSubmitted={() => router.refresh()}
+              />
             </div>
           )}
         </>

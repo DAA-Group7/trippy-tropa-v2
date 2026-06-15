@@ -49,7 +49,24 @@ export default async function DashboardPage() {
       .in('classroom_id', classroomIds)
       .order('due_date', { ascending: true, nullsFirst: false })
       .limit(8)
-    upcomingActivities = data || []
+    
+    const acts = data || []
+    if (acts.length > 0) {
+      const actIds = acts.map(a => a.id)
+      // For groups we might need a more complex query, but let's just check user_id or group membership
+      const { data: subs } = await supabase
+        .from('submissions')
+        .select('activity_id')
+        .eq('user_id', user.id)
+        .in('activity_id', actIds)
+        
+      const submittedActIds = new Set(subs?.map((s: any) => s.activity_id) || [])
+      
+      upcomingActivities = acts.map(a => ({
+        ...a,
+        isSubmitted: submittedActIds.has(a.id)
+      }))
+    }
   }
 
   return (

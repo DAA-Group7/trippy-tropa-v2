@@ -14,18 +14,18 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
   const bgColors = ['bg-primary/10', 'bg-tertiary/10', 'bg-secondary/10', 'bg-error/10']
 
   return (
-    <>
+    <div className="min-h-full p-6 md:p-8 max-w-6xl mx-auto">
       {/* HEADER SECTION WITH ACTION */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
         <div>
-          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight">Welcome, {profile?.full_name?.split(' ')[0] || 'Teacher'}</h3>
-          <p className="text-[14px] sm:text-[15px] text-on-surface-variant max-w-xl opacity-80">
+          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight text-[#e5e0ed]">Welcome, {profile?.full_name?.split(' ')[0] || 'Teacher'}</h3>
+          <p className="text-[14px] sm:text-[15px] text-[rgba(200,196,215,0.6)] max-w-xl opacity-80">
             Oversee your current sessions and active classrooms at a glance.
           </p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary hover:bg-surface-tint text-on-primary font-bold px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-2 transition-all active:scale-95"
+          className="bg-[#c6bfff] hover:brightness-110 text-[#13121b] font-bold px-6 py-2.5 rounded-lg shadow-[0_0_20px_rgba(198,191,255,0.15)] flex items-center gap-2 transition-all active:scale-95"
         >
           <Plus size={20} />
           <span className="text-[12px] font-bold uppercase tracking-widest">New Classroom</span>
@@ -62,7 +62,7 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
                       <div className={`w-10 h-10 rounded-lg ${bgColorClass} ${colorClass} flex items-center justify-center`}>
                         <Icon size={22} />
                       </div>
-                      <span className="bg-secondary/10 text-secondary border border-secondary/20 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                      <span className="bg-[#46eae5]/10 text-[#46eae5] border border-[#46eae5]/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
                         Active
                       </span>
                     </div>
@@ -75,12 +75,12 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
                   </div>
                   <div className="flex items-center justify-between border-t border-white/5 pt-3">
                     <div className="flex -space-x-1.5">
-                      <div className="w-7 h-7 rounded-full border-2 border-surface-container-low bg-surface-container-high flex items-center justify-center text-[9px] font-bold text-on-surface-variant">
+                      <div className="w-7 h-7 rounded-full border-2 border-[rgba(18,18,42,0.7)] bg-[rgba(18,18,42,0.4)] flex items-center justify-center text-[9px] font-bold text-[#e5e0ed]">
                         +{c.studentCount}
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-on-surface-variant font-semibold uppercase leading-none">Students</p>
+                      <p className="text-[10px] text-[rgba(200,196,215,0.6)] font-semibold uppercase leading-none">Students</p>
                       <p className={`text-xl font-semibold ${colorClass}`}>{c.studentCount}</p>
                     </div>
                   </div>
@@ -92,6 +92,6 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
       )}
 
       <CreateClassroomModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
+    </div>
   )
 }

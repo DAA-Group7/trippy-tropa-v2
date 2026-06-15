@@ -85,6 +85,34 @@ export default async function ActivityDetailPage({
     .eq('classroom_id', classroomId)
     .eq('role', 'student')
 
+  // Submissions
+  let submissions: any[] = []
+  let mySubmission: any = null
+
+  if (['teacher', 'student_officer'].includes(member.role)) {
+    const { data: subs } = await supabase
+      .from('submissions')
+      .select(`
+        *,
+        profiles:user_id(id, full_name, avatar_url),
+        groups:group_id(id, name)
+      `)
+      .eq('activity_id', activityId)
+      .order('submitted_at', { ascending: false })
+    submissions = subs || []
+  } else {
+    // Student individual submission
+    if (activity.type === 'individual') {
+      const { data: sub } = await supabase
+        .from('submissions')
+        .select('*')
+        .eq('activity_id', activityId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      mySubmission = sub
+    }
+  }
+
   return (
     <ActivityDetailClient
       activity={activity}
@@ -94,6 +122,8 @@ export default async function ActivityDetailPage({
       groups={groups}
       myGroup={myGroup}
       studentCount={studentCount || 0}
+      submissions={submissions}
+      mySubmission={mySubmission}
     />
   )
 }

@@ -160,8 +160,8 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
     <div className="max-w-5xl mx-auto space-y-8 pb-24">
       {/* Hero Header Section */}
       <section className="flex flex-col gap-1 mb-8">
-        <h1 className="text-3xl font-bold text-on-surface">Configuration</h1>
-        <p className="text-base text-on-surface-variant">Define the architectural parameters and skill weights for your virtual environment.</p>
+        <h1 className="text-3xl font-bold text-[#e5e0ed]">Configuration</h1>
+        <p className="text-sm text-[rgba(200,196,215,0.8)]">Define the architectural parameters and skill weights for your virtual environment.</p>
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -169,34 +169,32 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
         <div className="lg:col-span-8 space-y-8">
           
           {/* General Settings */}
-          <section className="bg-surface/70 backdrop-blur-xl border border-white/10 p-6 rounded-xl shadow-md">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-1.5 bg-primary-container/20 rounded-lg text-primary flex items-center justify-center">
-                <Settings className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-semibold">General Settings</h2>
+          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <Settings className="w-5 h-5 text-white/80" />
+              <h2 className="text-xl font-bold text-[#e5e0ed]">General Settings</h2>
             </div>
             
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Classroom Name</label>
-                <div className="focus-within:shadow-[0_0_15px_rgba(70,234,229,0.3)] focus-within:border-secondary transition-all border border-outline-variant rounded-lg bg-surface-container-lowest p-1">
+                <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Classroom Name</label>
+                <div className="border border-white/10 rounded-lg bg-[#1c1b23] p-1 transition-colors focus-within:border-white/30">
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-base py-2 px-4 outline-none" 
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 outline-none text-[#e5e0ed]" 
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Description</label>
-                <div className="focus-within:shadow-[0_0_15px_rgba(70,234,229,0.3)] focus-within:border-secondary transition-all border border-outline-variant rounded-lg bg-surface-container-lowest p-1">
+                <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Description</label>
+                <div className="border border-white/10 rounded-lg bg-[#1c1b23] p-1 transition-colors focus-within:border-white/30">
                   <textarea 
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-base py-2 px-4 resize-none outline-none" 
-                    rows={3}
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 resize-none outline-none text-[#e5e0ed]" 
+                    rows={4}
                   />
                 </div>
               </div>
@@ -204,16 +202,14 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           </section>
 
           {/* Skill Assessment Configuration */}
-          <section className="bg-surface/70 backdrop-blur-xl border border-white/10 p-6 rounded-xl shadow-md overflow-hidden">
+          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <div className="p-1.5 bg-secondary-container/20 rounded-lg text-secondary flex items-center justify-center">
-                  <Star className="w-5 h-5" />
-                </div>
-                <h2 className="text-xl font-semibold">Skill Assessment</h2>
+              <div className="flex items-center gap-3">
+                <Star className="w-5 h-5 text-white/40" />
+                <h2 className="text-xl font-bold text-[#e5e0ed]">Skill Assessment</h2>
               </div>
-              <button onClick={addSkill} className="flex items-center gap-1 text-secondary text-xs font-semibold hover:underline">
-                <Plus className="w-4 h-4" />
+              <button onClick={addSkill} className="flex items-center gap-1 text-white/20 hover:text-white/80 text-[10px] font-bold tracking-widest uppercase transition-colors">
+                <Plus className="w-3 h-3" />
                 Add Skill
               </button>
             </div>
@@ -252,31 +248,27 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
         <div className="lg:col-span-4 space-y-8">
           
           {/* Ownership Transfer (Mock) */}
-          <section className="bg-surface/70 backdrop-blur-xl border border-white/10 p-6 rounded-xl shadow-md border-l-4 border-l-tertiary">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-1.5 bg-tertiary-container/20 rounded-lg text-tertiary flex items-center justify-center">
-                <KeyRound className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-semibold">Ownership</h2>
+          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <KeyRound className="w-5 h-5 text-white/80" />
+              <h2 className="text-xl font-bold text-[#e5e0ed]">Ownership</h2>
             </div>
-            <p className="text-sm text-on-surface-variant mb-6">Transfer management rights of this classroom to another authorized educator.</p>
+            <p className="text-sm text-[rgba(200,196,215,0.8)] mb-8">Transfer management rights of this classroom to another authorized educator.</p>
             <div className="space-y-6">
-              <button disabled className="w-full bg-surface-container text-on-surface-variant py-3 rounded-lg text-xs font-semibold cursor-not-allowed">
+              <button disabled className="w-full bg-transparent border-none text-white/60 py-2 rounded-lg text-xs font-bold cursor-not-allowed">
                 Transfer Ownership (Coming Soon)
               </button>
             </div>
           </section>
 
           {/* Danger Zone */}
-          <section className="border-2 border-error/30 bg-error-container/10 p-6 rounded-xl shadow-md">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-1.5 bg-error-container/20 rounded-lg text-error flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-semibold text-error">Danger Zone</h2>
+          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="w-5 h-5 text-white/80" />
+              <h2 className="text-xl font-bold text-[#e5e0ed]">Danger Zone</h2>
             </div>
-            <p className="text-sm text-on-surface-variant mb-6">Once deleted, all classroom data, student progress logs, and collaborative assets will be permanently purged.</p>
-            <button className="w-full border-2 border-error text-error py-3 rounded-lg text-xs font-semibold hover:bg-error hover:text-on-error active:scale-[0.98] transition-all">
+            <p className="text-sm text-[rgba(200,196,215,0.8)] mb-6">Once deleted, all classroom data, student progress logs, and collaborative assets will be permanently purged.</p>
+            <button className="w-full bg-transparent border border-white/10 text-white/60 py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all">
               Delete Classroom
             </button>
           </section>

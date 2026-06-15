@@ -140,6 +140,11 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
   const [optimisticIds, setOptimisticIds] = useState<Set<string>>(new Set())
   const [boardTasks, setBoardTasks] = useState(serverTasksWithProfiles)
   const [activeTask, setActiveTask] = useState<any | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     setBoardTasks((prev: any[]) => {
@@ -258,6 +263,10 @@ export default function KanbanBoard({ tasks, estimates, currentUserId, isTeacher
     { id: 'in_progress', title: 'In Progress', icon: Loader2 },
     { id: 'done', title: 'Done', icon: CheckCircle2 },
   ]
+
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

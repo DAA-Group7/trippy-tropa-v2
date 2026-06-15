@@ -392,7 +392,12 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
                   let borderColor = 'rgba(198,191,255,0.4)'
                   let bgColor = 'rgba(198,191,255,0.06)'
 
-                  if (isOverdue) {
+                  if (a.isSubmitted) {
+                    statusLabel = 'Submitted'
+                    statusColor = '#46eae5'
+                    borderColor = 'rgba(70,234,229,0.4)'
+                    bgColor = 'rgba(70,234,229,0.06)'
+                  } else if (isOverdue) {
                     statusLabel = 'Overdue'
                     statusColor = '#ffb4ab'
                     borderColor = 'rgba(255,180,171,0.4)'
