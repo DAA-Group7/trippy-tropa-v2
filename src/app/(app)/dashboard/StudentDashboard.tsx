@@ -155,7 +155,7 @@ function ActivityItem({ activity }: { activity: Activity }) {
   return (
     <Link href={`/classroom/${activity.classroom_id}/activity/${activity.id}`}>
       <div
-        className="p-3.5 rounded-xl border-l-4 transition-all duration-200 cursor-pointer"
+        className="p-4 rounded-xl border-l-4 transition-all duration-200 cursor-pointer mb-3"
         style={{
           backgroundColor: bgColor,
           borderLeftColor: borderColor,
@@ -209,23 +209,25 @@ function JoinClassroomCard({
         style={{ background: 'rgba(108,92,231,0.08)', filter: 'blur(80px)' }}
       />
 
-      <div className="relative z-10">
-        <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#e5e0ed' }}>
-          <BookOpen className="w-5 h-5" style={{ color: '#c6bfff' }} />
-          Join a Classroom
-        </h2>
-        <p className="text-sm mb-5" style={{ color: 'rgba(200,196,215,0.65)' }}>
-          Enter the 6-character code provided by your instructor.
-        </p>
+      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#e5e0ed' }}>
+            <BookOpen className="w-5 h-5" style={{ color: '#c6bfff' }} />
+            Join a Classroom
+          </h2>
+          <p className="text-sm" style={{ color: 'rgba(200,196,215,0.65)' }}>
+            Enter the 6-character code provided by your instructor.
+          </p>
+        </div>
 
-        <form action={formAction} className="flex gap-3 max-w-lg">
+        <form action={formAction} className="flex gap-3 w-full md:w-auto md:min-w-[400px]">
           <input
             ref={inputRef}
             type="text"
             name="code"
             maxLength={6}
             required
-            placeholder="Ex: TROP24"
+            placeholder="EX: TROP24"
             className="flex-1 text-center font-black tracking-[0.4em] text-xl uppercase outline-none transition-all duration-200 rounded-xl px-5 py-3"
             style={{
               backgroundColor: 'rgba(14,13,21,0.8)',
@@ -249,16 +251,15 @@ function JoinClassroomCard({
           <button
             type="submit"
             disabled={isPending}
-            className="font-bold px-7 rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50"
+            className="px-6 rounded-xl font-bold transition-all disabled:opacity-50 text-on-primary"
             style={{
               backgroundColor: '#c6bfff',
-              color: '#2900a0',
               boxShadow: '0 4px 20px rgba(198,191,255,0.2)',
             }}
             onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 28px rgba(198,191,255,0.4)')}
             onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(198,191,255,0.2)')}
           >
-            {isPending ? 'Joining…' : 'Join'}
+            {isPending ? 'Joining...' : 'Join'}
           </button>
         </form>
 
@@ -404,9 +405,9 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
                   }
 
                   return (
-                    <Link key={a.id} href={`/classroom/${a.classroom_id}/activity/${a.id}`}>
+                    <Link key={a.id} href={`/classroom/${a.classroom_id}/activity/${a.id}`} className="block mb-3">
                       <div
-                        className="p-3 rounded-xl border-l-4 transition-all duration-200 cursor-pointer"
+                        className="p-3.5 rounded-xl border-l-4 transition-all duration-200 cursor-pointer"
                         style={{ backgroundColor: bgColor, borderLeftColor: borderColor }}
                         onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                         onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -420,10 +421,10 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
                             {format(due, 'MMM d')}
                           </p>
                         </div>
-                        <h4 className="text-xs font-semibold leading-snug" style={{ color: '#e5e0ed' }}>
+                        <h4 className="text-sm font-semibold leading-snug" style={{ color: '#e5e0ed' }}>
                           {a.title}
                         </h4>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'rgba(200,196,215,0.55)' }}>
+                        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(200,196,215,0.55)' }}>
                           {a.classroom?.name}
                         </p>
                       </div>

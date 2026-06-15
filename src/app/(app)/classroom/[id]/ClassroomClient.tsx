@@ -37,19 +37,19 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
           </div>
           {activity.due_date && (
             <span className={`flex items-center gap-1 text-[10px] font-bold whitespace-nowrap ${
-              isOverdue ? 'text-error' : 'text-on-surface-variant'
+              isOverdue ? 'text-error' : 'text-[rgba(200,196,215,0.6)]'
             }`}>
               <Clock className="w-3 h-3" />
               {isOverdue ? 'Overdue · ' : ''}{formatDate(activity.due_date)}
             </span>
           )}
         </div>
-        <h4 className="font-bold text-on-surface text-base group-hover:text-secondary transition-colors">{activity.title}</h4>
+        <h4 className="font-bold text-[#e5e0ed] text-base group-hover:text-secondary transition-colors">{activity.title}</h4>
         {activity.description && (
-          <p className="text-xs text-on-surface-variant mt-1 line-clamp-2 opacity-70">{activity.description}</p>
+          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-1 line-clamp-2 opacity-70">{activity.description}</p>
         )}
         {isGroup && activity.num_groups && (
-          <p className="text-xs text-on-surface-variant mt-2 flex items-center gap-1">
+          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-2 flex items-center gap-1">
             <Users className="w-3 h-3" />
             {activity.num_groups} groups planned
           </p>
@@ -81,16 +81,17 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
   const canManage = userRole === 'teacher' || userRole === 'student_officer'
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="min-h-full p-6 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
-          <Link href="/dashboard" className="text-secondary text-sm flex items-center hover:underline w-fit">
+          <Link href="/dashboard" className="text-[#c6bfff] text-sm flex items-center hover:underline w-fit">
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Classrooms
           </Link>
-          <h2 className="text-3xl font-bold text-on-surface">{classroom.name}</h2>
-          <p className="text-on-surface-variant max-w-2xl text-base">
+          <h2 className="text-3xl font-bold text-[#e5e0ed]">{classroom.name}</h2>
+          <p className="text-[rgba(200,196,215,0.6)] max-w-2xl text-base">
             {classroom.description || 'No description provided.'}
           </p>
         </div>
@@ -103,20 +104,20 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                 disabled={!hasSkills}
                 className={`px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-all ${
                   hasSkills 
-                    ? 'bg-gradient-to-r from-primary-container to-secondary text-on-primary hover:shadow-[0_0_20px_rgba(70,234,229,0.2)] active:scale-95' 
-                    : 'bg-surface-container-highest text-on-surface-variant opacity-50 cursor-not-allowed'
+                    ? 'bg-[#c6bfff] text-[#13121b] hover:shadow-[0_0_20px_rgba(70,234,229,0.2)] active:scale-95' 
+                    : 'bg-surface-container-highest text-[rgba(200,196,215,0.6)] opacity-50 cursor-not-allowed'
                 }`}
               >
                 <UserPlus className="w-5 h-5" />
                 <span className="hidden sm:inline">+ Invite Students</span>
               </button>
               {!hasSkills && (
-                <div className="absolute top-full mt-2 right-0 w-48 p-2 bg-surface-container-highest border border-white/10 rounded-lg text-xs text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl">
+                <div className="absolute top-full mt-2 right-0 w-48 p-2 bg-surface-container-highest border border-white/10 rounded-lg text-xs text-[rgba(200,196,215,0.6)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl">
                   Set up the skill assessment in Settings first!
                 </div>
               )}
             </div>
-            <Link href={`/classroom/${classroom.id}/settings`} className="glass-card p-2.5 rounded-lg text-on-surface hover:bg-white/10 transition-colors">
+            <Link href={`/classroom/${classroom.id}/settings`} className="glass-card p-2.5 rounded-lg text-[#e5e0ed] hover:bg-white/10 transition-colors">
               <Settings className="w-5 h-5" />
             </Link>
           </div>
@@ -130,12 +131,12 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`relative py-4 font-bold text-xs tracking-wider transition-colors ${
-              activeTab === tab ? 'text-secondary' : 'text-on-surface-variant hover:text-on-surface'
+              activeTab === tab ? 'text-[#c6bfff]' : 'text-[rgba(200,196,215,0.6)] hover:text-[#e5e0ed]'
             }`}
           >
             {tab}
             {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary rounded-t-full shadow-[0_0_10px_rgba(70,234,229,0.5)]" />
+              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#c6bfff] rounded-t-full shadow-[0_0_10px_rgba(198,191,255,0.5)]" />
             )}
           </button>
         ))}
@@ -145,7 +146,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
       {activeTab === 'STUDENTS' && (
         <>
           <div className="glass-card rounded-xl overflow-hidden">
-            <div className="grid grid-cols-12 px-6 py-4 border-b border-white/10 text-on-surface-variant font-bold text-xs uppercase tracking-wider bg-white/5">
+            <div className="grid grid-cols-12 px-6 py-4 border-b border-white/10 text-[rgba(200,196,215,0.6)] font-bold text-xs uppercase tracking-wider bg-white/5">
               <div className="col-span-5">Student</div>
               <div className="col-span-2 hidden sm:block">Role</div>
               <div className="col-span-4 hidden md:block">Skill Score</div>
@@ -155,19 +156,19 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
               {members.filter((m: any) => m.role !== 'teacher').map((member: any) => (
                 <div key={member.id} className="grid grid-cols-12 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
                   <div className="col-span-5 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary font-bold overflow-hidden shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#c6bfff] flex items-center justify-center text-[#13121b] font-bold overflow-hidden shrink-0">
                       {member.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-bold text-on-surface truncate">{member.name}</h4>
-                      <p className="text-xs text-on-surface-variant truncate">{member.email}</p>
+                      <h4 className="font-bold text-[#e5e0ed] truncate">{member.name}</h4>
+                      <p className="text-xs text-[rgba(200,196,215,0.6)] truncate">{member.email}</p>
                     </div>
                   </div>
                   <div className="col-span-2 hidden sm:block">
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold border border-white/10 ${
                       member.role === 'teacher' ? 'bg-primary/20 text-primary border-primary/30' :
                       member.role === 'student_officer' ? 'bg-secondary/20 text-secondary border-secondary/30' :
-                      'bg-white/5 text-on-surface-variant'
+                      'bg-white/5 text-[rgba(200,196,215,0.6)]'
                     }`}>
                       {member.role.replace('_', ' ').toUpperCase()}
                     </span>
@@ -183,24 +184,24 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                         </button>
                         {openSkillPopoverId === member.id && (
                           <div className="absolute top-8 left-0 z-50 w-64 bg-surface-container-highest border border-white/10 rounded-xl shadow-2xl p-4 cursor-default">
-                            <h5 className="text-xs uppercase tracking-wider font-bold text-on-surface-variant mb-3 border-b border-white/5 pb-2">Skill Breakdown</h5>
+                            <h5 className="text-xs uppercase tracking-wider font-bold text-[rgba(200,196,215,0.6)] mb-3 border-b border-white/5 pb-2">Skill Breakdown</h5>
                             {member.rawSkills && member.rawSkills.length > 0 ? (
                               <ul className="space-y-2">
                                 {member.rawSkills.map((rs: any, i: number) => (
                                   <li key={i} className="flex justify-between items-center text-sm">
-                                    <span className="text-on-surface truncate pr-2" title={rs.name}>{rs.name}</span>
-                                    <span className="text-secondary font-bold shrink-0">{rs.rating} <span className="text-on-surface-variant text-[10px] opacity-50">×{rs.multiplier}</span></span>
+                                    <span className="text-[#e5e0ed] truncate pr-2" title={rs.name}>{rs.name}</span>
+                                    <span className="text-secondary font-bold shrink-0">{rs.rating} <span className="text-[rgba(200,196,215,0.6)] text-[10px] opacity-50">×{rs.multiplier}</span></span>
                                   </li>
                                 ))}
                               </ul>
                             ) : (
-                              <p className="text-xs text-on-surface-variant italic">No skills assessed yet.</p>
+                              <p className="text-xs text-[rgba(200,196,215,0.6)] italic">No skills assessed yet.</p>
                             )}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-on-surface-variant">-</span>
+                      <span className="text-xs text-[rgba(200,196,215,0.6)]">-</span>
                     )}
                   </div>
                   <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right relative">
@@ -208,7 +209,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                       <>
                         <button 
                           onClick={() => setOpenDropdownId(openDropdownId === member.id ? null : member.id)}
-                          className="p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+                          className="p-2 text-[rgba(200,196,215,0.6)] hover:text-[#e5e0ed] transition-colors"
                         >
                           <MoreVertical className="w-5 h-5" />
                         </button>
@@ -238,8 +239,8 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                   <Activity className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Class Avg Score</p>
-                  <h3 className="text-2xl font-bold text-on-surface">{stats.avgScore}</h3>
+                  <p className="text-xs text-[rgba(200,196,215,0.6)] uppercase font-bold tracking-tight mb-1">Class Avg Score</p>
+                  <h3 className="text-2xl font-bold text-[#e5e0ed]">{stats.avgScore}</h3>
                 </div>
               </div>
               <div className="glass-card p-6 rounded-xl flex items-center gap-4 hover:-translate-y-1 transition-transform border border-error/20">
@@ -247,7 +248,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                   <AlertTriangle className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">At Risk Students</p>
+                  <p className="text-xs text-[rgba(200,196,215,0.6)] uppercase font-bold tracking-tight mb-1">At Risk Students</p>
                   <h3 className="text-2xl font-bold text-error">{stats.atRisk}</h3>
                 </div>
               </div>
@@ -256,8 +257,8 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                   <Users className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-on-surface-variant uppercase font-bold tracking-tight mb-1">Active Groups</p>
-                  <h3 className="text-2xl font-bold text-on-surface">{stats.activeGroups}</h3>
+                  <p className="text-xs text-[rgba(200,196,215,0.6)] uppercase font-bold tracking-tight mb-1">Active Groups</p>
+                  <h3 className="text-2xl font-bold text-[#e5e0ed]">{stats.activeGroups}</h3>
                 </div>
               </div>
             </div>
@@ -272,7 +273,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
             <div className="flex justify-end">
               <Link
                 href={`/classroom/${classroom.id}/activity/create`}
-                className="bg-gradient-to-r from-primary-container to-secondary text-white font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
+                className="bg-[#c6bfff] text-white font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Create Activity
@@ -292,15 +293,15 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                 <BookOpen className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-on-surface mb-1">No activities yet</h3>
-                <p className="text-sm text-on-surface-variant">
+                <h3 className="text-lg font-semibold text-[#e5e0ed] mb-1">No activities yet</h3>
+                <p className="text-sm text-[rgba(200,196,215,0.6)]">
                   {canManage ? 'Create your first activity to get started.' : 'No activities have been created yet.'}
                 </p>
               </div>
               {canManage && (
                 <Link
                   href={`/classroom/${classroom.id}/activity/create`}
-                  className="bg-gradient-to-r from-primary-container to-secondary text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
+                  className="bg-[#c6bfff] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Create Activity
@@ -312,7 +313,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
       )}
 
       {activeTab === 'RESOURCES' && (
-        <div className="glass-card rounded-xl p-12 text-center text-on-surface-variant">
+        <div className="glass-card rounded-xl p-12 text-center text-[rgba(200,196,215,0.6)]">
           No resources uploaded yet.
         </div>
       )}
@@ -322,6 +323,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
         onClose={() => setIsInviteModalOpen(false)}
         inviteCode={classroom.invite_code}
       />
+      </div>
     </div>
   )
 }
