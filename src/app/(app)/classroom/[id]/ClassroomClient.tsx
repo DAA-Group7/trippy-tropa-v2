@@ -17,14 +17,14 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
     new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
   return (
-    <Link href={`/classroom/${classroomId}/activity/${activity.id}`}>
-      <div className="glass-card p-5 rounded-xl hover:-translate-y-1 transition-all group cursor-pointer border border-white/10 hover:border-primary/30">
+    <Link href={`/classroom/${classroomId}/activity/${activity.id}`} className="block h-full">
+      <div className="glass-card h-full p-5 flex flex-col rounded-xl hover:-translate-y-1 transition-all group cursor-pointer border border-white/10 hover:border-[#c6bfff]/50">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
               isGroup
-                ? 'bg-secondary/10 text-secondary border-secondary/30'
-                : 'bg-primary/10 text-primary border-primary/30'
+                ? 'bg-[#46eae5]/10 text-[#46eae5] border-[#46eae5]/30'
+                : 'bg-[#c6bfff]/10 text-[#c6bfff] border-[#c6bfff]/30'
             }`}>
               {isGroup ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
               {isGroup ? 'Group' : 'Individual'}
@@ -44,12 +44,13 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
             </span>
           )}
         </div>
-        <h4 className="font-bold text-[#e5e0ed] text-base group-hover:text-secondary transition-colors">{activity.title}</h4>
+        <h4 className="font-bold text-[#e5e0ed] text-base group-hover:text-[#c6bfff] transition-colors">{activity.title}</h4>
         {activity.description && (
-          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-1 line-clamp-2 opacity-70">{activity.description}</p>
+          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-1 line-clamp-2 opacity-70 flex-grow">{activity.description}</p>
         )}
+        {(!activity.description) && <div className="flex-grow"></div>}
         {isGroup && activity.num_groups && (
-          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-2 flex items-center gap-1">
+          <p className="text-xs text-[rgba(200,196,215,0.6)] mt-3 flex items-center gap-1 pt-3 border-t border-white/5">
             <Users className="w-3 h-3" />
             {activity.num_groups} groups planned
           </p>
