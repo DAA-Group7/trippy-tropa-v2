@@ -21,31 +21,31 @@ interface Activity {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getStatusInfo(activity: Activity) {
-  const { due_date, type, groups_created, tasks_assigned, myGroup } = activity
+  const { due_date } = activity
 
-  if (!due_date) return { label: 'No Due Date', color: 'rgba(200,196,215,0.6)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' }
+  if (!due_date) return { label: 'No Due Date', textColor: 'text-muted-foreground', bgClass: 'bg-muted/50', borderClass: 'border-border/50' }
 
   const due = new Date(due_date)
   const now = new Date()
 
   if (activity.isSubmitted) {
-    return { label: 'Submitted', color: '#46eae5', bg: 'rgba(70,234,229,0.08)', border: 'rgba(70,234,229,0.2)' }
+    return { label: 'Submitted', textColor: 'text-primary', bgClass: 'bg-primary/10', borderClass: 'border-primary/20' }
   }
 
   if (isPast(due)) {
-    return { label: 'Overdue', color: '#ffb4ab', bg: 'rgba(255,180,171,0.08)', border: 'rgba(255,180,171,0.2)' }
+    return { label: 'Overdue', textColor: 'text-destructive', bgClass: 'bg-destructive/10', borderClass: 'border-destructive/20' }
   }
   if (isToday(due)) {
-    return { label: 'Due Today', color: '#ffb77d', bg: 'rgba(255,183,125,0.08)', border: 'rgba(255,183,125,0.2)' }
+    return { label: 'Due Today', textColor: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500/10', borderClass: 'border-orange-500/20' }
   }
   if (isTomorrow(due)) {
-    return { label: 'Due Tomorrow', color: '#ffb77d', bg: 'rgba(255,183,125,0.06)', border: 'rgba(255,183,125,0.15)' }
+    return { label: 'Due Tomorrow', textColor: 'text-amber-600 dark:text-amber-400', bgClass: 'bg-amber-500/10', borderClass: 'border-amber-500/20' }
   }
   const days = differenceInDays(due, now)
   if (days <= 7) {
-    return { label: `${days}d left`, color: '#c6bfff', bg: 'rgba(198,191,255,0.06)', border: 'rgba(198,191,255,0.15)' }
+    return { label: `${days}d left`, textColor: 'text-indigo-600 dark:text-indigo-400', bgClass: 'bg-indigo-500/10', borderClass: 'border-indigo-500/20' }
   }
-  return { label: 'Upcoming', color: 'rgba(200,196,215,0.6)', bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)' }
+  return { label: 'Upcoming', textColor: 'text-muted-foreground', bgClass: 'bg-muted/30', borderClass: 'border-border/30' }
 }
 
 function formatDueDate(dateStr?: string) {
@@ -70,19 +70,7 @@ function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?:
   return (
     <Link href={href} className="block group">
       <div
-        className="p-5 rounded-2xl transition-all duration-200 cursor-pointer"
-        style={{
-          backgroundColor: status.bg,
-          border: `1px solid ${status.border}`,
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(198,191,255,0.1)'
-          e.currentTarget.style.borderColor = 'rgba(198,191,255,0.25)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.boxShadow = 'none'
-          e.currentTarget.style.borderColor = status.border
-        }}
+        className={`p-5 rounded-2xl transition-all duration-200 cursor-pointer ${status.bgClass} border ${status.borderClass} hover:shadow-md hover:border-primary/30`}
       >
         <div className="flex items-start justify-between gap-4">
           {/* Left */}
@@ -104,8 +92,8 @@ function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?:
                 >
                   {isGroup ? 'Group' : 'Individual'}
                 </span>
-                <span className="text-muted-foreground/30 text-[10px]">·</span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-muted-foreground/60 text-[10px]">·</span>
+                <span className="text-[10px] font-semibold text-foreground/70">
                   {activity.classroom?.name}
                 </span>
               </div>
@@ -134,7 +122,7 @@ function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?:
 
               {isGroup && activity.groups_created && !activity.myGroup && !isTeacher && (
                 <div
-                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] bg-muted/50 text-muted-foreground border border-border/50"
+                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] bg-muted/50 text-foreground/70 font-semibold border border-border/50"
                 >
                   Not yet assigned to a group
                 </div>
@@ -146,12 +134,7 @@ function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?:
           <div className="flex flex-col items-end gap-2 flex-shrink-0">
             {/* Status badge */}
             <span
-              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"
-              style={{
-                backgroundColor: status.bg,
-                color: status.color,
-                border: `1px solid ${status.border}`
-              }}
+              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 border ${status.bgClass} ${status.textColor} ${status.borderClass}`}
             >
               {activity.isSubmitted ? <CheckCircle className="w-3 h-3" /> : (isPast(new Date(activity.due_date!)) ? <AlertTriangle className="w-3 h-3" /> : <Clock className="w-3 h-3" />)}
               {status.label}
@@ -160,7 +143,7 @@ function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?:
             {/* Date */}
             {dateLabel && (
               <div
-                className="flex items-center gap-1 text-[11px] text-muted-foreground/50"
+                className="flex items-center gap-1 text-[11px] font-medium text-foreground/60"
               >
                 <Clock className="w-3 h-3" />
                 {dateLabel}
@@ -198,7 +181,7 @@ function EmptyState() {
         <BookOpen className="w-8 h-8 text-primary" />
       </div>
       <h3 className="text-lg font-semibold mb-2 text-foreground">No activities yet</h3>
-      <p className="text-sm max-w-xs text-muted-foreground">
+      <p className="text-sm max-w-xs text-foreground/70">
         Join a classroom and your activities will appear here.
       </p>
     </div>
@@ -228,7 +211,7 @@ export default function ActivitiesClient({ activities, userId, userRoleMap, isGl
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             All Activities
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-foreground/70">
             Your individual and group activities across all enrolled classrooms.
           </p>
         </div>
@@ -247,7 +230,7 @@ export default function ActivitiesClient({ activities, userId, userRoleMap, isGl
                 className="rounded-xl p-4 text-center bg-card border border-border"
               >
                 <div className={`text-2xl font-bold mb-0.5 ${s.colorClass}`}>{s.value}</div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-foreground/70">{s.label}</div>
               </div>
             ))}
           </div>
@@ -256,7 +239,7 @@ export default function ActivitiesClient({ activities, userId, userRoleMap, isGl
         {/* Activity list */}
         {activities.length === 0 ? (
           <EmptyState />
-        ) : isGlobalTeacher ? (
+        ) : (
           <div className="space-y-8">
             {Object.entries(
               activities.reduce((acc, act) => {
@@ -269,39 +252,13 @@ export default function ActivitiesClient({ activities, userId, userRoleMap, isGl
               <div key={classroomName} className="bg-card/40 rounded-2xl border border-border overflow-hidden">
                 <div className="bg-muted/30 px-6 py-4 border-b border-border flex items-center justify-between">
                   <h3 className="font-bold text-foreground text-lg">{classroomName}</h3>
-                  <span className="text-xs font-semibold text-muted-foreground bg-background px-2 py-1 rounded-md border border-border">{acts.length} Activities</span>
+                  <span className="text-xs font-semibold text-foreground/80 bg-background px-2 py-1 rounded-md border border-border">{acts.length} Activities</span>
                 </div>
                 <div className="p-6 space-y-3">
-                  {acts.map(a => <ActivityCard key={a.id} activity={a} isTeacher={true} />)}
+                  {acts.map(a => <ActivityCard key={a.id} activity={a} isTeacher={isGlobalTeacher} />)}
                 </div>
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {overdue.length > 0 && (
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-destructive">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Overdue
-                </p>
-                <div className="space-y-3">
-                  {overdue.map(a => <ActivityCard key={a.id} activity={a} isTeacher={false} />)}
-                </div>
-              </div>
-            )}
-
-            {upcoming.length > 0 && (
-              <div className={overdue.length > 0 ? 'mt-6' : ''}>
-                {overdue.length > 0 && (
-                  <p className="text-xs font-bold uppercase tracking-wider mb-3 text-muted-foreground/50">
-                    Upcoming
-                  </p>
-                )}
-                <div className="space-y-3">
-                  {upcoming.map(a => <ActivityCard key={a.id} activity={a} isTeacher={false} />)}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
