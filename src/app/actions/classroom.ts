@@ -150,3 +150,49 @@ export async function promoteMemberAction(classroomId: string, targetUserId: str
   revalidatePath('/classroom/[id]', 'layout')
   return { success: true }
 }
+
+export async function removeMemberAction(classroomId: string, targetUserId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // Check if current user is teacher
+  const { data: member } = await supabase
+    .from('classroom_members')
+    .select('role')
+    .eq('classroom_id', classroomId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!member || member.role !== 'teacher') {
+    return { error: 'Only teachers can remove students' }
+  }
+
+  // Get classroom name for notification
+  const { data: classroom } = await supabase
+    .from('classrooms')
+    .select('name')
+    .eq('id', classroomId)
+    .single()
+
+  // Remove the user
+  const { error } = await supabase
+    .from('classroom_members')
+    .delete()
+    .eq('classroom_id', classroomId)
+    .eq('user_id', targetUserId)
+
+  if (error) return { error: error.message }
+
+  // Create notification for the removed student
+  await supabase.from('notifications').insert({
+    user_id: targetUserId,
+    type: 'request',
+    title: 'Removed from Classroom',
+    message: `You have been removed from the classroom "${classroom?.name || 'Unknown'}".`,
+    link: '/dashboard'
+  })
+
+  revalidatePath('/classroom/[id]', 'layout')
+  return { success: true }
+}

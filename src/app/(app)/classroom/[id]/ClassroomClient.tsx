@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import {
   ArrowLeft, UserPlus, Settings, MoreVertical, Activity, AlertTriangle,
-  Users, Plus, User, Clock, CheckCircle, BookOpen
+  Users, Plus, User, Clock, CheckCircle, BookOpen, Eye, Trash2, Crown, X
 } from 'lucide-react'
 import Link from 'next/link'
 import { InviteStudentsModal } from '@/components/classroom/InviteStudentsModal'
-import { promoteMemberAction } from '@/app/actions/classroom'
+import { promoteMemberAction, removeMemberAction } from '@/app/actions/classroom'
 
 function ActivityCard({ activity, classroomId }: { activity: any; classroomId: string }) {
   const isGroup = activity.type === 'group'
@@ -66,6 +66,8 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
   const [openSkillPopoverId, setOpenSkillPopoverId] = useState<string | null>(null)
   const [isPromoting, setIsPromoting] = useState(false)
+  const [isRemoving, setIsRemoving] = useState(false)
+  const [viewProfileId, setViewProfileId] = useState<string | null>(null)
 
   const handlePromote = async (userId: string) => {
     if (!confirm('Are you sure you want to promote this student to Student Officer?')) return
@@ -77,6 +79,16 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
       setOpenDropdownId(null)
     }
     setIsPromoting(false)
+  }
+
+  const handleRemove = async (userId: string) => {
+    if (!confirm('Are you sure you want to remove this student?')) return
+    setIsRemoving(true)
+    const result = await removeMemberAction(classroom.id, userId)
+    if (result.error) {
+      alert(result.error)
+    }
+    setIsRemoving(false)
   }
 
   const canManage = userRole === 'teacher' || userRole === 'student_officer'
@@ -205,26 +217,33 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                       <span className="text-xs text-[rgba(200,196,215,0.6)]">-</span>
                     )}
                   </div>
-                  <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right relative">
+                  <div className="col-span-7 sm:col-span-5 md:col-span-1 flex justify-end items-center gap-2 relative">
                     {userRole === 'teacher' && member.role === 'student' && (
                       <>
-                        <button 
-                          onClick={() => setOpenDropdownId(openDropdownId === member.id ? null : member.id)}
-                          className="p-2 text-[rgba(200,196,215,0.6)] hover:text-[#e5e0ed] transition-colors"
+                        <button
+                          onClick={() => setViewProfileId(member.user_id || member.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-[#46eae5] hover:text-[#46eae5] bg-[#46eae5]/10 hover:bg-[#46eae5]/20 rounded-lg transition-colors text-xs font-bold whitespace-nowrap"
+                          title="View Profile"
                         >
-                          <MoreVertical className="w-5 h-5" />
+                          <Eye className="w-4 h-4" />
+                          <span>{member.skillScore ? `${member.skillScore.toFixed(1)} pts` : 'No Skills'}</span>
                         </button>
-                        {openDropdownId === member.id && (
-                          <div className="absolute right-0 top-10 mt-2 w-48 bg-surface-container-high border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
-                            <button
-                              onClick={() => handlePromote(member.user_id || member.id)}
-                              disabled={isPromoting}
-                              className="w-full text-left px-4 py-3 text-sm text-secondary hover:bg-white/5 font-semibold transition-colors disabled:opacity-50"
-                            >
-                              Promote to Officer
-                            </button>
-                          </div>
-                        )}
+                        <button
+                          onClick={() => handlePromote(member.user_id || member.id)}
+                          disabled={isPromoting}
+                          className="p-2 text-[#c6bfff]/70 hover:text-[#c6bfff] bg-[#c6bfff]/10 hover:bg-[#c6bfff]/20 rounded-lg transition-colors disabled:opacity-50"
+                          title="Promote to Officer"
+                        >
+                          <Crown className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleRemove(member.user_id || member.id)}
+                          disabled={isRemoving}
+                          className="p-2 text-error/70 hover:text-error bg-error/10 hover:bg-error/20 rounded-lg transition-colors disabled:opacity-50"
+                          title="Remove Student"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </>
                     )}
                   </div>
@@ -324,6 +343,49 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
         onClose={() => setIsInviteModalOpen(false)}
         inviteCode={classroom.invite_code}
       />
+        {viewProfileId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+            <div className="w-full max-w-sm bg-[#13121b] border border-white/10 rounded-2xl p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+              <button onClick={() => setViewProfileId(null)} className="absolute right-4 top-4 text-white/40 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              {(() => {
+                const profileMember = members.find((m: any) => (m.user_id || m.id) === viewProfileId)
+                if (!profileMember) return null
+                return (
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-20 h-20 rounded-full bg-[#1c1b23] border-2 border-white/10 flex items-center justify-center mb-4 overflow-hidden shadow-lg shadow-[#c6bfff]/10">
+                      {profileMember.avatarUrl ? (
+                        <img src={profileMember.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-10 h-10 text-white/20" />
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-[#e5e0ed]">{profileMember.name}</h3>
+                    <p className="text-sm text-[rgba(200,196,215,0.8)] mb-6">{profileMember.role === 'student_officer' ? 'Student Officer' : 'Student'}</p>
+                    
+                    <div className="w-full bg-[#1c1b23] p-4 rounded-xl border border-white/5 text-left">
+                      <h4 className="text-[10px] font-black text-[#46eae5] uppercase tracking-widest mb-3">Skills Profile</h4>
+                      {profileMember.rawSkills && profileMember.rawSkills.length > 0 ? (
+                        <ul className="space-y-3">
+                          {profileMember.rawSkills.map((rs: any, i: number) => (
+                            <li key={i} className="flex justify-between items-center text-sm bg-white/5 px-3 py-2 rounded-lg">
+                              <span className="text-[#e5e0ed] font-medium">{rs.name}</span>
+                              <span className="text-secondary font-black">LVL {rs.rating}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-[rgba(200,196,215,0.6)] italic text-center py-4">No skills assessed yet.</p>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   )
