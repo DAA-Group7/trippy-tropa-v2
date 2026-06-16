@@ -159,6 +159,7 @@ export async function generateGroupsAction(activityId: string) {
   if (profilesErr) {
     console.error('Error fetching profiles:', profilesErr)
   }
+  console.log('Fetched profiles:', profiles)
 
   // Get skills for weighting
   const { data: skills, error: skillsErr } = await supabase
@@ -203,7 +204,7 @@ export async function generateGroupsAction(activityId: string) {
     
     return {
       id: m.user_id,
-      name: profile?.full_name || 'Unknown',
+      name: profile?.full_name || (profile?.email ? profile.email.split('@')[0] : 'Unknown'),
       email: profile?.email || '',
       skillScore: score,
     }
