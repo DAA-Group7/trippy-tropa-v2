@@ -160,15 +160,15 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
         <>
           <div className="glass-card rounded-xl overflow-hidden">
             <div className="grid grid-cols-12 px-6 py-4 border-b border-white/10 text-[rgba(200,196,215,0.6)] font-bold text-xs uppercase tracking-wider bg-white/5">
-              <div className="col-span-5">Student</div>
+              <div className={userRole === 'teacher' ? 'col-span-5' : 'col-span-9'}>Student</div>
               <div className="col-span-2 hidden sm:block">Role</div>
-              <div className="col-span-4 hidden md:block">Skill Score</div>
+              {userRole === 'teacher' && <div className="col-span-4 hidden md:block">Skill Score</div>}
               <div className="col-span-7 sm:col-span-5 md:col-span-1 text-right pr-2">Action</div>
             </div>
             <div className="divide-y divide-white/5">
               {members.filter((m: any) => m.role !== 'teacher').map((member: any) => (
                 <div key={member.id} className="grid grid-cols-12 px-6 py-4 items-center hover:bg-white/5 transition-colors group">
-                  <div className="col-span-5 flex items-center gap-4">
+                  <div className={userRole === 'teacher' ? 'col-span-5 flex items-center gap-4' : 'col-span-9 flex items-center gap-4'}>
                     <div className="w-10 h-10 rounded-full bg-[#c6bfff] flex items-center justify-center text-[#13121b] font-bold overflow-hidden shrink-0">
                       {member.name.charAt(0)}
                     </div>
@@ -186,51 +186,53 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                       {member.role.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
-                  <div className="col-span-4 hidden md:flex items-center gap-4">
-                    {member.role === 'student' ? (
-                      <div className="relative">
-                        <button 
-                          onClick={() => setOpenSkillPopoverId(openSkillPopoverId === member.id ? null : member.id)}
-                          className="text-sm font-bold text-secondary hover:text-secondary-container transition-colors cursor-pointer border-b border-dashed border-secondary/50 pb-0.5"
-                        >
-                          {member.skillScore?.toFixed(1) || '0.0'} pts
-                        </button>
-                        {openSkillPopoverId === member.id && (
-                          <div className="absolute top-8 left-0 z-50 w-64 bg-surface-container-highest border border-white/10 rounded-xl shadow-2xl p-4 cursor-default">
-                            <h5 className="text-xs uppercase tracking-wider font-bold text-[rgba(200,196,215,0.6)] mb-3 border-b border-white/5 pb-2">Skill Breakdown</h5>
-                            {member.rawSkills && member.rawSkills.length > 0 ? (
-                              <ul className="space-y-2">
-                                {member.rawSkills.map((rs: any, i: number) => (
-                                  <li key={i} className="flex justify-between items-center text-sm">
-                                    <span className="text-[#e5e0ed] truncate pr-2" title={rs.name}>{rs.name}</span>
-                                    <span className="text-secondary font-bold shrink-0">{rs.rating} <span className="text-[rgba(200,196,215,0.6)] text-[10px] opacity-50">×{rs.multiplier}</span></span>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-xs text-[rgba(200,196,215,0.6)] italic">No skills assessed yet.</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-[rgba(200,196,215,0.6)]">-</span>
-                    )}
-                  </div>
+                  {userRole === 'teacher' && (
+                    <div className="col-span-4 hidden md:flex items-center gap-4">
+                      {member.role === 'student' ? (
+                        <div className="relative">
+                          <button 
+                            onClick={() => setOpenSkillPopoverId(openSkillPopoverId === member.id ? null : member.id)}
+                            className="text-sm font-bold text-secondary hover:text-secondary-container transition-colors cursor-pointer border-b border-dashed border-secondary/50 pb-0.5"
+                          >
+                            {member.skillScore?.toFixed(1) || '0.0'} pts
+                          </button>
+                          {openSkillPopoverId === member.id && (
+                            <div className="absolute top-8 left-0 z-50 w-64 bg-surface-container-highest border border-white/10 rounded-xl shadow-2xl p-4 cursor-default">
+                              <h5 className="text-xs uppercase tracking-wider font-bold text-[rgba(200,196,215,0.6)] mb-3 border-b border-white/5 pb-2">Skill Breakdown</h5>
+                              {member.rawSkills && member.rawSkills.length > 0 ? (
+                                <ul className="space-y-2">
+                                  {member.rawSkills.map((rs: any, i: number) => (
+                                    <li key={i} className="flex justify-between items-center text-sm">
+                                      <span className="text-[#e5e0ed] truncate pr-2" title={rs.name}>{rs.name}</span>
+                                      <span className="text-secondary font-bold shrink-0">{rs.rating} <span className="text-[rgba(200,196,215,0.6)] text-[10px] opacity-50">×{rs.multiplier}</span></span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="text-xs text-[rgba(200,196,215,0.6)] italic">No skills assessed yet.</p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[rgba(200,196,215,0.6)]">-</span>
+                      )}
+                    </div>
+                  )}
                   <div className="col-span-7 sm:col-span-5 md:col-span-1 flex justify-end items-center gap-2 relative">
+                    <button
+                      onClick={() => setViewProfileId(member.user_id || member.id)}
+                      className="p-2 text-[#46eae5]/70 hover:text-[#46eae5] bg-[#46eae5]/10 hover:bg-[#46eae5]/20 rounded-lg transition-colors"
+                      title="View Profile"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
                     {userRole === 'teacher' && member.role === 'student' && (
                       <>
                         <button
-                          onClick={() => setViewProfileId(member.user_id || member.id)}
-                          className="p-2 text-[#46eae5]/70 hover:text-[#46eae5] bg-[#46eae5]/10 hover:bg-[#46eae5]/20 rounded-lg transition-colors"
-                          title="View Profile"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
                           onClick={() => handleRemove(member.user_id || member.id)}
                           disabled={isRemoving}
-                          className="p-2 text-error/70 hover:text-error bg-error/10 hover:bg-error/20 rounded-lg transition-colors disabled:opacity-50"
+                          className="p-2 text-[#ff6b6b]/70 hover:text-[#ff6b6b] bg-[#ff6b6b]/10 hover:bg-[#ff6b6b]/20 rounded-lg transition-colors disabled:opacity-50"
                           title="Remove Student"
                         >
                           <Trash2 className="w-4 h-4" />

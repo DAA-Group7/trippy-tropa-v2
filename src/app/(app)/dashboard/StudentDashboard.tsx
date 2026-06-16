@@ -316,52 +316,16 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
 
   return (
     <div className="min-h-full p-6 md:p-8">
-      <div className="flex gap-7 max-w-6xl mx-auto">
-
-        {/* ── Main Content ── */}
-        <div className="flex-1 min-w-0 space-y-8">
-          {/* Greeting */}
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
-              Welcome back, {firstName} 👋
-            </h2>
-            <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
-              Here&apos;s what&apos;s happening across your enrolled classrooms.
-            </p>
-          </div>
-
-          {/* Join Classroom */}
-          <JoinClassroomCard formAction={formAction} isPending={isPending} error={state?.error} />
-
-          {/* Classrooms Grid */}
-          <section>
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold" style={{ color: '#e5e0ed' }}>
-                Your Classrooms
-              </h3>
-            </div>
-
-            {classrooms.length === 0 ? (
-              <EmptyClassrooms />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {classrooms.map((c, i) => (
-                  <ClassroomCard key={c.id} classroom={c} index={i} />
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* ── Right Sidebar ── */}
-        <aside className="w-72 flex-shrink-0 hidden xl:flex flex-col gap-5">
+      <div className="flex flex-col xl:flex-row gap-8 max-w-7xl mx-auto items-start">
+        
+        {/* ── Left Sidebar (Activity Feed) ── */}
+        <aside className="w-72 flex-shrink-0 hidden xl:flex flex-col gap-5 sticky top-8" style={{ height: 'calc(100vh - 6rem)' }}>
           <div
             className="flex-1 flex flex-col rounded-2xl p-5 overflow-hidden"
             style={{
               background: 'rgba(18,18,42,0.7)',
               backdropFilter: 'blur(20px)',
               border: '1px solid rgba(255,255,255,0.08)',
-              maxHeight: 'calc(100vh - 160px)',
             }}
           >
             {/* Header */}
@@ -451,6 +415,42 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
             </Link>
           </div>
         </aside>
+
+        {/* ── Main Content ── */}
+        <div className="flex-1 min-w-0 space-y-8">
+          {/* Greeting */}
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
+              Welcome back, {firstName} 👋
+            </h2>
+            <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
+              Here&apos;s what&apos;s happening across your enrolled classrooms.
+            </p>
+          </div>
+
+          {/* Join Classroom */}
+          <JoinClassroomCard formAction={formAction} isPending={isPending} error={state?.error} />
+
+          {/* Classrooms Grid */}
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-semibold" style={{ color: '#e5e0ed' }}>
+                Your Classrooms
+              </h3>
+            </div>
+
+            {classrooms.length === 0 ? (
+              <EmptyClassrooms />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {classrooms.map((c, i) => (
+                  <ClassroomCard key={c.id} classroom={c} index={i} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
       </div>
     </div>
   )
