@@ -187,7 +187,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                   </div>
                   <div className="col-span-5 sm:col-span-3 flex justify-end items-center gap-2 relative">
                     <button
-                      onClick={() => setViewProfileId(member.user_id || member.id)}
+                      onClick={() => setViewProfileId(member.userId || member.id)}
                       className="p-2 text-secondary hover:text-secondary-foreground bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 rounded-lg transition-colors"
                       title="View Profile"
                     >
@@ -196,7 +196,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                     {userRole === 'teacher' && member.role === 'student' && (
                       <>
                         <button
-                          onClick={() => handleRemove(member.user_id || member.id)}
+                          onClick={() => handleRemove(member.userId || member.id)}
                           disabled={isRemoving}
                           className="p-2 text-destructive hover:text-destructive-foreground bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 rounded-lg transition-colors disabled:opacity-50"
                           title="Remove Student"
@@ -204,7 +204,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                           <Trash2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handlePromote(member.user_id || member.id)}
+                          onClick={() => handlePromote(member.userId || member.id)}
                           disabled={isPromoting}
                           className="p-2 text-primary hover:text-primary-foreground bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg transition-colors disabled:opacity-50"
                           title="Promote to Officer"
@@ -317,7 +317,7 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                 <X className="w-5 h-5" />
               </button>
               {(() => {
-                const profileMember = members.find((m: any) => (m.user_id || m.id) === viewProfileId)
+                const profileMember = members.find((m: any) => (m.userId || m.id) === viewProfileId)
                 if (!profileMember) return null
                 return (
                   <div className="flex flex-col items-center text-center">
