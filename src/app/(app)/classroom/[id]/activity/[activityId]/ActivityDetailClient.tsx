@@ -175,7 +175,7 @@ export default function ActivityDetailClient({
                   {submissions.map((sub: any) => (
                     <div key={sub.id} className="p-4 bg-card border border-border rounded-xl flex items-center justify-between">
                       <div>
-                        <p className="font-bold text-foreground">{sub.profiles?.full_name || 'Unknown'}</p>
+                        <p className="font-bold text-foreground">{sub.profiles?.full_name || (sub.profiles?.email ? sub.profiles.email.split('@')[0] : 'Unknown')}</p>
                         <p className="text-xs text-foreground/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
                         {sub.is_late && <span className="text-xs text-error font-bold mt-1 block">LATE</span>}
                       </div>

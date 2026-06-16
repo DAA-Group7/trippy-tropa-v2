@@ -47,15 +47,15 @@ function StudentCard({ member, isOverlay = false }: { member: any; isOverlay?: b
       style={style}
       className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
         isOverlay
-          ? 'bg-[rgba(18,18,42,0.95)] border-secondary/50 shadow-[0_0_20px_rgba(70,234,229,0.3)] scale-105'
-          : 'bg-white/5 border-white/10 hover:border-primary/30'
+          ? 'bg-card border-secondary shadow-xl shadow-secondary/20 scale-105'
+          : 'bg-input border-border hover:border-primary/50'
       }`}
     >
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-foreground/30 hover:text-foreground/60 transition-colors">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-foreground/40 hover:text-foreground transition-colors">
         <GripVertical className="w-4 h-4" />
       </div>
 
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-foreground text-xs font-bold flex-shrink-0">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
         {member.name?.charAt(0) || '?'}
       </div>
 
@@ -97,7 +97,7 @@ function GroupColumn({
   return (
     <div ref={setNodeRef} className="flex-shrink-0 w-72 flex flex-col gap-3">
       {/* Group Header */}
-      <div className="bg-[rgba(18,18,42,0.9)] border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+      <div className="bg-card border border-border rounded-xl p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           {isEditing ? (
             <input
@@ -106,7 +106,7 @@ function GroupColumn({
               onChange={e => setTempName(e.target.value)}
               onBlur={() => { onRename(group.tempId, tempName); setIsEditing(false) }}
               onKeyDown={e => { if (e.key === 'Enter') { onRename(group.tempId, tempName); setIsEditing(false) } }}
-              className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm font-bold text-foreground outline-none focus:border-secondary w-full"
+              className="bg-input border border-border rounded px-2 py-1 text-sm font-bold text-foreground outline-none focus:border-secondary w-full"
             />
           ) : (
             <button
@@ -121,9 +121,9 @@ function GroupColumn({
           </span>
         </div>
         {/* Mini bar */}
-        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-border/50 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary-container to-secondary rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
             style={{ width: `${heightPct}%` }}
           />
         </div>
@@ -141,7 +141,7 @@ function GroupColumn({
           ))}
         </SortableContext>
         {group.members.length === 0 && (
-          <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center text-foreground/30 text-xs">
+          <div className="border-2 border-dashed border-border text-foreground/40 rounded-lg p-6 text-center text-foreground/30 text-xs">
             Drop students here
           </div>
         )}
@@ -158,9 +158,9 @@ function BalanceChart({ groups }: { groups: any[] }) {
   const balance = maxScore > 0 ? (1 - (maxScore - minScore) / maxScore) * 100 : 100
 
   return (
-    <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl p-6">
+    <div className="bg-card border border-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Group Skill Distribution</h3>
+        <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wider">Group Skill Distribution</h3>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
           <span className="text-xs text-secondary font-bold">Balance: {balance.toFixed(1)}%</span>
@@ -171,12 +171,12 @@ function BalanceChart({ groups }: { groups: any[] }) {
           const pct = maxScore > 0 ? (group.totalScore / maxScore) * 100 : 10
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-[9px] text-white/40">{group.totalScore.toFixed(0)}</span>
+              <span className="text-[9px] text-foreground/40">{group.totalScore.toFixed(0)}</span>
               <div
-                className="w-full rounded-t bg-gradient-to-t from-primary-container/60 to-secondary/60 border-t border-secondary/40 transition-all duration-500"
+                className="w-full rounded-t bg-gradient-to-t from-primary/60 to-secondary/60 border-t border-secondary transition-all duration-500"
                 style={{ height: `${Math.max(4, pct)}%`, minHeight: '4px' }}
               />
-              <span className="text-[8px] text-white/40 truncate w-full text-center">{group.name}</span>
+              <span className="text-[8px] text-foreground/40 truncate w-full text-center">{group.name}</span>
             </div>
           )
         })}
@@ -319,12 +319,12 @@ export default function GroupDraftBoard({ activityId, classroomId, initialGroups
       )}
 
       {/* Sticky confirm bar */}
-      <div className="sticky bottom-0 -mx-4 md:-mx-8 px-4 md:px-8 py-4 bg-[rgba(10,10,26,0.9)] backdrop-blur-xl border-t border-white/10 flex justify-between items-center gap-4">
-        <p className="text-sm text-white/50">{groups.reduce((s, g) => s + g.members.length, 0)} students across {groups.length} groups</p>
+      <div className="sticky bottom-0 -mx-4 md:-mx-8 px-4 md:px-8 py-4 bg-background/90 backdrop-blur-xl border-t border-border shadow-[0_-10px_40px_rgba(0,0,0,0.05)] flex justify-between items-center gap-4">
+        <p className="text-sm text-foreground/50">{groups.reduce((s, g) => s + g.members.length, 0)} students across {groups.length} groups</p>
         <div className="flex gap-3">
           <button
             onClick={() => router.refresh()}
-            className="px-6 py-2.5 rounded-lg border border-white/10 text-white/60 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 text-sm font-semibold"
+            className="px-6 py-2.5 rounded-lg border border-white/10 text-foreground/60 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 text-sm font-semibold"
           >
             <RefreshCw className="w-4 h-4" />
             Regenerate
@@ -332,7 +332,7 @@ export default function GroupDraftBoard({ activityId, classroomId, initialGroups
           <button
             onClick={handleConfirm}
             disabled={isConfirming}
-            className="px-8 py-2.5 rounded-lg bg-gradient-to-r from-primary-container to-secondary text-white font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg disabled:opacity-60 disabled:scale-100 text-sm"
+            className="px-8 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg disabled:opacity-60 disabled:scale-100 text-sm"
           >
             {isConfirming ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
             Confirm Groups
