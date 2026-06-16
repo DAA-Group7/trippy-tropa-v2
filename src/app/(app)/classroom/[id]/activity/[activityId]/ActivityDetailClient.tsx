@@ -52,7 +52,7 @@ function StatusBadge({ dueDate, isSubmitted }: { dueDate: string | null; isSubmi
 
 function PlaceholderCard({ message }: { message: string }) {
   return (
-    <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-dashed border-white/10 rounded-xl p-16 text-center">
+    <div className="bg-card backdrop-blur-xl border border-dashed border-border rounded-xl p-16 text-center">
       <BookOpen className="w-12 h-12 text-foreground/20 mx-auto mb-4" />
       <p className="text-foreground/40 text-sm">{message}</p>
     </div>
@@ -114,7 +114,7 @@ export default function ActivityDetailClient({
         <div className="space-y-4">
           <Link
             href={`/classroom/${classroomId}`}
-            className="inline-flex items-center gap-1.5 text-[#c6bfff] text-sm hover:underline"
+            className="inline-flex items-center gap-1.5 text-primary text-sm hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Classroom
@@ -123,7 +123,7 @@ export default function ActivityDetailClient({
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-3xl md:text-4xl font-bold text-[#e5e0ed]">{activity.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">{activity.title}</h1>
               <span className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 ${
                 isGroup
                   ? 'bg-secondary/10 text-secondary border-secondary/30'
@@ -149,12 +149,12 @@ export default function ActivityDetailClient({
 
           {isGroup && (
             <div className="flex items-center gap-4">
-              <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl px-5 py-3 text-center">
+              <div className="bg-card border border-border rounded-xl px-5 py-3 text-center">
                 <p className="text-2xl font-bold text-foreground">{studentCount}</p>
                 <p className="text-xs text-foreground/40 uppercase tracking-wide">Students</p>
               </div>
               {activity.num_groups && (
-                <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl px-5 py-3 text-center">
+                <div className="bg-card border border-border rounded-xl px-5 py-3 text-center">
                   <p className="text-2xl font-bold text-secondary">{activity.num_groups}</p>
                   <p className="text-xs text-foreground/40 uppercase tracking-wide">Groups</p>
                 </div>
@@ -173,7 +173,7 @@ export default function ActivityDetailClient({
               {submissions && submissions.length > 0 ? (
                 <div className="space-y-4">
                   {submissions.map((sub: any) => (
-                    <div key={sub.id} className="p-4 bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl flex items-center justify-between">
+                    <div key={sub.id} className="p-4 bg-card border border-border rounded-xl flex items-center justify-between">
                       <div>
                         <p className="font-bold text-foreground">{sub.profiles?.full_name || 'Unknown'}</p>
                         <p className="text-xs text-foreground/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
@@ -213,16 +213,16 @@ export default function ActivityDetailClient({
           {canManage ? (
             <div className="space-y-6">
               {/* Info card */}
-              <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center flex-shrink-0">
+              <div className="bg-card border border-border rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
                   <Users className="w-8 h-8 text-foreground" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-foreground mb-1">Ready to form groups</h2>
                   <p className="text-foreground/60">
-                    <span className="text-foreground font-semibold">{studentCount}</span> students enrolled,
+                    <span className="text-foreground font-bold">{studentCount}</span> students enrolled,
                     creating <span className="text-secondary font-semibold">{activity.num_groups}</span> groups
-                    (~<span className="text-foreground font-semibold">{Math.ceil(studentCount / (activity.num_groups || 1))}</span> per group)
+                    (~<span className="text-foreground font-bold">{Math.ceil(studentCount / (activity.num_groups || 1))}</span> per group)
                   </p>
                   <p className="text-foreground/40 text-sm mt-1">
                     Uses Greedy LPT algorithm to balance skill scores across all groups.
@@ -236,7 +236,7 @@ export default function ActivityDetailClient({
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="bg-gradient-to-r from-primary-container to-secondary text-foreground font-bold py-5 px-12 rounded-2xl text-xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(70,234,229,0.25)] disabled:animate-none disabled:opacity-60 disabled:scale-100"
+                    className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-5 px-12 rounded-2xl text-xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-secondary/20 disabled:animate-none disabled:opacity-60 disabled:scale-100"
                     style={{ animation: isGenerating ? 'none' : undefined }}
                   >
                     {isGenerating ? (
@@ -301,7 +301,7 @@ export default function ActivityDetailClient({
                   const leader = group.members?.find((m: any) => m.is_leader)
                   const others = group.members?.filter((m: any) => !m.is_leader) || []
                   return (
-                    <Link href={`/classroom/${classroomId}/activity/${activity.id}/group/${group.id}`} key={group.id} className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden hover:-translate-y-1 transition-all group cursor-pointer block">
+                    <Link href={`/classroom/${classroomId}/activity/${activity.id}/group/${group.id}`} key={group.id} className="bg-card backdrop-blur-xl border border-border rounded-xl overflow-hidden hover:-translate-y-1 transition-all group cursor-pointer block">
                       <div className="h-1 bg-gradient-to-r from-primary-container to-secondary" />
                       <div className="p-6 space-y-4">
                         <div className="flex justify-between items-start">
@@ -313,7 +313,7 @@ export default function ActivityDetailClient({
                         {leader && (
                           <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5">
                             <Crown className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-xs font-bold text-foreground flex-shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-xs font-bold text-foreground flex-shrink-0">
                               {leader.profile?.full_name?.charAt(0)}
                             </div>
                             <div>
@@ -347,9 +347,9 @@ export default function ActivityDetailClient({
               {myGroup ? (
                 <>
                   <h2 className="text-xl font-bold text-foreground">Your Group</h2>
-                  <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-secondary/30 rounded-xl p-6 space-y-4 shadow-[0_0_30px_rgba(70,234,229,0.1)]">
+                  <div className="bg-card backdrop-blur-xl border border-secondary/30 rounded-xl p-6 space-y-4 shadow-[0_0_30px_rgba(70,234,229,0.1)]">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                         <Users className="w-6 h-6 text-foreground" />
                       </div>
                       <div>
@@ -360,7 +360,7 @@ export default function ActivityDetailClient({
                     <div className="divide-y divide-white/5">
                       {myGroup.members?.map((m: any) => (
                         <div key={m.id} className="flex items-center gap-3 py-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-foreground font-bold text-sm flex-shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-foreground font-bold text-sm flex-shrink-0">
                             {m.profile?.full_name?.charAt(0)}
                           </div>
                           <div className="flex-1">

@@ -19,7 +19,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const studentsPerGroup = numGroups > 0 ? Math.ceil(studentCount / numGroups) : 0
+  const studentsPerGroup = (typeof numGroups === 'number' && numGroups > 0) ? Math.ceil(studentCount / numGroups) : 0
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -30,7 +30,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
     const title = (formData.get('title') as string).trim()
     const description = (formData.get('description') as string | null)?.trim() ?? ''
     const due_date = (formData.get('due_date') as string | null) ?? ''
-    const num_groups = activityType === 'group' ? numGroups : undefined
+    const num_groups = activityType === 'group' ? (typeof numGroups === 'number' ? numGroups : 2) : undefined
 
     if (!title) {
       setError('Activity title is required.')
