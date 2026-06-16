@@ -58,16 +58,18 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
         >
           {/* Brand & Navigation */}
           <div className="flex items-center gap-8">
-            <h1
-              className="text-xl font-black tracking-tight"
-              style={{
-                background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Trippy Tropa
-            </h1>
+            <Link href="/">
+              <h1
+                className="text-xl font-black tracking-tight cursor-pointer hover:opacity-80 transition-opacity"
+                style={{
+                  background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Trippy Tropa
+              </h1>
+            </Link>
             
             <nav className="hidden md:flex items-center gap-2">
               <Link 

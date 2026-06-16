@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cousine.variable} antialiased`}
+      className={`${cousine.variable} antialiased scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground overflow-x-hidden transition-colors duration-300">

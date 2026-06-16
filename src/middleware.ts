@@ -32,13 +32,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect root to dashboard or login
-  if (request.nextUrl.pathname === '/') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
-  }
-
   return response
 }
 

@@ -61,13 +61,12 @@ export default function LandingPage() {
 <div className="max-w-[1200px] mx-auto px-6 md:px-[48px] flex justify-between items-center h-full">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-[#004ac6] text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
-<span className="font-['Inter'] font-semibold text-[24px] leading-[32px] font-bold text-[#004ac6]">Smart Grouping</span>
+<span className="font-['Inter'] font-semibold text-[24px] leading-[32px] font-bold text-[#004ac6]">Trippy Tropa</span>
 </div>
 <div className="hidden md:flex gap-8 items-center">
 <a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em]" href="#features">Features</a>
 <a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em]" href="#how-it-works">How it Works</a>
 <a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em]" href="#roles">Roles</a>
-<a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em]" href="#pricing">Pricing</a>
 </div>
 <Link href="/login" className="bg-[#004ac6] text-[#ffffff] px-6 py-2.5 rounded-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] hover:opacity-80 transition-all active:scale-95">
                 Get Started
@@ -79,18 +78,18 @@ export default function LandingPage() {
 <div className="max-w-[1200px] mx-auto px-6 md:px-[48px] grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-[24px] items-center">
 <div className="space-y-[32px]">
 <h1 className="font-['Inter'] font-bold text-4xl md:text-[60px] md:leading-[72px] tracking-[-0.02em] text-[#131b2e] leading-tight">
-                    Build Better Student Teams with <span className="text-[#004ac6]">Smart Grouping</span> and Task Assignment
+                    Build Better Student Teams with <span className="text-[#004ac6]">Trippy Tropa</span> and Task Assignment
                 </h1>
 <p className="font-['Inter'] font-normal text-[18px] leading-[28px] text-[#131b2e]-variant max-w-xl">
                     Say goodbye to unfair workloads and random teams. Our platform uses advanced algorithms to create balanced groups and intelligently distribute tasks based on student skills.
                 </p>
 <div className="flex flex-wrap gap-4">
-<Link href="/login" className="bg-[#004ac6] text-[#ffffff] px-8 py-4 rounded-xl font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+<Link href="/login" className="bg-[#004ac6] text-[#ffffff] px-8 py-4 rounded-xl font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all text-center">
                         Get Started
                     </Link>
-<button className="border border-[#737686] text-[#131b2e] px-8 py-4 rounded-xl font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] hover:bg-[#f2f3ff] transition-all">
+<a href="#how-it-works" className="border border-[#737686] text-[#131b2e] px-8 py-4 rounded-xl font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] hover:bg-[#f2f3ff] transition-all text-center">
                         Learn How It Works
-                    </button>
+                    </a>
 </div>
 </div>
 <div className="relative">
@@ -156,7 +155,7 @@ export default function LandingPage() {
 </div>
 <div className="text-center space-y-4">
 <div className="w-16 h-16 bg-[#004ac6] text-[#ffffff] rounded-full flex items-center justify-center mx-auto shadow-lg">4</div>
-<h4 className="font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] font-bold">Smart Grouping</h4>
+<h4 className="font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[0.01em] font-bold">Intelligent Grouping</h4>
 </div>
 <div className="text-center space-y-4">
 <div className="w-16 h-16 bg-[#004ac6] text-[#ffffff] rounded-full flex items-center justify-center mx-auto shadow-lg">5</div>
@@ -175,18 +174,18 @@ export default function LandingPage() {
 <div className="max-w-[1200px] mx-auto px-6 md:px-[48px]">
 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 <div>
-<h2 className="font-['Inter'] font-semibold text-3xl md:text-[36px] md:leading-[44px] tracking-[-0.01em] mb-6">Balanced Teams with <span className="text-[#004ac6]">Greedy Algorithm</span></h2>
+<h2 className="font-['Inter'] font-semibold text-3xl md:text-[36px] md:leading-[44px] tracking-[-0.01em] mb-6">Interactive <span className="text-[#004ac6]">Group Draft Board</span></h2>
 <p className="font-['Inter'] font-normal text-[18px] leading-[28px] text-[#131b2e]-variant mb-8">
-                        Our system ranks students by their aggregate skill scores and distributes them across groups to ensure each team has a similar "strength level." This prevents "power groups" and ensures every group has a fair chance at success.
+                        Our system provides a visually intuitive drafting interface where teachers can seamlessly manage, shuffle, and finalize group compositions based on students' self-assessed skill scores before officially publishing them to the class.
                     </p>
 <ul className="space-y-4">
 <li className="flex items-center gap-3">
 <span className="material-symbols-outlined text-[#004ac6]">check_circle</span>
-<span>Fair distribution of high-performers</span>
+<span>Visual Drag-and-Drop Management</span>
 </li>
 <li className="flex items-center gap-3">
 <span className="material-symbols-outlined text-[#004ac6]">check_circle</span>
-<span>Consistent group skill averages</span>
+<span>Real-time Group Health Metrics</span>
 </li>
 </ul>
 </div>
@@ -269,27 +268,27 @@ export default function LandingPage() {
 </table>
 </div>
 <div className="mt-8 p-4 bg-[#004ac6] text-[#ffffff] rounded-xl text-center font-bold">
-                        Hungarian Algorithm: Optimal Time 4h Total
+                        Fair Workload Distribution: Optimal Time 4h Total
                     </div>
 </div>
 <div className="order-1 lg:order-2">
-<h2 className="font-['Inter'] font-semibold text-3xl md:text-[36px] md:leading-[44px] tracking-[-0.01em] mb-6">Optimized Task Assignment with <span className="text-[#004ac6]">Hungarian Algorithm</span></h2>
+<h2 className="font-['Inter'] font-semibold text-3xl md:text-[36px] md:leading-[44px] tracking-[-0.01em] mb-6">Collaborative <span className="text-[#004ac6]">Estimation Matrix</span></h2>
 <p className="font-['Inter'] font-normal text-[18px] leading-[28px] text-[#131b2e]-variant mb-8">
-                        Efficiency is about matching the right person with the right task. Our Hungarian Algorithm integration analyzes student proficiency and time estimates to assign tasks that minimize project duration and maximize output.
+                        Efficiency is about matching the right person with the right task. Our Collaborative Estimation Matrix empowers each student to input their estimated hours for tasks, allowing Student Officers to assign work fairly based on true capacity.
                     </p>
 <div className="grid grid-cols-2 gap-4">
 <div className="flex items-start gap-3">
 <span className="material-symbols-outlined text-[#004ac6]">speed</span>
 <div>
-<p className="font-bold">Fastest Completion</p>
-<p className="text-sm text-[#131b2e]-variant">Minimizes the bottleneck tasks.</p>
+<p className="font-bold">Transparent Workloads</p>
+<p className="text-sm text-[#131b2e]-variant">Visualizes everyone's capacity.</p>
 </div>
 </div>
 <div className="flex items-start gap-3">
 <span className="material-symbols-outlined text-[#004ac6]">psychology</span>
 <div>
-<p className="font-bold">Skill Matching</p>
-<p className="text-sm text-[#131b2e]-variant">Prioritizes student expertise.</p>
+<p className="font-bold">Peer-Led Assignments</p>
+<p className="text-sm text-[#131b2e]-variant">Officers assign based on data.</p>
 </div>
 </div>
 </div>
@@ -326,20 +325,20 @@ export default function LandingPage() {
 <div className="p-8 rounded-3xl bg-[#004ac6] text-[#ffffff]">
 <span className="material-symbols-outlined mb-4">view_kanban</span>
 <h3 className="font-['Inter'] font-semibold text-[24px] leading-[32px] mb-2">Kanban Board</h3>
-<p className="text-[#004ac6]-fixed-dim text-sm">Real-time task tracking with auto-assignment triggers.</p>
+<p className="text-[#b4c5ff] text-sm">Real-time drag-and-drop workflow with GitHub link submissions.</p>
 </div>
 <div className="p-8 rounded-3xl border border-[#737686]-variant/30">
 <span className="material-symbols-outlined text-[#004ac6] mb-4">monitoring</span>
 <h3 className="font-['Inter'] font-semibold text-[24px] leading-[32px] mb-2">Teacher Dashboard</h3>
-<p className="text-[#131b2e]-variant text-sm">Get insights into individual contributions and group health metrics.</p>
+<p className="text-[#434655] text-sm">Monitor At Risk Students and track Class Average Scores in real-time.</p>
 </div>
-<div className="md:col-span-2 p-8 rounded-3xl bg-[#faf8ff]-container-highest border border-[#737686]-variant/30 flex items-center gap-8">
+<div className="md:col-span-2 p-8 rounded-3xl bg-[#dae2fd] border border-[#c3c6d7]/30 flex items-center gap-8">
 <div className="flex-1">
-<h3 className="font-['Inter'] font-semibold text-[24px] leading-[32px] mb-2">AI-Powered Optimization</h3>
-<p className="text-[#131b2e]-variant">Continuously refines group balance as student performance evolves throughout the semester.</p>
+<h3 className="font-['Inter'] font-semibold text-[24px] leading-[32px] mb-2">Student Officer Roles</h3>
+<p className="text-[#434655]">Empower top-performing students by promoting them to Student Officers to help manage groups, verify tasks, and lead their peers.</p>
 </div>
-<div className="hidden sm:block w-32 h-32 bg-[#004ac6]/20 rounded-full flex items-center justify-center">
-<span className="material-symbols-outlined text-[#004ac6] text-5xl">auto_fix_high</span>
+<div className="hidden sm:flex w-32 h-32 bg-[#004ac6]/20 rounded-full items-center justify-center">
+<span className="material-symbols-outlined text-[#004ac6] text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
 </div>
 </div>
 <div className="p-8 rounded-3xl border border-[#737686]-variant/30">
@@ -403,7 +402,7 @@ export default function LandingPage() {
                             "Before this system, group assignments were a grading nightmare. Now, I have clear visibility into who is doing what, and the teams are much more harmonious."
                         </p>
 <div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-full bg-[#004ac6]/20"></div>
+<div className="w-12 h-12 rounded-full bg-[#004ac6]/20 flex items-center justify-center"><span className="material-symbols-outlined text-[#004ac6]">school</span></div>
 <div>
 <p className="font-bold">Dr. Sarah Mitchell</p>
 <p className="text-sm text-[#131b2e]-variant">Professor of Computer Science</p>
@@ -418,7 +417,7 @@ export default function LandingPage() {
                             "I love how the system identified my strengths in UI design and assigned me relevant tasks. It made the project feel like a real professional experience."
                         </p>
 <div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-full bg-secondary/20"></div>
+<div className="w-12 h-12 rounded-full bg-[#006686]/10 flex items-center justify-center"><span className="material-symbols-outlined text-[#006686]">face</span></div>
 <div>
 <p className="font-bold">Liam Peterson</p>
 <p className="text-sm text-[#131b2e]-variant">3rd Year Student</p>
@@ -439,12 +438,9 @@ export default function LandingPage() {
                     Join hundreds of classrooms already using smart algorithms to power their collaborative learning environments.
                 </p>
 <div className="flex flex-wrap justify-center gap-6 relative z-10">
-<Link href="/login" className="bg-white text-[#004ac6] px-10 py-5 rounded-2xl font-bold hover:scale-105 transition-transform">
+<Link href="/login" className="bg-white text-[#004ac6] px-10 py-5 rounded-2xl font-bold hover:scale-105 transition-transform text-center">
                         Create a Classroom
                     </Link>
-<button className="border border-white/30 text-white px-10 py-5 rounded-2xl font-bold hover:bg-white/10 transition-colors">
-                        Request a Demo
-                    </button>
 </div>
 </div>
 </div>
@@ -456,7 +452,7 @@ export default function LandingPage() {
 <div className="col-span-2 space-y-6">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-[#004ac6] text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
-<span className="font-['Inter'] font-semibold text-[24px] leading-[32px] font-bold text-[#004ac6]">Smart Grouping</span>
+<span className="font-['Inter'] font-semibold text-[24px] leading-[32px] font-bold text-[#004ac6]">Trippy Tropa</span>
 </div>
 <p className="text-[#131b2e]-variant max-w-xs">Empowering education through intelligent collaborative tools and algorithmic efficiency.</p>
 </div>
@@ -464,7 +460,6 @@ export default function LandingPage() {
 <h4 className="font-bold">Product</h4>
 <ul className="space-y-2">
 <li><a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors text-label-md" href="#">Features</a></li>
-<li><a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors text-label-md" href="#">Pricing</a></li>
 <li><a className="text-[#131b2e]-variant hover:text-[#004ac6] transition-colors text-label-md" href="#">How it Works</a></li>
 </ul>
 </div>
@@ -497,7 +492,7 @@ export default function LandingPage() {
 </div>
 </div>
 <div className="border-t border-[#c3c6d7]/20 pt-8 text-center text-[#131b2e]-variant text-label-md">
-                © 2024 Smart Collaborative Group Management System. All rights reserved.
+                © 2024 Trippy Tropa. All rights reserved.
             </div>
 </div>
 </footer>
