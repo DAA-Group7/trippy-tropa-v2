@@ -37,7 +37,7 @@ function SortableSkillItem({ skill, onUpdate, onDelete }: any) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-4 p-4 bg-surface-container-low border border-outline-variant rounded-xl hover:border-secondary/40 transition-colors group">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-4 p-4 bg-surface-container-low border border-border rounded-xl hover:border-secondary/40 transition-colors group">
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 text-outline opacity-40 group-hover:opacity-100 flex items-center justify-center">
         <GripVertical className="w-5 h-5" />
       </div>
@@ -48,20 +48,20 @@ function SortableSkillItem({ skill, onUpdate, onDelete }: any) {
           value={skill.name}
           onChange={(e) => onUpdate(skill.id || skill._tempId, 'name', e.target.value)}
           placeholder="Skill Name"
-          className="flex-1 bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 text-base focus:ring-1 focus:ring-secondary outline-none w-full"
+          className="flex-1 bg-surface-container-lowest border border-border rounded-lg px-4 py-2 text-base focus:ring-1 focus:ring-secondary outline-none w-full"
         />
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-on-surface-variant whitespace-nowrap">Multiplier</span>
+          <span className="text-xs font-semibold text-foreground/70 whitespace-nowrap">Multiplier</span>
           <input 
             type="number" 
             step="0.1" 
             value={skill.multiplier}
             onChange={(e) => onUpdate(skill.id || skill._tempId, 'multiplier', parseFloat(e.target.value))}
-            className="w-20 bg-surface-container-lowest border border-outline-variant rounded-lg px-2 py-2 text-center text-base focus:ring-1 focus:ring-secondary outline-none"
+            className="w-20 bg-surface-container-lowest border border-border rounded-lg px-2 py-2 text-center text-base focus:ring-1 focus:ring-secondary outline-none"
           />
         </div>
       </div>
-      <button onClick={() => onDelete(skill.id || skill._tempId)} className="p-2 text-on-surface-variant hover:text-error transition-colors flex items-center justify-center">
+      <button onClick={() => onDelete(skill.id || skill._tempId)} className="p-2 text-foreground/70 hover:text-destructive transition-colors flex items-center justify-center">
         <Trash2 className="w-5 h-5" />
       </button>
     </div>
@@ -80,6 +80,8 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
   const [transferSuccess, setTransferSuccess] = useState(false)
   const [transferError, setTransferError] = useState<string | null>(null)
   const [showTransferConfirm, setShowTransferConfirm] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const handleTransferOwnership = async () => {
     if (!selectedTeacherId) return
@@ -157,41 +159,82 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-24">
-      {/* Hero Header Section */}
-      <section className="flex flex-col gap-1 mb-8">
-        <h1 className="text-3xl font-bold text-[#e5e0ed]">Configuration</h1>
-        <p className="text-sm text-[rgba(200,196,215,0.8)]">Define the architectural parameters and skill weights for your virtual environment.</p>
+    <div className="max-w-5xl mx-auto space-y-8 pt-12 pb-24">
+            {/* Hero Header Section */}
+      <section className="flex items-start justify-between mb-8">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+          <p className="text-sm text-foreground/70">Define the architectural parameters and skill weights for your virtual environment.</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button 
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="px-4 py-2 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-lg text-xs font-bold transition-colors"
+            >
+              Delete Classroom
+            </button>
+            {!isEditing ? (
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="px-6 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-bold transition-colors"
+              >
+                Edit Settings
+              </button>
+            ) : (
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 border border-border text-foreground/70 hover:bg-muted rounded-lg text-xs font-bold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    await handleSave();
+                    setIsEditing(false);
+                  }}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-lg text-xs font-bold transition-colors shadow-md disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving...' : 'Save Configuration'}
+                </button>
+              </div>
+            )}
+        </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-8 space-y-8">
+
+      
+        
+        <div className="space-y-8">
           
-          {/* General Settings */}
-          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
+                    {/* General Settings */}
+          <section className="bg-transparent border border-border p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-6">
               <Settings className="w-5 h-5 text-foreground/80" />
-              <h2 className="text-xl font-bold text-[#e5e0ed]">General Settings</h2>
+              <h2 className="text-xl font-bold text-foreground">General Settings</h2>
             </div>
             
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Classroom Name</label>
+                <label className="text-[10px] font-bold text-foreground/70 uppercase tracking-widest">Classroom Name</label>
                 <div className="border border-border rounded-lg bg-input p-1 transition-colors focus-within:border-border/80">
                   <input 
                     type="text" 
                     value={name}
+                    disabled={!isEditing}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 outline-none text-foreground" 
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Description</label>
+                <label className="text-[10px] font-bold text-foreground/70 uppercase tracking-widest">Description</label>
                 <div className="border border-border rounded-lg bg-input p-1 transition-colors focus-within:border-border/80">
                   <textarea 
                     value={description}
+                    disabled={!isEditing}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 resize-none outline-none text-foreground" 
                     rows={4}
@@ -202,14 +245,14 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           </section>
 
           {/* Skill Assessment Configuration */}
-          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
+          <section className="bg-transparent border border-border p-6 rounded-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Star className="w-5 h-5 text-foreground/40" />
-                <h2 className="text-xl font-bold text-[#e5e0ed]">Skill Assessment</h2>
+                <Star className="w-5 h-5 text-foreground/80" />
+                <h2 className="text-xl font-bold text-foreground">Skill Assessment</h2>
               </div>
-              <button onClick={addSkill} className="flex items-center gap-1 text-foreground/20 hover:text-foreground/80 text-[10px] font-bold tracking-widest uppercase transition-colors">
-                <Plus className="w-3 h-3" />
+              <button onClick={addSkill} disabled={!isEditing} className="flex items-center gap-1 text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold tracking-widest uppercase transition-colors">
+                <Plus className="w-3.5 h-3.5" />
                 Add Skill
               </button>
             </div>
@@ -235,7 +278,7 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
                 </SortableContext>
               </DndContext>
               {skills.length === 0 && (
-                <div className="text-center py-8 text-on-surface-variant border border-dashed border-outline-variant rounded-xl">
+                <div className="text-center py-8 text-foreground/70 border border-dashed border-border rounded-xl">
                   No skills defined. Add some skills to assess students when they join.
                 </div>
               )}
@@ -244,59 +287,40 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
 
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="lg:col-span-4 space-y-8">
+        
+        
           
-          {/* Ownership Transfer (Mock) */}
-          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <KeyRound className="w-5 h-5 text-foreground/80" />
-              <h2 className="text-xl font-bold text-[#e5e0ed]">Ownership</h2>
-            </div>
-            <p className="text-sm text-[rgba(200,196,215,0.8)] mb-8">Transfer management rights of this classroom to another authorized educator.</p>
-            <div className="space-y-6">
-              <button disabled className="w-full bg-transparent border-none text-foreground/60 py-2 rounded-lg text-xs font-bold cursor-not-allowed">
-                Transfer Ownership (Coming Soon)
-              </button>
-            </div>
-          </section>
+          
+          
 
-          {/* Danger Zone */}
-          <section className="bg-transparent border border-white/5 p-6 rounded-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <AlertTriangle className="w-5 h-5 text-foreground/80" />
-              <h2 className="text-xl font-bold text-[#e5e0ed]">Danger Zone</h2>
-            </div>
-            <p className="text-sm text-[rgba(200,196,215,0.8)] mb-6">Once deleted, all classroom data, student progress logs, and collaborative assets will be permanently purged.</p>
-            <button className="w-full bg-transparent border border-white/10 text-foreground/60 py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all">
-              Delete Classroom
-            </button>
-          </section>
+          
+
+          
 
           {/* RECEIVED TRANSFER — only for teachers who have a pending transfer request */}
           {receivedTransfer && (
-            <section className="bg-surface/70 backdrop-blur-xl border border-secondary/50 p-6 rounded-xl shadow-md shadow-secondary/10">
+            <section className="bg-card/70 backdrop-blur-xl border border-secondary/50 p-6 rounded-xl shadow-md shadow-secondary/10">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-1.5 bg-secondary/20 rounded-lg text-secondary flex items-center justify-center">
                   <Crown className="w-5 h-5" />
                 </div>
                 <h2 className="text-xl font-semibold text-secondary">Classroom Ownership Transfer</h2>
               </div>
-              <p className="text-sm text-on-surface mb-6">
+              <p className="text-sm text-foreground mb-6">
                 <strong>{receivedTransfer.from_profile?.full_name || receivedTransfer.from_profile?.email}</strong> has requested to transfer ownership of this classroom to you.
               </p>
               <div className="flex gap-4">
                 <button
                   onClick={() => handleRespond('accepted')}
                   disabled={isResponding}
-                  className="flex-1 bg-secondary text-on-secondary py-3 rounded-lg text-xs font-bold hover:bg-secondary/90 transition-all shadow-lg disabled:opacity-50"
+                  className="flex-1 bg-secondary text-secondary-foreground py-3 rounded-lg text-xs font-bold hover:bg-secondary/90 transition-all shadow-lg disabled:opacity-50"
                 >
                   Accept Transfer
                 </button>
                 <button
                   onClick={() => handleRespond('rejected')}
                   disabled={isResponding}
-                  className="flex-1 border border-white/10 text-on-surface-variant py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all disabled:opacity-50"
+                  className="flex-1 border border-border/60 text-foreground/70 py-3 rounded-lg text-xs font-bold hover:bg-muted transition-all disabled:opacity-50"
                 >
                   Decline
                 </button>
@@ -310,8 +334,8 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
               <div className="flex items-center gap-3 mb-2">
                 <Crown className="text-yellow-400 w-5 h-5" />
                 <div>
-                  <h2 className="text-base font-bold text-on-surface">Transfer Ownership</h2>
-                  <p className="text-xs text-on-surface-variant">Transfer classroom ownership to a teacher.</p>
+                  <h2 className="text-base font-bold text-foreground">Transfer Ownership</h2>
+                  <p className="text-xs text-foreground/70">Transfer classroom ownership to a teacher.</p>
                 </div>
               </div>
 
@@ -319,8 +343,8 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
                 <div className="flex items-center gap-3 p-4 bg-secondary/10 border border-secondary/30 rounded-xl">
                   <CheckCircle className="w-5 h-5 text-secondary flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-on-surface">Transfer Pending</p>
-                    <p className="text-xs text-on-surface-variant">
+                    <p className="text-sm font-semibold text-foreground">Transfer Pending</p>
+                    <p className="text-xs text-foreground/70">
                       Waiting for <span className="text-secondary font-bold">{pendingTransfer.to_profile?.full_name || pendingTransfer.to_profile?.email}</span> to accept.
                     </p>
                   </div>
@@ -333,18 +357,18 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
               ) : (
                 <div className="space-y-4">
                   {transferError && (
-                    <p className="text-xs text-error">{transferError}</p>
+                    <p className="text-xs text-destructive">{transferError}</p>
                   )}
                   {teachers.length === 0 ? (
-                    <p className="text-xs text-on-surface-variant">No teachers in this classroom yet. Invite a teacher to transfer ownership.</p>
+                    <p className="text-xs text-foreground/70">No teachers in this classroom yet. Invite a teacher to transfer ownership.</p>
                   ) : (
                     <>
                       <div className="space-y-2">
-                        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider block">Select Teacher</label>
+                        <label className="text-xs font-semibold text-foreground/70 uppercase tracking-wider block">Select Teacher</label>
                         <select
                           value={selectedTeacherId}
                           onChange={e => setSelectedTeacherId(e.target.value)}
-                          className="w-full bg-[rgba(14,13,21,0.5)] border border-white/10 rounded-lg px-4 py-3 text-on-surface outline-none focus:ring-1 focus:ring-secondary text-sm"
+                          className="w-full bg-input border border-border/60 rounded-lg px-4 py-3 text-foreground outline-none focus:ring-1 focus:ring-secondary text-sm"
                         >
                           <option value="">— Select a teacher —</option>
                           {teachers.map((t: any) => (
@@ -364,7 +388,7 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
                         <div className="p-4 bg-yellow-400/5 border border-yellow-400/20 rounded-xl space-y-3">
                           <p className="text-sm text-yellow-300 font-semibold">Are you sure? You will lose ownership of this classroom.</p>
                           <div className="flex gap-3">
-                            <button onClick={() => setShowTransferConfirm(false)} className="px-5 py-2 border border-white/10 rounded-lg text-xs text-on-surface-variant hover:bg-white/5 transition-all">
+                            <button onClick={() => setShowTransferConfirm(false)} className="px-5 py-2 border border-border/60 rounded-lg text-xs text-foreground/70 hover:bg-muted transition-all">
                               Cancel
                             </button>
                             <button
@@ -385,22 +409,42 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
             </section>
           )}
 
-        </div>{/* end right column */}
-      </div>{/* end grid */}
+        
+      
 
-      {/* Global Actions Sticky Footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-md border-t border-outline-variant py-4 px-8 flex justify-end gap-4 z-40 pl-[292px]">
-        <button className="px-8 py-3 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-          Discard Changes
-        </button>
-        <button 
-          onClick={handleSave}
-          disabled={isSaving}
-          className="px-8 py-3 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-foreground text-xs font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-        >
-          {isSaving ? 'Saving...' : 'Save Configuration'}
-        </button>
-      </div>
+      
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="w-6 h-6 text-destructive" />
+              <h2 className="text-xl font-bold text-foreground">Danger Zone</h2>
+            </div>
+            <p className="text-sm text-foreground/70 mb-8">
+              Once deleted, all classroom data, student progress logs, and collaborative assets will be permanently purged.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="px-4 py-2 border border-border text-foreground/70 hover:bg-muted rounded-lg text-sm font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  alert('Classroom deleted!');
+                  setIsDeleteDialogOpen(false);
+                }}
+                className="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg text-sm font-bold transition-colors"
+              >
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
