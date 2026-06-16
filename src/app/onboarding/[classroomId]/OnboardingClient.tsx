@@ -5,7 +5,13 @@ import { School, CheckCircle, Terminal, Rocket, Palette, BrainCircuit, MessageSq
 import { submitSkillRatingsAction } from '@/app/actions/skills'
 
 export default function OnboardingClient({ classroomId, classroomName, skills }: any) {
-  const [ratings, setRatings] = useState<Record<string, number>>({})
+  const [ratings, setRatings] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {}
+    if (skills) {
+      skills.forEach((s: any) => initial[s.id] = 3)
+    }
+    return initial
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDone, setIsDone] = useState(false)
 
@@ -50,11 +56,11 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
     <main className="w-full max-w-4xl mx-auto z-10 p-6 md:p-12 min-h-screen flex flex-col justify-center animate-in fade-in duration-500">
       <header className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 mb-4">
-          <School className="text-primary w-8 h-8" />
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Trippy Tropa</h1>
+          <School className="text-[#c6bfff] w-8 h-8" />
+          <h1 className="text-2xl font-black bg-gradient-to-r from-[#c6bfff] to-[#46eae5] bg-clip-text text-transparent">Trippy Tropa</h1>
         </div>
-        <h2 className="text-3xl md:text-4xl font-semibold text-on-surface mb-2">Welcome to {classroomName}</h2>
-        <p className="text-base text-on-surface-variant max-w-xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-black text-[#e5e0ed] mb-2 tracking-tight">Welcome to {classroomName}</h2>
+        <p className="text-base text-[rgba(200,196,215,0.8)] font-medium max-w-xl mx-auto">
           Let's assess your skills to help us match you with the perfect project group and tailor your learning experience.
         </p>
       </header>
@@ -63,19 +69,19 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
         
         {/* Progress Indicator */}
         <div className="flex items-center justify-between mb-12 px-2">
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center text-primary font-bold text-xs">1</div>
-            <span className="text-xs text-primary font-semibold tracking-wider">Identity</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 rounded-full border-2 border-[#c6bfff] flex items-center justify-center text-[#c6bfff] font-black text-lg">1</div>
+            <span className="text-sm text-[#c6bfff] font-bold tracking-wider uppercase">Identity</span>
           </div>
-          <div className="h-[2px] flex-1 bg-primary/30 mx-4"></div>
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 rounded-full border-2 border-primary bg-primary text-on-primary flex items-center justify-center font-bold text-xs">2</div>
-            <span className="text-xs text-primary font-semibold tracking-wider">Skills</span>
+          <div className="h-[2px] flex-1 bg-[#c6bfff]/30 mx-4"></div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 rounded-full border-2 border-[#c6bfff] bg-[#c6bfff] text-white flex items-center justify-center font-black text-lg shadow-[0_0_15px_rgba(198,191,255,0.5)]">2</div>
+            <span className="text-sm text-[#c6bfff] font-bold tracking-wider uppercase">Skills</span>
           </div>
-          <div className="h-[2px] flex-1 bg-surface-container-highest mx-4"></div>
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 rounded-full border-2 border-surface-container-highest flex items-center justify-center text-on-surface-variant font-bold text-xs">3</div>
-            <span className="text-xs text-on-surface-variant font-semibold tracking-wider">Review</span>
+          <div className="h-[2px] flex-1 bg-white/10 mx-4"></div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center text-white/50 font-black text-lg">3</div>
+            <span className="text-sm text-white/50 font-bold tracking-wider uppercase">Review</span>
           </div>
         </div>
 
@@ -84,17 +90,17 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
             <div key={skill.id} className="border border-white/5 bg-white/5 p-6 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_rgba(198,191,255,0.15)] hover:border-primary/30">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+                  <div className="w-12 h-12 rounded-lg bg-[#c6bfff]/20 flex items-center justify-center text-[#c6bfff]">
                     {getIcon(skill.name)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-on-surface">{skill.name}</h3>
-                    <p className="text-sm text-on-surface-variant">Weight Multiplier: ×{skill.multiplier}</p>
+                    <h3 className="text-xl font-bold text-[#e5e0ed]">{skill.name}</h3>
+                    <p className="text-sm text-[rgba(200,196,215,0.7)] font-medium">Weight Multiplier: ×{skill.multiplier}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 bg-surface-container-low px-3 py-1 rounded-full border border-white/5">
-                  <span className="text-secondary font-bold text-xs">LVL</span>
-                  <span className="text-xl font-semibold text-on-surface">{ratings[skill.id] || 3}</span>
+                <div className="flex items-center gap-1.5 bg-[#13121b] px-4 py-2 rounded-full border border-white/10 shadow-inner">
+                  <span className="text-[#46eae5] font-black text-sm tracking-widest">LVL</span>
+                  <span className="text-2xl font-black text-white">{ratings[skill.id] || 3}</span>
                 </div>
               </div>
 
@@ -105,10 +111,10 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
                   max="5" 
                   value={ratings[skill.id] || 3} 
                   onChange={(e) => handleSliderChange(skill.id, parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                  className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#c6bfff]"
                   style={{ accentColor: '#c6bfff' }}
                 />
-                <div className="flex justify-between mt-2 text-xs text-on-surface-variant px-1 font-semibold">
+                <div className="flex justify-between mt-3 text-xs text-[#e5e0ed] px-1 font-bold tracking-wide uppercase">
                   <span>Novice</span>
                   <span>Expert</span>
                 </div>
