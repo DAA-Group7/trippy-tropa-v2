@@ -56,10 +56,10 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
   }
 
   const labelClass =
-    'text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2 block'
+    'text-xs font-semibold text-foreground/70 uppercase tracking-wider mb-2 block'
 
   const inputClass =
-    'bg-[rgba(14,13,21,0.5)] border border-white/10 rounded-lg px-4 py-3 focus:ring-1 focus:ring-[#46eae5] outline-none text-foreground w-full transition-all placeholder:text-foreground/20'
+    'bg-input border border-border rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary outline-none text-foreground w-full transition-all placeholder:text-foreground/40'
 
   return (
     <div className="min-h-[80vh] flex flex-col justify-center py-8">
@@ -67,7 +67,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
       <div className="max-w-2xl mx-auto w-full mb-6">
         <Link
           href={`/classroom/${classroomId}`}
-          className="inline-flex items-center gap-1.5 text-sm text-[#46eae5] hover:underline decoration-[#46eae5]/30 w-fit"
+          className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline decoration-primary/30 w-fit"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Classroom
@@ -75,11 +75,11 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
       </div>
 
       {/* Form card */}
-      <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-white/10 rounded-xl p-8 md:p-12 max-w-2xl mx-auto w-full shadow-2xl animate-in fade-in zoom-in duration-500">
+      <div className="bg-card backdrop-blur-xl border border-border rounded-xl p-8 md:p-12 max-w-2xl mx-auto w-full shadow-2xl animate-in fade-in zoom-in duration-500">
         {/* Heading */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-foreground mb-1">Create New Activity</h1>
-          <p className="text-foreground/50 text-sm">Configure an activity for your classroom.</p>
+          <p className="text-foreground/70 text-sm">Configure an activity for your classroom.</p>
         </div>
 
         {/* Error banner */}
@@ -131,7 +131,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
               id="due_date"
               name="due_date"
               type="datetime-local"
-              className={`${inputClass} [color-scheme:dark]`}
+              className={`${inputClass} [color-scheme:light] dark:[color-scheme:dark]`}
             />
           </div>
 
@@ -145,7 +145,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 onClick={() => setActivityType('individual')}
                 className={`flex flex-col items-center gap-3 p-5 rounded-xl border transition-all duration-200 ${
                   activityType === 'individual'
-                    ? 'border-primary bg-primary/10 shadow-[0_0_16px_rgba(198,191,255,0.15)]'
+                    ? 'border-primary bg-primary/10 shadow-md shadow-primary/20'
                     : 'border-border bg-input hover:bg-input/80 hover:border-border/80'
                 }`}
               >
@@ -153,7 +153,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                   className={`p-3 rounded-lg ${
                     activityType === 'individual'
                       ? 'bg-primary/20 text-primary'
-                      : 'bg-muted/50 text-muted-foreground/40'
+                      : 'bg-muted/50 text-foreground/60'
                   }`}
                 >
                   <User className="w-6 h-6" />
@@ -166,7 +166,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                   >
                     Individual
                   </p>
-                  <p className="text-[11px] text-muted-foreground/40 mt-0.5">Each student works alone</p>
+                  <p className="text-[11px] text-foreground/60 mt-0.5">Each student works alone</p>
                 </div>
               </button>
 
@@ -176,7 +176,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 onClick={() => setActivityType('group')}
                 className={`flex flex-col items-center gap-3 p-5 rounded-xl border transition-all duration-200 ${
                   activityType === 'group'
-                    ? 'border-secondary bg-secondary/10 shadow-[0_0_16px_rgba(70,234,229,0.15)]'
+                    ? 'border-secondary bg-secondary/10 shadow-md shadow-secondary/20'
                     : 'border-border bg-input hover:bg-input/80 hover:border-border/80'
                 }`}
               >
@@ -184,7 +184,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                   className={`p-3 rounded-lg ${
                     activityType === 'group'
                       ? 'bg-secondary/20 text-secondary'
-                      : 'bg-muted/50 text-muted-foreground/40'
+                      : 'bg-muted/50 text-foreground/60'
                   }`}
                 >
                   <Users className="w-6 h-6" />
@@ -197,7 +197,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                   >
                     Group
                   </p>
-                  <p className="text-[11px] text-muted-foreground/40 mt-0.5">AI-balanced skill groups</p>
+                  <p className="text-[11px] text-foreground/60 mt-0.5">AI-balanced skill groups</p>
                 </div>
               </button>
             </div>
@@ -209,10 +209,10 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
               activityType === 'group' ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <div className="bg-[rgba(70,234,229,0.05)] border border-[#46eae5]/20 rounded-xl p-5 flex flex-col gap-3">
+            <div className="bg-secondary/10 border border-secondary/30 rounded-xl p-5 flex flex-col gap-3">
               <label htmlFor="num_groups" className={labelClass}>
                 <span className="inline-flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#46eae5]" />
+                  <Users className="w-3.5 h-3.5 text-secondary" />
                   Number of Groups
                 </span>
               </label>
@@ -230,9 +230,9 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 className={`${inputClass} max-w-[120px]`}
               />
               {studentCount > 0 && (
-                <p className="text-xs text-[#46eae5]/80">
+                <p className="text-xs text-secondary/80">
                   ≈ {studentsPerGroup} student{studentsPerGroup !== 1 ? 's' : ''} per group
-                  <span className="text-foreground/30 ml-1">({studentCount} students total)</span>
+                  <span className="text-foreground/60 ml-1">({studentCount} students total)</span>
                 </p>
               )}
               {studentCount === 0 && (
@@ -247,7 +247,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-[#6c5ce7] to-[#46eae5] text-foreground font-bold py-4 px-8 rounded-xl w-full flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 mt-2"
+            className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-4 px-8 rounded-xl w-full flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 mt-2"
           >
             <Rocket className="w-5 h-5" />
             {isSubmitting ? 'Creating Activity…' : 'Create Activity'}
