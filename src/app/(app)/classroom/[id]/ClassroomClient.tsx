@@ -222,19 +222,10 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                       <>
                         <button
                           onClick={() => setViewProfileId(member.user_id || member.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-[#46eae5] hover:text-[#46eae5] bg-[#46eae5]/10 hover:bg-[#46eae5]/20 rounded-lg transition-colors text-xs font-bold whitespace-nowrap"
+                          className="p-2 text-[#46eae5]/70 hover:text-[#46eae5] bg-[#46eae5]/10 hover:bg-[#46eae5]/20 rounded-lg transition-colors"
                           title="View Profile"
                         >
                           <Eye className="w-4 h-4" />
-                          <span>{member.skillScore ? `${member.skillScore.toFixed(1)} pts` : 'No Skills'}</span>
-                        </button>
-                        <button
-                          onClick={() => handlePromote(member.user_id || member.id)}
-                          disabled={isPromoting}
-                          className="p-2 text-[#c6bfff]/70 hover:text-[#c6bfff] bg-[#c6bfff]/10 hover:bg-[#c6bfff]/20 rounded-lg transition-colors disabled:opacity-50"
-                          title="Promote to Officer"
-                        >
-                          <Crown className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleRemove(member.user_id || member.id)}
@@ -243,6 +234,14 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                           title="Remove Student"
                         >
                           <Trash2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handlePromote(member.user_id || member.id)}
+                          disabled={isPromoting}
+                          className="p-2 text-[#c6bfff]/70 hover:text-[#c6bfff] bg-[#c6bfff]/10 hover:bg-[#c6bfff]/20 rounded-lg transition-colors disabled:opacity-50"
+                          title="Promote to Officer"
+                        >
+                          <Crown className="w-4 h-4" />
                         </button>
                       </>
                     )}
@@ -365,13 +364,26 @@ export default function ClassroomClient({ classroom, members, userRole, stats, a
                     <p className="text-sm text-[rgba(200,196,215,0.8)] mb-6">{profileMember.role === 'student_officer' ? 'Student Officer' : 'Student'}</p>
                     
                     <div className="w-full bg-[#1c1b23] p-4 rounded-xl border border-white/5 text-left">
-                      <h4 className="text-[10px] font-black text-[#46eae5] uppercase tracking-widest mb-3">Skills Profile</h4>
+                      <div className="flex justify-between items-center mb-3">
+                        <h4 className="text-[10px] font-black text-[#46eae5] uppercase tracking-widest">Skills Profile</h4>
+                        {profileMember.skillScore !== undefined && (
+                          <span className="text-[11px] font-black text-white bg-[#46eae5]/30 border border-[#46eae5]/50 px-2.5 py-1 rounded-md uppercase tracking-widest shadow-sm">
+                            Total: {profileMember.skillScore.toFixed(1)} pts
+                          </span>
+                        )}
+                      </div>
                       {profileMember.rawSkills && profileMember.rawSkills.length > 0 ? (
                         <ul className="space-y-3">
                           {profileMember.rawSkills.map((rs: any, i: number) => (
-                            <li key={i} className="flex justify-between items-center text-sm bg-white/5 px-3 py-2 rounded-lg">
-                              <span className="text-[#e5e0ed] font-medium">{rs.name}</span>
-                              <span className="text-secondary font-black">LVL {rs.rating}</span>
+                            <li key={i} className="flex flex-col gap-1 text-sm bg-white/5 px-3 py-2.5 rounded-lg border border-white/5">
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#e5e0ed] font-bold">{rs.name}</span>
+                                <span className="text-[#c6bfff] font-black text-xs">{(rs.rating * (rs.multiplier || 1)).toFixed(1)} pts</span>
+                              </div>
+                              <div className="flex justify-between items-center text-[10px] text-[rgba(200,196,215,0.6)] uppercase tracking-wider font-bold">
+                                <span>Input: LVL {rs.rating}</span>
+                                <span>Weight: x{rs.multiplier || 1}</span>
+                              </div>
                             </li>
                           ))}
                         </ul>
