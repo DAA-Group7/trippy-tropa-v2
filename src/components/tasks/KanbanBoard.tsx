@@ -54,7 +54,7 @@ const SortableTaskCard = React.memo(function SortableTaskCard({ task, isDragging
       style={style} 
       {...attributes} 
       {...listeners}
-      className={`glass-card p-4 rounded-xl border ${isDraggingOverlay ? 'shadow-2xl border-secondary/50 scale-105 rotate-2 cursor-grabbing' : 'border-white/10 hover:border-white/20 cursor-grab'} transition-colors bg-surface-container/50 relative overflow-hidden group`}
+      className={`glass-card p-4 rounded-xl border ${isDraggingOverlay ? 'shadow-2xl border-secondary/50 scale-105 rotate-2 cursor-grabbing' : 'border-border hover:border-border cursor-grab'} transition-colors bg-surface-container/50 relative overflow-hidden group`}
     >
       <div className={`absolute top-0 left-0 w-1 h-full ${
         task.status === 'todo' ? 'bg-primary' : 
@@ -64,12 +64,12 @@ const SortableTaskCard = React.memo(function SortableTaskCard({ task, isDragging
       <div className="pl-3">
         <h4 className="font-bold text-on-surface mb-3 line-clamp-2">{task.title}</h4>
         
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
           <div className="flex items-center gap-2">
             <img 
               src={member?.avatar_url || `https://ui-avatars.com/api/?name=${member?.full_name || 'U'}&background=random`} 
               alt="Avatar" 
-              className="w-6 h-6 rounded-full border border-white/10"
+              className="w-6 h-6 rounded-full border border-border"
             />
             <span className="text-xs font-semibold text-on-surface-variant truncate max-w-[80px]">
               {member?.full_name || 'Unassigned'}
@@ -90,7 +90,7 @@ const KanbanColumn = React.memo(function KanbanColumn({ id, title, tasks, icon: 
   const { setNodeRef } = useDroppable({ id })
 
   return (
-    <div ref={setNodeRef} className="flex flex-col gap-4 bg-surface-container-lowest/30 rounded-2xl p-4 border border-white/5 min-h-[500px]">
+    <div ref={setNodeRef} className="flex flex-col gap-4 bg-surface-container-lowest/30 rounded-2xl p-4 border border-border min-h-[500px]">
       <div className="flex items-center justify-between mb-2 px-2">
         <div className="flex items-center gap-2">
           <Icon className={`w-5 h-5 ${
@@ -110,7 +110,7 @@ const KanbanColumn = React.memo(function KanbanColumn({ id, title, tasks, icon: 
             <SortableTaskCard key={task.id} task={task} />
           ))}
           {tasks.length === 0 && (
-            <div className="h-full flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl p-6">
+            <div className="h-full flex items-center justify-center border-2 border-dashed border-border rounded-xl p-6">
               <span className="text-sm font-semibold text-on-surface-variant opacity-50">Drop here</span>
             </div>
           )}

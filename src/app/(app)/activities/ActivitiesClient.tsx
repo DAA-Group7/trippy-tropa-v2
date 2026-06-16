@@ -58,7 +58,7 @@ function formatDueDate(dateStr?: string) {
 
 // ─── Activity Card ────────────────────────────────────────────────────────────
 
-function ActivityCard({ activity }: { activity: Activity }) {
+function ActivityCard({ activity, isTeacher }: { activity: Activity, isTeacher?: boolean }) {
   const status = getStatusInfo(activity)
   const isGroup = activity.type === 'group'
   const dateLabel = formatDueDate(activity.due_date)
@@ -132,7 +132,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
                 </div>
               )}
 
-              {isGroup && activity.groups_created && !activity.myGroup && (
+              {isGroup && activity.groups_created && !activity.myGroup && !isTeacher && (
                 <div
                   className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] bg-muted/50 text-muted-foreground border border-border/50"
                 >
@@ -210,7 +210,7 @@ function EmptyState() {
 type FilterType = 'all' | 'individual' | 'group'
 type FilterStatus = 'all' | 'overdue' | 'upcoming'
 
-export default function ActivitiesClient({ activities, userId }: { activities: Activity[]; userId: string }) {
+export default function ActivitiesClient({ activities, userId, userRoleMap, isGlobalTeacher }: { activities: Activity[]; userId: string; userRoleMap?: Record<string, string>; isGlobalTeacher?: boolean }) {
   const now = new Date()
 
   // Split by status for summary
@@ -256,6 +256,27 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
         {/* Activity list */}
         {activities.length === 0 ? (
           <EmptyState />
+        ) : isGlobalTeacher ? (
+          <div className="space-y-8">
+            {Object.entries(
+              activities.reduce((acc, act) => {
+                const cId = act.classroom?.name || 'Unknown Classroom';
+                if (!acc[cId]) acc[cId] = [];
+                acc[cId].push(act);
+                return acc;
+              }, {} as Record<string, Activity[]>)
+            ).map(([classroomName, acts]) => (
+              <div key={classroomName} className="bg-card/40 rounded-2xl border border-border overflow-hidden">
+                <div className="bg-muted/30 px-6 py-4 border-b border-border flex items-center justify-between">
+                  <h3 className="font-bold text-foreground text-lg">{classroomName}</h3>
+                  <span className="text-xs font-semibold text-muted-foreground bg-background px-2 py-1 rounded-md border border-border">{acts.length} Activities</span>
+                </div>
+                <div className="p-6 space-y-3">
+                  {acts.map(a => <ActivityCard key={a.id} activity={a} isTeacher={true} />)}
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="space-y-3">
             {overdue.length > 0 && (
@@ -264,7 +285,7 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
                   <AlertTriangle className="w-3.5 h-3.5" /> Overdue
                 </p>
                 <div className="space-y-3">
-                  {overdue.map(a => <ActivityCard key={a.id} activity={a} />)}
+                  {overdue.map(a => <ActivityCard key={a.id} activity={a} isTeacher={false} />)}
                 </div>
               </div>
             )}
@@ -277,7 +298,7 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
                   </p>
                 )}
                 <div className="space-y-3">
-                  {upcoming.map(a => <ActivityCard key={a.id} activity={a} />)}
+                  {upcoming.map(a => <ActivityCard key={a.id} activity={a} isTeacher={false} />)}
                 </div>
               </div>
             )}

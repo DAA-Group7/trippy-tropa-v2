@@ -123,7 +123,7 @@ export function SubmissionForm({ activityId, groupId, existingSubmission, isLate
         <textarea 
           value={text}
           onChange={e => setText(e.target.value)}
-          className="w-full bg-surface-container-lowest/80 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 min-h-[120px] transition-all resize-none"
+          className="w-full bg-surface-container-lowest/80 border border-border rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 min-h-[120px] transition-all resize-none"
           placeholder="Paste your GitHub link or add any comments for the instructor..."
         />
       </div>
@@ -137,7 +137,7 @@ export function SubmissionForm({ activityId, groupId, existingSubmission, isLate
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             className={`w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer group ${
-              isDragging ? 'bg-primary/10 border-primary' : 'border-white/10 bg-surface-container-lowest/30 hover:bg-primary/5 hover:border-primary/40'
+              isDragging ? 'bg-primary/10 border-primary' : 'border-border bg-surface-container-lowest/30 hover:bg-primary/5 hover:border-primary/40'
             }`}
           >
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -177,7 +177,7 @@ export function SubmissionForm({ activityId, groupId, existingSubmission, isLate
                 href={filePreview.url} 
                 target="_blank" 
                 rel="noreferrer"
-                className="p-2 hover:bg-white/5 rounded-full text-on-surface-variant transition-colors"
+                className="p-2 hover:bg-accent rounded-full text-on-surface-variant transition-colors"
                 title="Download"
               >
                 <Download className="w-4 h-4" />

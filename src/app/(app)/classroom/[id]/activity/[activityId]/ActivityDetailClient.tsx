@@ -53,8 +53,8 @@ function StatusBadge({ dueDate, isSubmitted }: { dueDate: string | null; isSubmi
 function PlaceholderCard({ message }: { message: string }) {
   return (
     <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-dashed border-white/10 rounded-xl p-16 text-center">
-      <BookOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
-      <p className="text-white/40 text-sm">{message}</p>
+      <BookOpen className="w-12 h-12 text-foreground/20 mx-auto mb-4" />
+      <p className="text-foreground/40 text-sm">{message}</p>
     </div>
   )
 }
@@ -136,11 +136,11 @@ export default function ActivityDetailClient({
             </div>
 
             {activity.description && (
-              <p className="text-white/60 max-w-2xl text-base">{activity.description}</p>
+              <p className="text-foreground/60 max-w-2xl text-base">{activity.description}</p>
             )}
 
             {activity.due_date && (
-              <div className="flex items-center gap-2 text-sm text-white/50">
+              <div className="flex items-center gap-2 text-sm text-foreground/50">
                 <Calendar className="w-4 h-4" />
                 <span>Due: {formatDate(activity.due_date)}</span>
               </div>
@@ -150,13 +150,13 @@ export default function ActivityDetailClient({
           {isGroup && (
             <div className="flex items-center gap-4">
               <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl px-5 py-3 text-center">
-                <p className="text-2xl font-bold text-white">{studentCount}</p>
-                <p className="text-xs text-white/40 uppercase tracking-wide">Students</p>
+                <p className="text-2xl font-bold text-foreground">{studentCount}</p>
+                <p className="text-xs text-foreground/40 uppercase tracking-wide">Students</p>
               </div>
               {activity.num_groups && (
                 <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl px-5 py-3 text-center">
                   <p className="text-2xl font-bold text-secondary">{activity.num_groups}</p>
-                  <p className="text-xs text-white/40 uppercase tracking-wide">Groups</p>
+                  <p className="text-xs text-foreground/40 uppercase tracking-wide">Groups</p>
                 </div>
               )}
             </div>
@@ -169,14 +169,14 @@ export default function ActivityDetailClient({
         <>
           {canManage ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">Submissions</h2>
+              <h2 className="text-xl font-semibold text-foreground">Submissions</h2>
               {submissions && submissions.length > 0 ? (
                 <div className="space-y-4">
                   {submissions.map((sub: any) => (
                     <div key={sub.id} className="p-4 bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl flex items-center justify-between">
                       <div>
-                        <p className="font-bold text-white">{sub.profiles?.full_name || 'Unknown'}</p>
-                        <p className="text-xs text-white/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
+                        <p className="font-bold text-foreground">{sub.profiles?.full_name || 'Unknown'}</p>
+                        <p className="text-xs text-foreground/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
                         {sub.is_late && <span className="text-xs text-error font-bold mt-1 block">LATE</span>}
                       </div>
                       <div className="flex items-center gap-4">
@@ -195,7 +195,7 @@ export default function ActivityDetailClient({
             </div>
           ) : (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">Your Submission</h2>
+              <h2 className="text-xl font-semibold text-foreground">Your Submission</h2>
               <SubmissionForm 
                 activityId={activity.id} 
                 existingSubmission={mySubmission} 
@@ -215,16 +215,16 @@ export default function ActivityDetailClient({
               {/* Info card */}
               <div className="bg-[rgba(18,18,42,0.7)] border border-white/10 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center flex-shrink-0">
-                  <Users className="w-8 h-8 text-white" />
+                  <Users className="w-8 h-8 text-foreground" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white mb-1">Ready to form groups</h2>
-                  <p className="text-white/60">
-                    <span className="text-white font-semibold">{studentCount}</span> students enrolled,
+                  <h2 className="text-xl font-bold text-foreground mb-1">Ready to form groups</h2>
+                  <p className="text-foreground/60">
+                    <span className="text-foreground font-semibold">{studentCount}</span> students enrolled,
                     creating <span className="text-secondary font-semibold">{activity.num_groups}</span> groups
-                    (~<span className="text-white font-semibold">{Math.ceil(studentCount / (activity.num_groups || 1))}</span> per group)
+                    (~<span className="text-foreground font-semibold">{Math.ceil(studentCount / (activity.num_groups || 1))}</span> per group)
                   </p>
-                  <p className="text-white/40 text-sm mt-1">
+                  <p className="text-foreground/40 text-sm mt-1">
                     Uses Greedy LPT algorithm to balance skill scores across all groups.
                   </p>
                 </div>
@@ -236,7 +236,7 @@ export default function ActivityDetailClient({
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="bg-gradient-to-r from-primary-container to-secondary text-white font-bold py-5 px-12 rounded-2xl text-xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(70,234,229,0.25)] disabled:animate-none disabled:opacity-60 disabled:scale-100"
+                    className="bg-gradient-to-r from-primary-container to-secondary text-foreground font-bold py-5 px-12 rounded-2xl text-xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(70,234,229,0.25)] disabled:animate-none disabled:opacity-60 disabled:scale-100"
                     style={{ animation: isGenerating ? 'none' : undefined }}
                   >
                     {isGenerating ? (
@@ -264,7 +264,7 @@ export default function ActivityDetailClient({
               {isDrafting && draftGroups.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-white">Draft Preview</h2>
+                    <h2 className="text-xl font-bold text-foreground">Draft Preview</h2>
                     <span className="text-xs bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 px-3 py-1 rounded-full font-bold">
                       Draft Mode — Not Saved
                     </span>
@@ -290,7 +290,7 @@ export default function ActivityDetailClient({
           {canManage ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white">Groups</h2>
+                <h2 className="text-xl font-bold text-foreground">Groups</h2>
                 <span className="text-xs bg-secondary/10 text-secondary border border-secondary/30 px-3 py-1 rounded-full font-bold flex items-center gap-1.5">
                   <CheckCircle className="w-3 h-3" />
                   Confirmed
@@ -305,7 +305,7 @@ export default function ActivityDetailClient({
                       <div className="h-1 bg-gradient-to-r from-primary-container to-secondary" />
                       <div className="p-6 space-y-4">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-lg font-bold text-white group-hover:text-secondary transition-colors">{group.name}</h3>
+                          <h3 className="text-lg font-bold text-foreground group-hover:text-secondary transition-colors">{group.name}</h3>
                           <span className="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-2 py-0.5 rounded-full font-bold">
                             {group.members?.length} members
                           </span>
@@ -313,18 +313,18 @@ export default function ActivityDetailClient({
                         {leader && (
                           <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5">
                             <Crown className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-xs font-bold text-foreground flex-shrink-0">
                               {leader.profile?.full_name?.charAt(0)}
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-white">{leader.profile?.full_name}</p>
-                              <p className="text-xs text-white/40">Group Leader</p>
+                              <p className="text-sm font-semibold text-foreground">{leader.profile?.full_name}</p>
+                              <p className="text-xs text-foreground/40">Group Leader</p>
                             </div>
                           </div>
                         )}
                         <div className="space-y-1.5">
                           {others.slice(0, 4).map((m: any) => (
-                            <div key={m.id} className="flex items-center gap-2 text-sm text-white/60">
+                            <div key={m.id} className="flex items-center gap-2 text-sm text-foreground/60">
                               <div className="w-5 h-5 rounded-full bg-primary-container/30 flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0">
                                 {m.profile?.full_name?.charAt(0)}
                               </div>
@@ -332,7 +332,7 @@ export default function ActivityDetailClient({
                             </div>
                           ))}
                           {others.length > 4 && (
-                            <p className="text-xs text-white/30 pl-7">+{others.length - 4} more</p>
+                            <p className="text-xs text-foreground/30 pl-7">+{others.length - 4} more</p>
                           )}
                         </div>
                       </div>
@@ -346,26 +346,26 @@ export default function ActivityDetailClient({
             <div className="space-y-4">
               {myGroup ? (
                 <>
-                  <h2 className="text-xl font-bold text-white">Your Group</h2>
+                  <h2 className="text-xl font-bold text-foreground">Your Group</h2>
                   <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-secondary/30 rounded-xl p-6 space-y-4 shadow-[0_0_30px_rgba(70,234,229,0.1)]">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center">
-                        <Users className="w-6 h-6 text-white" />
+                        <Users className="w-6 h-6 text-foreground" />
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold text-secondary">{myGroup.name}</h3>
-                        <p className="text-white/40 text-sm">{myGroup.members?.length} members</p>
+                        <p className="text-foreground/40 text-sm">{myGroup.members?.length} members</p>
                       </div>
                     </div>
                     <div className="divide-y divide-white/5">
                       {myGroup.members?.map((m: any) => (
                         <div key={m.id} className="flex items-center gap-3 py-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-foreground font-bold text-sm flex-shrink-0">
                             {m.profile?.full_name?.charAt(0)}
                           </div>
                           <div className="flex-1">
-                            <p className="font-semibold text-white text-sm">{m.profile?.full_name}</p>
-                            <p className="text-xs text-white/40">{m.profile?.email}</p>
+                            <p className="font-semibold text-foreground text-sm">{m.profile?.full_name}</p>
+                            <p className="text-xs text-foreground/40">{m.profile?.email}</p>
                           </div>
                           {m.is_leader && (
                             <span className="flex items-center gap-1 text-xs text-yellow-400 font-bold">

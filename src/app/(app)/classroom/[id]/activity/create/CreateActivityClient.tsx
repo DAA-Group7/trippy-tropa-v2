@@ -56,10 +56,10 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
   }
 
   const labelClass =
-    'text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 block'
+    'text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2 block'
 
   const inputClass =
-    'bg-[rgba(14,13,21,0.5)] border border-white/10 rounded-lg px-4 py-3 focus:ring-1 focus:ring-[#46eae5] outline-none text-white w-full transition-all placeholder:text-white/20'
+    'bg-[rgba(14,13,21,0.5)] border border-white/10 rounded-lg px-4 py-3 focus:ring-1 focus:ring-[#46eae5] outline-none text-foreground w-full transition-all placeholder:text-foreground/20'
 
   return (
     <div className="min-h-[80vh] flex flex-col justify-center py-8">
@@ -78,8 +78,8 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
       <div className="bg-[rgba(18,18,42,0.7)] backdrop-blur-xl border border-white/10 rounded-xl p-8 md:p-12 max-w-2xl mx-auto w-full shadow-2xl animate-in fade-in zoom-in duration-500">
         {/* Heading */}
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-white mb-1">Create New Activity</h1>
-          <p className="text-white/50 text-sm">Configure an activity for your classroom.</p>
+          <h1 className="text-3xl font-bold text-foreground mb-1">Create New Activity</h1>
+          <p className="text-foreground/50 text-sm">Configure an activity for your classroom.</p>
         </div>
 
         {/* Error banner */}
@@ -232,7 +232,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
               {studentCount > 0 && (
                 <p className="text-xs text-[#46eae5]/80">
                   ≈ {studentsPerGroup} student{studentsPerGroup !== 1 ? 's' : ''} per group
-                  <span className="text-white/30 ml-1">({studentCount} students total)</span>
+                  <span className="text-foreground/30 ml-1">({studentCount} students total)</span>
                 </p>
               )}
               {studentCount === 0 && (
@@ -247,7 +247,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-[#6c5ce7] to-[#46eae5] text-white font-bold py-4 px-8 rounded-xl w-full flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 mt-2"
+            className="bg-gradient-to-r from-[#6c5ce7] to-[#46eae5] text-foreground font-bold py-4 px-8 rounded-xl w-full flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 mt-2"
           >
             <Rocket className="w-5 h-5" />
             {isSubmitting ? 'Creating Activity…' : 'Create Activity'}

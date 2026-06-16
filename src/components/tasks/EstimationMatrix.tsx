@@ -166,7 +166,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
 
       {/* Task Creation Form (Inline) */}
       {!isAssigned && !isTeacherOrOfficer && (
-        <form onSubmit={handleCreateTask} className="bg-surface/50 border border-white/5 p-4 rounded-xl flex gap-3 items-center backdrop-blur-md">
+        <form onSubmit={handleCreateTask} className="bg-surface/50 border border-border p-4 rounded-xl flex gap-3 items-center backdrop-blur-md">
           <input 
             type="text"
             value={newTaskTitle}
@@ -187,7 +187,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
       )}
 
       {/* Progress Bar */}
-      <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-white/5">
+      <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-border">
         <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Global Progress</span>
         <div className="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
           <div 
@@ -199,15 +199,15 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
       </div>
 
       {/* Matrix Table */}
-      <div className="glass-card rounded-xl overflow-x-auto shadow-2xl border border-white/10">
+      <div className="glass-card rounded-xl overflow-x-auto shadow-2xl border border-border">
         <table className="w-full text-left border-collapse min-w-max">
           <thead>
             <tr className="bg-surface-container-high/50">
-              <th className="p-4 border-b border-white/10 font-bold text-xs uppercase tracking-wider text-on-surface-variant sticky left-0 bg-surface-container-high z-10">
+              <th className="p-4 border-b border-border font-bold text-xs uppercase tracking-wider text-on-surface-variant sticky left-0 bg-surface-container-high z-10">
                 Student Member
               </th>
               {tasks.map((t: any) => (
-                <th key={t.id} className="p-4 border-b border-white/10 font-bold text-xs uppercase tracking-wider text-on-surface-variant group relative">
+                <th key={t.id} className="p-4 border-b border-border font-bold text-xs uppercase tracking-wider text-on-surface-variant group relative">
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate max-w-[120px]" title={t.title}>{t.title}</span>
                     {isLeader && !isAssigned && (
@@ -222,7 +222,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                   </div>
                 </th>
               ))}
-              <th className="p-4 border-b border-white/10 font-bold text-xs uppercase tracking-wider text-on-surface-variant">
+              <th className="p-4 border-b border-border font-bold text-xs uppercase tracking-wider text-on-surface-variant">
                 Total Hours
               </th>
             </tr>
@@ -234,12 +234,12 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
               return (
                 <tr 
                   key={m.user_id} 
-                  className={`border-b border-white/5 transition-colors ${isMe ? 'bg-secondary/5 border-l-4 border-l-secondary' : 'hover:bg-white/5'}`}
+                  className={`border-b border-border transition-colors ${isMe ? 'bg-secondary/5 border-l-4 border-l-secondary' : 'hover:bg-accent'}`}
                 >
                   <td className={`p-4 sticky left-0 z-10 ${isMe ? 'bg-secondary/10' : 'bg-card'}`}>
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <img src={m.profile?.avatar_url || `https://ui-avatars.com/api/?name=${m.profile?.full_name || 'U'}&background=random`} alt="Avatar" className={`w-8 h-8 rounded-lg border ${isMe ? 'border-secondary/50' : 'border-white/10'}`} />
+                        <img src={m.profile?.avatar_url || `https://ui-avatars.com/api/?name=${m.profile?.full_name || 'U'}&background=random`} alt="Avatar" className={`w-8 h-8 rounded-lg border ${isMe ? 'border-secondary/50' : 'border-border'}`} />
                         {m.is_leader && (
                           <div className="absolute -top-1 -right-1 bg-tertiary text-on-tertiary rounded-full p-[2px]" title="Leader">
                             <Sparkles className="w-3 h-3" />
@@ -262,7 +262,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                     const isCellAssigned = isAssigned && t.assigned_to === m.user_id
 
                     return (
-                      <td key={t.id} className={`p-4 border-r border-white/5 last:border-none ${isCellAssigned ? 'bg-secondary/20 border-secondary/50' : ''}`}>
+                      <td key={t.id} className={`p-4 border-r border-border last:border-none ${isCellAssigned ? 'bg-secondary/20 border-secondary/50' : ''}`}>
                         {isMe && !isAssigned && !isTeacherOrOfficer ? (
                           <input
                             type="number"
@@ -271,7 +271,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                             value={val}
                             onChange={(e) => handleEstimateChange(t.id, m.user_id, e.target.value)}
                             placeholder="—"
-                            className="w-16 bg-surface-container-lowest border border-white/10 rounded px-2 py-1 text-center text-secondary font-bold focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
+                            className="w-16 bg-surface-container-lowest border border-border rounded px-2 py-1 text-center text-secondary font-bold focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
                           />
                         ) : (
                           <span className={`w-16 inline-block text-center font-medium ${isCellAssigned ? 'text-secondary font-black' : 'text-on-surface-variant opacity-60'}`}>

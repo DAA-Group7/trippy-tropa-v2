@@ -171,7 +171,7 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           {/* General Settings */}
           <section className="bg-transparent border border-white/5 p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-6">
-              <Settings className="w-5 h-5 text-white/80" />
+              <Settings className="w-5 h-5 text-foreground/80" />
               <h2 className="text-xl font-bold text-[#e5e0ed]">General Settings</h2>
             </div>
             
@@ -205,10 +205,10 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           <section className="bg-transparent border border-white/5 p-6 rounded-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Star className="w-5 h-5 text-white/40" />
+                <Star className="w-5 h-5 text-foreground/40" />
                 <h2 className="text-xl font-bold text-[#e5e0ed]">Skill Assessment</h2>
               </div>
-              <button onClick={addSkill} className="flex items-center gap-1 text-white/20 hover:text-white/80 text-[10px] font-bold tracking-widest uppercase transition-colors">
+              <button onClick={addSkill} className="flex items-center gap-1 text-foreground/20 hover:text-foreground/80 text-[10px] font-bold tracking-widest uppercase transition-colors">
                 <Plus className="w-3 h-3" />
                 Add Skill
               </button>
@@ -250,12 +250,12 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           {/* Ownership Transfer (Mock) */}
           <section className="bg-transparent border border-white/5 p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
-              <KeyRound className="w-5 h-5 text-white/80" />
+              <KeyRound className="w-5 h-5 text-foreground/80" />
               <h2 className="text-xl font-bold text-[#e5e0ed]">Ownership</h2>
             </div>
             <p className="text-sm text-[rgba(200,196,215,0.8)] mb-8">Transfer management rights of this classroom to another authorized educator.</p>
             <div className="space-y-6">
-              <button disabled className="w-full bg-transparent border-none text-white/60 py-2 rounded-lg text-xs font-bold cursor-not-allowed">
+              <button disabled className="w-full bg-transparent border-none text-foreground/60 py-2 rounded-lg text-xs font-bold cursor-not-allowed">
                 Transfer Ownership (Coming Soon)
               </button>
             </div>
@@ -264,11 +264,11 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
           {/* Danger Zone */}
           <section className="bg-transparent border border-white/5 p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
-              <AlertTriangle className="w-5 h-5 text-white/80" />
+              <AlertTriangle className="w-5 h-5 text-foreground/80" />
               <h2 className="text-xl font-bold text-[#e5e0ed]">Danger Zone</h2>
             </div>
             <p className="text-sm text-[rgba(200,196,215,0.8)] mb-6">Once deleted, all classroom data, student progress logs, and collaborative assets will be permanently purged.</p>
-            <button className="w-full bg-transparent border border-white/10 text-white/60 py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all">
+            <button className="w-full bg-transparent border border-white/10 text-foreground/60 py-3 rounded-lg text-xs font-bold hover:bg-white/5 transition-all">
               Delete Classroom
             </button>
           </section>
@@ -396,7 +396,7 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className="px-8 py-3 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-white text-xs font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+          className="px-8 py-3 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-foreground text-xs font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
         >
           {isSaving ? 'Saving...' : 'Save Configuration'}
         </button>

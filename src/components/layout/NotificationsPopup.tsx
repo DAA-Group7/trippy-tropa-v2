@@ -70,17 +70,17 @@ export function NotificationsPopup() {
               <div className="p-8 text-center text-sm text-muted-foreground/50">No notifications yet.</div>
             ) : notifications.map((notif) => {
               let Icon = Megaphone
-              let iconColor = 'text-[#46eae5]'
-              let iconBg = 'bg-[#46eae5]/10'
+              let iconColor = 'text-primary'
+              let iconBg = 'bg-primary/10'
               
               if (notif.type === 'group') {
                 Icon = UserPlus
-                iconColor = 'text-[#c6bfff]'
-                iconBg = 'bg-[#c6bfff]/10'
+                iconColor = 'text-secondary'
+                iconBg = 'bg-secondary/10'
               } else if (notif.type === 'request') {
                 Icon = ArrowLeftRight
-                iconColor = 'text-[#ffb77d]'
-                iconBg = 'bg-[#ffb77d]/10'
+                iconColor = 'text-accent'
+                iconBg = 'bg-accent/10'
               }
 
               return (

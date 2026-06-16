@@ -73,6 +73,19 @@ export default async function ActivitiesPage() {
     submittedActIds = new Set(subs?.map((s: any) => s.activity_id) || [])
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isGlobalTeacher = profile?.role === 'teacher'
+
+  const userRoleMap = myMemberships?.reduce((acc: any, m: any) => {
+    acc[m.classroom_id] = m.role
+    return acc
+  }, {}) || {}
+
   const formattedActivities = (activities || []).map(a => ({
     ...a,
     classroom: Array.isArray(a.classroom) ? a.classroom[0] ?? null : a.classroom,
@@ -80,5 +93,5 @@ export default async function ActivitiesPage() {
     isSubmitted: submittedActIds.has(a.id)
   }))
 
-  return <ActivitiesClient activities={formattedActivities} userId={user.id} />
+  return <ActivitiesClient activities={formattedActivities} userId={user.id} userRoleMap={userRoleMap} isGlobalTeacher={isGlobalTeacher} />
 }

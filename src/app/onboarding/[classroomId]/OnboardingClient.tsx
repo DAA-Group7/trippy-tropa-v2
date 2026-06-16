@@ -65,7 +65,7 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
         </p>
       </header>
 
-      <section className="bg-surface/70 backdrop-blur-xl border border-white/10 rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+      <section className="bg-surface/70 backdrop-blur-xl border border-border rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
         
         {/* Progress Indicator removed per user request */}
 
@@ -108,7 +108,7 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
         </div>
 
         {/* Submit Action */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-white/10">
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-border">
           <p className="text-sm text-on-surface-variant font-semibold">
             {ratedCount} of {skills.length} skills rated
           </p>

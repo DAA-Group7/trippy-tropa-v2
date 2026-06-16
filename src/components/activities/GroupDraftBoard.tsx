@@ -51,11 +51,11 @@ function StudentCard({ member, isOverlay = false }: { member: any; isOverlay?: b
           : 'bg-white/5 border-white/10 hover:border-primary/30'
       }`}
     >
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60 transition-colors">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-foreground/30 hover:text-foreground/60 transition-colors">
         <GripVertical className="w-4 h-4" />
       </div>
 
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-foreground text-xs font-bold flex-shrink-0">
         {member.name?.charAt(0) || '?'}
       </div>
 
@@ -64,14 +64,14 @@ function StudentCard({ member, isOverlay = false }: { member: any; isOverlay?: b
           {member.isLeader && (
             <Crown className="w-3 h-3 text-yellow-400 flex-shrink-0" />
           )}
-          <p className="text-sm font-semibold text-white truncate">{member.name}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{member.name}</p>
         </div>
-        <p className="text-xs text-white/50 truncate">{member.email}</p>
+        <p className="text-xs text-foreground/50 truncate">{member.email}</p>
       </div>
 
       <div className="text-right flex-shrink-0">
         <span className="text-xs font-bold text-secondary">{member.skillScore.toFixed(1)}</span>
-        <p className="text-[10px] text-white/40">pts</p>
+        <p className="text-[10px] text-foreground/40">pts</p>
       </div>
     </div>
   )
@@ -106,12 +106,12 @@ function GroupColumn({
               onChange={e => setTempName(e.target.value)}
               onBlur={() => { onRename(group.tempId, tempName); setIsEditing(false) }}
               onKeyDown={e => { if (e.key === 'Enter') { onRename(group.tempId, tempName); setIsEditing(false) } }}
-              className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm font-bold text-white outline-none focus:border-secondary w-full"
+              className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm font-bold text-foreground outline-none focus:border-secondary w-full"
             />
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="text-base font-bold text-white hover:text-secondary transition-colors text-left"
+              className="text-base font-bold text-foreground hover:text-secondary transition-colors text-left"
             >
               {group.name}
             </button>
@@ -127,7 +127,7 @@ function GroupColumn({
             style={{ width: `${heightPct}%` }}
           />
         </div>
-        <p className="text-xs text-white/40">{group.members.length} members</p>
+        <p className="text-xs text-foreground/40">{group.members.length} members</p>
       </div>
 
       {/* Student list */}
@@ -141,7 +141,7 @@ function GroupColumn({
           ))}
         </SortableContext>
         {group.members.length === 0 && (
-          <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center text-white/30 text-xs">
+          <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center text-foreground/30 text-xs">
             Drop students here
           </div>
         )}

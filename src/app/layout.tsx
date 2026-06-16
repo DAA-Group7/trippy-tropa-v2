@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cousine } from "next/font/google";
 import "./globals.css";
 import "./trippy.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const cousine = Cousine({
+  weight: ["400", "700"],
   subsets: ["latin"],
+  variable: "--font-cousine",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -23,13 +25,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} antialiased`}
+      className={`${cousine.variable} antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground overflow-x-hidden transition-colors duration-300">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >
