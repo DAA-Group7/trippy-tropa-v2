@@ -32,7 +32,7 @@ function LoginForm() {
         </div>
       )}
 
-      <form action={formAction} className="flex flex-col gap-6">
+      <form action={formAction} autoComplete={"off"} className="flex flex-col gap-6">
         {nextParam && <input type="hidden" name="next" value={nextParam} />}
         {/* Input Fields */}
         <div className="flex flex-col gap-4">

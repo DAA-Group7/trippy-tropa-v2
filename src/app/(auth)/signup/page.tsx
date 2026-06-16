@@ -33,7 +33,7 @@ function SignUpForm() {
         </div>
       )}
 
-      <form action={formAction} onSubmit={(e) => {
+      <form action={formAction} autoComplete={"off"} onSubmit={(e) => {
         const p1 = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value
         const p2 = (e.currentTarget.elements.namedItem('confirm_password') as HTMLInputElement).value
         if (p1 !== p2) {
