@@ -67,23 +67,7 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
 
       <section className="bg-surface/70 backdrop-blur-xl border border-white/10 rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
         
-        {/* Progress Indicator */}
-        <div className="flex items-center justify-between mb-12 px-2">
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-10 h-10 rounded-full border-2 border-[#c6bfff] flex items-center justify-center text-[#c6bfff] font-black text-lg">1</div>
-            <span className="text-sm text-[#c6bfff] font-bold tracking-wider uppercase">Identity</span>
-          </div>
-          <div className="h-[2px] flex-1 bg-[#c6bfff]/30 mx-4"></div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-10 h-10 rounded-full border-2 border-[#c6bfff] bg-[#c6bfff] text-white flex items-center justify-center font-black text-lg shadow-[0_0_15px_rgba(198,191,255,0.5)]">2</div>
-            <span className="text-sm text-[#c6bfff] font-bold tracking-wider uppercase">Skills</span>
-          </div>
-          <div className="h-[2px] flex-1 bg-white/10 mx-4"></div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center text-white/50 font-black text-lg">3</div>
-            <span className="text-sm text-white/50 font-bold tracking-wider uppercase">Review</span>
-          </div>
-        </div>
+        {/* Progress Indicator removed per user request */}
 
         <div className="space-y-6">
           {skills.map((skill: any) => (
