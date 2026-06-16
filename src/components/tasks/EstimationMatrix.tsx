@@ -236,7 +236,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
                   key={m.user_id} 
                   className={`border-b border-white/5 transition-colors ${isMe ? 'bg-secondary/5 border-l-4 border-l-secondary' : 'hover:bg-white/5'}`}
                 >
-                  <td className={`p-4 sticky left-0 z-10 ${isMe ? 'bg-[#182a36]' : 'bg-[#15141d]'}`}>
+                  <td className={`p-4 sticky left-0 z-10 ${isMe ? 'bg-secondary/10' : 'bg-card'}`}>
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <img src={m.profile?.avatar_url || `https://ui-avatars.com/api/?name=${m.profile?.full_name || 'U'}&background=random`} alt="Avatar" className={`w-8 h-8 rounded-lg border ${isMe ? 'border-secondary/50' : 'border-white/10'}`} />
@@ -291,7 +291,7 @@ export default function EstimationMatrix({ members, tasks, estimates, currentUse
           </tbody>
           <tfoot>
             <tr className="bg-surface-container-highest/30">
-              <td className="p-4 font-bold text-on-surface sticky left-0 bg-[#23222b] z-10">Task Totals</td>
+              <td className="p-4 font-bold text-on-surface sticky left-0 bg-card z-10">Task Totals</td>
               {tasks.map((t: any) => (
                 <td key={t.id} className="p-4 font-bold text-primary">
                   {taskTotals[t.id] || 0}h

@@ -89,38 +89,35 @@ function ActivityCard({ activity }: { activity: Activity }) {
           <div className="flex items-start gap-4 flex-1 min-w-0">
             {/* Icon */}
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ backgroundColor: isGroup ? 'rgba(70,234,229,0.12)' : 'rgba(198,191,255,0.12)' }}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${isGroup ? 'bg-secondary/10' : 'bg-primary/10'}`}
             >
               {isGroup
-                ? <Users className="w-5 h-5" style={{ color: '#46eae5' }} />
-                : <User className="w-5 h-5" style={{ color: '#c6bfff' }} />}
+                ? <Users className="w-5 h-5 text-secondary" />
+                : <User className="w-5 h-5 text-primary" />}
             </div>
 
             {/* Content */}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <span
-                  className="text-[10px] font-bold uppercase tracking-wider"
-                  style={{ color: isGroup ? '#46eae5' : '#c6bfff' }}
+                  className={`text-[10px] font-bold uppercase tracking-wider ${isGroup ? 'text-secondary' : 'text-primary'}`}
                 >
                   {isGroup ? 'Group' : 'Individual'}
                 </span>
-                <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '10px' }}>·</span>
-                <span className="text-[10px]" style={{ color: 'rgba(200,196,215,0.5)' }}>
+                <span className="text-muted-foreground/30 text-[10px]">·</span>
+                <span className="text-[10px] text-muted-foreground">
                   {activity.classroom?.name}
                 </span>
               </div>
 
               <h3
-                className="text-base font-semibold leading-snug truncate transition-colors duration-200 group-hover:text-[#c6bfff]"
-                style={{ color: '#e5e0ed' }}
+                className="text-base font-semibold leading-snug truncate transition-colors duration-200 group-hover:text-primary text-foreground"
               >
                 {activity.title}
               </h3>
 
               {activity.description && (
-                <p className="text-sm mt-1 line-clamp-1" style={{ color: 'rgba(200,196,215,0.6)' }}>
+                <p className="text-sm mt-1 line-clamp-1 text-muted-foreground">
                   {activity.description}
                 </p>
               )}
@@ -128,8 +125,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
               {/* Group info */}
               {isGroup && activity.myGroup && (
                 <div
-                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
-                  style={{ backgroundColor: 'rgba(70,234,229,0.08)', color: '#46eae5', border: '1px solid rgba(70,234,229,0.2)' }}
+                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-secondary/10 text-secondary border border-secondary/20"
                 >
                   <Crown className="w-3 h-3" />
                   {activity.myGroup.name}
@@ -138,8 +134,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
 
               {isGroup && activity.groups_created && !activity.myGroup && (
                 <div
-                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px]"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'rgba(200,196,215,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[11px] bg-muted/50 text-muted-foreground border border-border/50"
                 >
                   Not yet assigned to a group
                 </div>
@@ -165,8 +160,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
             {/* Date */}
             {dateLabel && (
               <div
-                className="flex items-center gap-1 text-[11px]"
-                style={{ color: 'rgba(200,196,215,0.5)' }}
+                className="flex items-center gap-1 text-[11px] text-muted-foreground/50"
               >
                 <Clock className="w-3 h-3" />
                 {dateLabel}
@@ -175,15 +169,14 @@ function ActivityCard({ activity }: { activity: Activity }) {
 
             {/* Tasks done indicator */}
             {activity.tasks_assigned && (
-              <div className="flex items-center gap-1 text-[11px]" style={{ color: '#46eae5' }}>
+              <div className="flex items-center gap-1 text-[11px] text-secondary">
                 <CheckCircle className="w-3 h-3" />
                 Tasks assigned
               </div>
             )}
 
             <ChevronRight
-              className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ color: '#c6bfff' }}
+              className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary"
             />
           </div>
         </div>
@@ -197,17 +190,15 @@ function ActivityCard({ activity }: { activity: Activity }) {
 function EmptyState() {
   return (
     <div
-      className="flex flex-col items-center justify-center text-center py-24 rounded-2xl border-2 border-dashed"
-      style={{ borderColor: 'rgba(255,255,255,0.07)', backgroundColor: 'rgba(18,18,42,0.4)' }}
+      className="flex flex-col items-center justify-center text-center py-24 rounded-2xl border-2 border-dashed border-border/50 bg-card/40"
     >
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-        style={{ backgroundColor: 'rgba(108,92,231,0.1)' }}
+        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 bg-primary/10"
       >
-        <BookOpen className="w-8 h-8" style={{ color: '#c6bfff' }} />
+        <BookOpen className="w-8 h-8 text-primary" />
       </div>
-      <h3 className="text-lg font-semibold mb-2" style={{ color: '#e5e0ed' }}>No activities yet</h3>
-      <p className="text-sm max-w-xs" style={{ color: 'rgba(200,196,215,0.5)' }}>
+      <h3 className="text-lg font-semibold mb-2 text-foreground">No activities yet</h3>
+      <p className="text-sm max-w-xs text-muted-foreground">
         Join a classroom and your activities will appear here.
       </p>
     </div>
@@ -234,10 +225,10 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#e5e0ed' }}>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             All Activities
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'rgba(200,196,215,0.6)' }}>
+          <p className="mt-1 text-sm text-muted-foreground">
             Your individual and group activities across all enrolled classrooms.
           </p>
         </div>
@@ -246,18 +237,17 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
         {activities.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Total', value: activities.length, color: '#c6bfff' },
-              { label: 'Overdue', value: overdue.length, color: '#ffb4ab' },
-              { label: 'Group', value: groupActs.length, color: '#46eae5' },
-              { label: 'Individual', value: individualActs.length, color: '#c6bfff' },
+              { label: 'Total', value: activities.length, colorClass: 'text-primary' },
+              { label: 'Overdue', value: overdue.length, colorClass: 'text-destructive' },
+              { label: 'Group', value: groupActs.length, colorClass: 'text-secondary' },
+              { label: 'Individual', value: individualActs.length, colorClass: 'text-primary' },
             ].map(s => (
               <div
                 key={s.label}
-                className="rounded-xl p-4 text-center"
-                style={{ backgroundColor: 'rgba(18,18,42,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}
+                className="rounded-xl p-4 text-center bg-card border border-border"
               >
-                <div className="text-2xl font-bold mb-0.5" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(200,196,215,0.5)' }}>{s.label}</div>
+                <div className={`text-2xl font-bold mb-0.5 ${s.colorClass}`}>{s.value}</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
               </div>
             ))}
           </div>
@@ -270,7 +260,7 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
           <div className="space-y-3">
             {overdue.length > 0 && (
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ffb4ab' }}>
+                <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-destructive">
                   <AlertTriangle className="w-3.5 h-3.5" /> Overdue
                 </p>
                 <div className="space-y-3">
@@ -282,7 +272,7 @@ export default function ActivitiesClient({ activities, userId }: { activities: A
             {upcoming.length > 0 && (
               <div className={overdue.length > 0 ? 'mt-6' : ''}>
                 {overdue.length > 0 && (
-                  <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'rgba(200,196,215,0.5)' }}>
+                  <p className="text-xs font-bold uppercase tracking-wider mb-3 text-muted-foreground/50">
                     Upcoming
                   </p>
                 )}

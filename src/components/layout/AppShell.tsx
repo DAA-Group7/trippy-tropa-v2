@@ -8,14 +8,37 @@ import {
   ClipboardList,
   LogOut,
   ChevronRight,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { NotificationsPopup } from './NotificationsPopup'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 interface AppShellProps {
   profile: { full_name?: string; role?: string; avatar_url?: string } | null
   classrooms: { id: string; name: string }[]
   userId: string
   children: React.ReactNode
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  if (!mounted) return <div className="w-9 h-9" />
+
+  return (
+    <button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="p-2 rounded-lg bg-card border border-border text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+      title="Toggle theme"
+    >
+      {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+    </button>
+  )
 }
 
 export default function AppShell({ profile, classrooms, children }: AppShellProps) {
@@ -26,27 +49,19 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
     : '??'
 
   return (
-    <div
-      className="flex h-screen overflow-hidden"
-      style={{ backgroundColor: '#13121b', color: '#e5e0ed', fontFamily: 'Inter, sans-serif' }}
-    >
+    <div className="flex h-screen overflow-hidden bg-background text-foreground font-sans">
       {/* ── MAIN AREA ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
         <header
-          className="h-16 flex items-center justify-between px-6 md:px-8 flex-shrink-0 z-10"
-          style={{
-            backgroundColor: 'rgba(19,18,27,0.6)',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-          }}
+          className="h-16 flex items-center justify-between px-6 md:px-8 flex-shrink-0 z-10 border-b border-border bg-card/60 backdrop-blur-xl"
         >
           {/* Brand & Navigation */}
           <div className="flex items-center gap-8">
             <h1
               className="text-xl font-black tracking-tight"
               style={{
-                background: 'linear-gradient(90deg, #c6bfff, #46eae5)',
+                background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -59,8 +74,8 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
                 href="/dashboard" 
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
                   pathname === '/dashboard' || pathname.startsWith('/dashboard/') 
-                    ? 'bg-[#c6bfff]/10 text-[#c6bfff] border border-[#c6bfff]/20' 
-                    : 'text-[#e5e0ed]/60 hover:text-[#e5e0ed] hover:bg-white/5 border border-transparent'
+                    ? 'bg-primary/10 text-primary border border-primary/20' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent'
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -70,8 +85,8 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
                 href="/activities" 
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
                   pathname === '/activities' || pathname.startsWith('/activities/') 
-                    ? 'bg-[#46eae5]/10 text-[#46eae5] border border-[#46eae5]/20' 
-                    : 'text-[#e5e0ed]/60 hover:text-[#e5e0ed] hover:bg-white/5 border border-transparent'
+                    ? 'bg-secondary/10 text-secondary border border-secondary/20' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent'
                 }`}
               >
                 <ClipboardList className="w-4 h-4" />
@@ -82,31 +97,27 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
 
           {/* Right controls */}
           <div className="flex items-center gap-6">
+            <ThemeToggle />
             <NotificationsPopup />
 
-            <div className="flex items-center gap-4 border-l border-white/10 pl-6">
+            <div className="flex items-center gap-4 border-l border-border pl-6">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-[#e5e0ed] leading-tight">{profile?.full_name || 'User'}</p>
+                <p className="text-sm font-bold text-foreground leading-tight">{profile?.full_name || 'User'}</p>
                 <p
-                  className="text-[10px] font-black text-[#46eae5] uppercase tracking-widest leading-tight mt-0.5"
+                  className="text-[10px] font-black text-secondary uppercase tracking-widest leading-tight mt-0.5"
                 >
                   {profile?.role?.replace('_', ' ')}
                 </p>
               </div>
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #c6bfff, #46eae5)',
-                  color: '#13121b',
-                  border: '2px solid rgba(255,255,255,0.1)',
-                }}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shadow-lg bg-primary text-primary-foreground border-2 border-border"
               >
                 {initials}
               </div>
               <form action={signOutAction}>
                 <button
                   title="Sign out"
-                  className="p-2 text-error/60 hover:text-error hover:bg-error/10 rounded-lg transition-colors ml-2"
+                  className="p-2 text-destructive/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors ml-2"
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -124,22 +135,12 @@ export default function AppShell({ profile, classrooms, children }: AppShellProp
       {/* Ambient background blobs */}
       <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
         <div
-          className="absolute rounded-full animate-pulse"
-          style={{
-            top: '20%', left: '30%',
-            width: '384px', height: '384px',
-            background: 'rgba(198,191,255,0.06)',
-            filter: 'blur(120px)',
-          }}
+          className="absolute rounded-full animate-pulse bg-primary/5 blur-[120px]"
+          style={{ top: '20%', left: '30%', width: '384px', height: '384px' }}
         />
         <div
-          className="absolute rounded-full"
-          style={{
-            bottom: '10%', right: '10%',
-            width: '480px', height: '480px',
-            background: 'rgba(70,234,229,0.04)',
-            filter: 'blur(160px)',
-          }}
+          className="absolute rounded-full bg-secondary/5 blur-[160px]"
+          style={{ bottom: '10%', right: '10%', width: '480px', height: '480px' }}
         />
       </div>
     </div>

@@ -145,15 +145,15 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 onClick={() => setActivityType('individual')}
                 className={`flex flex-col items-center gap-3 p-5 rounded-xl border transition-all duration-200 ${
                   activityType === 'individual'
-                    ? 'border-[#c6bfff] bg-[#c6bfff]/10 shadow-[0_0_16px_rgba(198,191,255,0.15)]'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
+                    ? 'border-primary bg-primary/10 shadow-[0_0_16px_rgba(198,191,255,0.15)]'
+                    : 'border-border bg-input hover:bg-input/80 hover:border-border/80'
                 }`}
               >
                 <div
                   className={`p-3 rounded-lg ${
                     activityType === 'individual'
-                      ? 'bg-[#c6bfff]/20 text-[#c6bfff]'
-                      : 'bg-white/5 text-white/40'
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-muted/50 text-muted-foreground/40'
                   }`}
                 >
                   <User className="w-6 h-6" />
@@ -161,12 +161,12 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 <div className="text-center">
                   <p
                     className={`font-bold text-sm ${
-                      activityType === 'individual' ? 'text-[#c6bfff]' : 'text-white/70'
+                      activityType === 'individual' ? 'text-primary' : 'text-muted-foreground'
                     }`}
                   >
                     Individual
                   </p>
-                  <p className="text-[11px] text-white/40 mt-0.5">Each student works alone</p>
+                  <p className="text-[11px] text-muted-foreground/40 mt-0.5">Each student works alone</p>
                 </div>
               </button>
 
@@ -176,15 +176,15 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 onClick={() => setActivityType('group')}
                 className={`flex flex-col items-center gap-3 p-5 rounded-xl border transition-all duration-200 ${
                   activityType === 'group'
-                    ? 'border-[#46eae5] bg-[#46eae5]/10 shadow-[0_0_16px_rgba(70,234,229,0.15)]'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
+                    ? 'border-secondary bg-secondary/10 shadow-[0_0_16px_rgba(70,234,229,0.15)]'
+                    : 'border-border bg-input hover:bg-input/80 hover:border-border/80'
                 }`}
               >
                 <div
                   className={`p-3 rounded-lg ${
                     activityType === 'group'
-                      ? 'bg-[#46eae5]/20 text-[#46eae5]'
-                      : 'bg-white/5 text-white/40'
+                      ? 'bg-secondary/20 text-secondary'
+                      : 'bg-muted/50 text-muted-foreground/40'
                   }`}
                 >
                   <Users className="w-6 h-6" />
@@ -192,12 +192,12 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 <div className="text-center">
                   <p
                     className={`font-bold text-sm ${
-                      activityType === 'group' ? 'text-[#46eae5]' : 'text-white/70'
+                      activityType === 'group' ? 'text-secondary' : 'text-muted-foreground'
                     }`}
                   >
                     Group
                   </p>
-                  <p className="text-[11px] text-white/40 mt-0.5">AI-balanced skill groups</p>
+                  <p className="text-[11px] text-muted-foreground/40 mt-0.5">AI-balanced skill groups</p>
                 </div>
               </button>
             </div>

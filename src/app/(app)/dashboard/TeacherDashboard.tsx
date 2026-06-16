@@ -18,14 +18,14 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
       {/* HEADER SECTION WITH ACTION */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
         <div>
-          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight text-[#e5e0ed]">Welcome, {profile?.full_name?.split(' ')[0] || 'Teacher'}</h3>
-          <p className="text-[14px] sm:text-[15px] text-[rgba(200,196,215,0.6)] max-w-xl opacity-80">
+          <h3 className="text-3xl sm:text-4xl font-bold mb-1 tracking-tight text-foreground">Welcome, {profile?.full_name?.split(' ')[0] || 'Teacher'}</h3>
+          <p className="text-[14px] sm:text-[15px] text-muted-foreground max-w-xl">
             Oversee your current sessions and active classrooms at a glance.
           </p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#c6bfff] hover:brightness-110 text-[#13121b] font-bold px-6 py-2.5 rounded-lg shadow-[0_0_20px_rgba(198,191,255,0.15)] flex items-center gap-2 transition-all active:scale-95"
+          className="bg-primary hover:brightness-110 text-primary-foreground font-bold px-6 py-2.5 rounded-lg shadow-lg hover:shadow-primary/20 flex items-center gap-2 transition-all active:scale-95"
         >
           <Plus size={20} />
           <span className="text-[12px] font-bold uppercase tracking-widest">New Classroom</span>
@@ -33,15 +33,15 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
       </div>
 
       {classrooms.length === 0 ? (
-        <div className="glass-card rounded-xl p-12 flex flex-col items-center justify-center text-center border-dashed border-2 border-white/10 mt-4">
+        <div className="glass-card rounded-xl p-12 flex flex-col items-center justify-center text-center border-dashed border-2 border-border mt-4">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
             <Plus className="w-8 h-8 text-primary" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">No classrooms yet</h3>
-          <p className="text-white/60 max-w-sm mb-6">Create your first classroom to invite students and start running smart grouping algorithms.</p>
+          <h3 className="text-xl font-semibold mb-2 text-foreground">No classrooms yet</h3>
+          <p className="text-muted-foreground max-w-sm mb-6">Create your first classroom to invite students and start running smart grouping algorithms.</p>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="relative group bg-surface-container hover:bg-surface-container-high border border-primary/30 px-6 py-3 rounded-lg font-medium transition-colors"
+            className="relative group bg-card hover:bg-accent border border-primary/30 px-6 py-3 rounded-lg font-medium transition-colors"
           >
             <div className="absolute inset-0 bg-primary/30 blur-xl opacity-50 group-hover:opacity-100 transition-opacity animate-pulse rounded-lg" />
             <span className="relative z-10 text-primary font-bold">Create Your First Classroom</span>
@@ -62,7 +62,7 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
                       <div className={`w-10 h-10 rounded-lg ${bgColorClass} ${colorClass} flex items-center justify-center`}>
                         <Icon size={22} />
                       </div>
-                      <span className="bg-[#46eae5]/10 text-[#46eae5] border border-[#46eae5]/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                      <span className="bg-secondary/10 text-secondary border border-secondary/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
                         Active
                       </span>
                     </div>
@@ -73,14 +73,14 @@ export default function TeacherDashboard({ classrooms, profile }: { classrooms: 
                       {c.description || 'No description provided.'}
                     </p>
                   </div>
-                  <div className="flex items-center justify-between border-t border-white/5 pt-3">
+                  <div className="flex items-center justify-between border-t border-border/50 pt-3">
                     <div className="flex -space-x-1.5">
-                      <div className="w-7 h-7 rounded-full border-2 border-[rgba(18,18,42,0.7)] bg-[rgba(18,18,42,0.4)] flex items-center justify-center text-[9px] font-bold text-[#e5e0ed]">
+                      <div className="w-7 h-7 rounded-full border-2 border-background bg-card flex items-center justify-center text-[9px] font-bold text-foreground">
                         +{c.studentCount}
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-[rgba(200,196,215,0.6)] font-semibold uppercase leading-none">Students</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase leading-none">Students</p>
                       <p className={`text-xl font-semibold ${colorClass}`}>{c.studentCount}</p>
                     </div>
                   </div>

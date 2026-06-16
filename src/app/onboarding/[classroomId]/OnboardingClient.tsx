@@ -56,11 +56,11 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
     <main className="w-full max-w-4xl mx-auto z-10 p-6 md:p-12 min-h-screen flex flex-col justify-center animate-in fade-in duration-500">
       <header className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 mb-4">
-          <School className="text-[#c6bfff] w-8 h-8" />
-          <h1 className="text-2xl font-black bg-gradient-to-r from-[#c6bfff] to-[#46eae5] bg-clip-text text-transparent">Trippy Tropa</h1>
+          <School className="text-primary w-8 h-8" />
+          <h1 className="text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Trippy Tropa</h1>
         </div>
-        <h2 className="text-3xl md:text-4xl font-black text-[#e5e0ed] mb-2 tracking-tight">Welcome to {classroomName}</h2>
-        <p className="text-base text-[rgba(200,196,215,0.8)] font-medium max-w-xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tight">Welcome to {classroomName}</h2>
+        <p className="text-base text-muted-foreground font-medium max-w-xl mx-auto">
           Let's assess your skills to help us match you with the perfect project group and tailor your learning experience.
         </p>
       </header>
@@ -71,20 +71,20 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
 
         <div className="space-y-6">
           {skills.map((skill: any) => (
-            <div key={skill.id} className="border border-white/5 bg-white/5 p-6 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_rgba(198,191,255,0.15)] hover:border-primary/30">
+            <div key={skill.id} className="border border-border bg-card/50 p-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#c6bfff]/20 flex items-center justify-center text-[#c6bfff]">
+                  <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
                     {getIcon(skill.name)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#e5e0ed]">{skill.name}</h3>
-                    <p className="text-sm text-[rgba(200,196,215,0.7)] font-medium">Weight Multiplier: ×{skill.multiplier}</p>
+                    <h3 className="text-xl font-bold text-foreground">{skill.name}</h3>
+                    <p className="text-sm text-muted-foreground font-medium">Weight Multiplier: ×{skill.multiplier}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 bg-[#13121b] px-4 py-2 rounded-full border border-white/10 shadow-inner">
-                  <span className="text-[#46eae5] font-black text-sm tracking-widest">LVL</span>
-                  <span className="text-2xl font-black text-white">{ratings[skill.id] || 3}</span>
+                <div className="flex items-center gap-1.5 bg-input px-4 py-2 rounded-full border border-border shadow-inner">
+                  <span className="text-secondary font-black text-sm tracking-widest">LVL</span>
+                  <span className="text-2xl font-black text-foreground">{ratings[skill.id] || 3}</span>
                 </div>
               </div>
 
@@ -95,10 +95,10 @@ export default function OnboardingClient({ classroomId, classroomName, skills }:
                   max="5" 
                   value={ratings[skill.id] || 3} 
                   onChange={(e) => handleSliderChange(skill.id, parseInt(e.target.value))}
-                  className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#c6bfff]"
-                  style={{ accentColor: '#c6bfff' }}
+                  className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+                  style={{ accentColor: 'var(--primary)' }}
                 />
-                <div className="flex justify-between mt-3 text-xs text-[#e5e0ed] px-1 font-bold tracking-wide uppercase">
+                <div className="flex justify-between mt-3 text-xs text-foreground px-1 font-bold tracking-wide uppercase">
                   <span>Novice</span>
                   <span>Expert</span>
                 </div>

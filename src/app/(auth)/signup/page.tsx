@@ -18,17 +18,17 @@ function SignUpForm() {
       {/* Header Section */}
       <header className="text-center flex flex-col gap-2">
         <div className="inline-flex items-center justify-center self-center mb-2">
-          <span className="font-sans text-2xl font-bold bg-gradient-to-r from-[#c6bfff] to-[#46eae5] bg-clip-text text-transparent">
+          <span className="font-sans text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Trippy Tropa
           </span>
-          <span className="ml-2 text-xs text-white/60">v2.0 Beta</span>
+          <span className="ml-2 text-xs text-muted-foreground/60">v2.0 Beta</span>
         </div>
-        <h1 className="text-3xl font-semibold text-white">Create an account</h1>
-        <p className="text-white/70">Join the next generation of smart classrooms.</p>
+        <h1 className="text-3xl font-semibold text-foreground">Create an account</h1>
+        <p className="text-muted-foreground">Join the next generation of smart classrooms.</p>
       </header>
 
       {state?.error && (
-        <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+        <div className="p-3 bg-destructive/20 border border-destructive/50 rounded-lg text-destructive text-sm">
           {state.error}
         </div>
       )}
@@ -46,16 +46,16 @@ function SignUpForm() {
         <div className="grid grid-cols-2 gap-4">
           <label className="cursor-pointer relative group">
             <input className="sr-only peer" name="role" type="radio" value="student" defaultChecked />
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-white/10 bg-white/5 peer-checked:border-[#c6bfff] peer-checked:bg-[#6c5ce7]/20 transition-all duration-300">
-              <School className="w-8 h-8 mb-2 peer-checked:text-[#c6bfff]" />
-              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">🎓 I'm a Student</span>
+            <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-border bg-input peer-checked:border-primary peer-checked:bg-primary/10 transition-all duration-300">
+              <School className="w-8 h-8 mb-2 peer-checked:text-primary text-muted-foreground" />
+              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-primary text-muted-foreground">🎓 I'm a Student</span>
             </div>
           </label>
           <label className="cursor-pointer relative group">
             <input className="sr-only peer" name="role" type="radio" value="teacher" />
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-white/10 bg-white/5 peer-checked:border-[#c6bfff] peer-checked:bg-[#6c5ce7]/20 transition-all duration-300">
-              <UserSquare2 className="w-8 h-8 mb-2 peer-checked:text-[#c6bfff]" />
-              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-[#c6bfff]">👨‍🏫 I'm a Teacher</span>
+            <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-border bg-input peer-checked:border-primary peer-checked:bg-primary/10 transition-all duration-300">
+              <UserSquare2 className="w-8 h-8 mb-2 peer-checked:text-primary text-muted-foreground" />
+              <span className="text-xs uppercase tracking-widest font-semibold peer-checked:text-primary text-muted-foreground">👨‍🏫 I'm a Teacher</span>
             </div>
           </label>
         </div>
@@ -63,11 +63,11 @@ function SignUpForm() {
         {/* Input Fields */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-white/60 ml-1" htmlFor="fullname">FULL NAME</label>
+            <label className="text-xs font-semibold text-muted-foreground ml-1" htmlFor="fullname">FULL NAME</label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 w-5 h-5 group-focus-within:text-[#46eae5] transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 group-focus-within:text-primary transition-colors" />
               <input 
-                className="w-full bg-[#050510] border border-white/10 rounded-lg py-2 pl-12 pr-4 text-white focus:outline-none focus:ring-0 focus:border-[#46eae5] input-glow transition-all" 
+                className="w-full bg-input border border-border rounded-lg py-2 pl-12 pr-4 text-foreground focus:outline-none focus:ring-0 focus:border-primary input-glow transition-all" 
                 id="fullname" 
                 name="fullname"
                 placeholder="Enter your full name" 
@@ -77,11 +77,11 @@ function SignUpForm() {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-white/60 ml-1" htmlFor="email">EMAIL ADDRESS</label>
+            <label className="text-xs font-semibold text-muted-foreground ml-1" htmlFor="email">EMAIL ADDRESS</label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 w-5 h-5 group-focus-within:text-[#46eae5] transition-colors" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 group-focus-within:text-primary transition-colors" />
               <input 
-                className="w-full bg-[#050510] border border-white/10 rounded-lg py-2 pl-12 pr-4 text-white focus:outline-none focus:ring-0 focus:border-[#46eae5] input-glow transition-all" 
+                className="w-full bg-input border border-border rounded-lg py-2 pl-12 pr-4 text-foreground focus:outline-none focus:ring-0 focus:border-primary input-glow transition-all" 
                 id="email" 
                 name="email"
                 placeholder="name@example.com" 
@@ -91,11 +91,11 @@ function SignUpForm() {
             </div>
           </div>
           <div className="flex flex-col gap-1 relative">
-            <label className="text-xs font-semibold text-white/60 ml-1" htmlFor="password">PASSWORD</label>
+            <label className="text-xs font-semibold text-muted-foreground ml-1" htmlFor="password">PASSWORD</label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 w-5 h-5 group-focus-within:text-[#46eae5] transition-colors" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 group-focus-within:text-primary transition-colors" />
               <input 
-                className="w-full bg-[#050510] border border-white/10 rounded-lg py-2 pl-12 pr-12 text-white focus:outline-none focus:ring-0 focus:border-[#46eae5] input-glow transition-all" 
+                className="w-full bg-input border border-border rounded-lg py-2 pl-12 pr-12 text-foreground focus:outline-none focus:ring-0 focus:border-primary input-glow transition-all" 
                 id="password" 
                 name="password"
                 placeholder="••••••••" 
@@ -104,7 +104,7 @@ function SignUpForm() {
                 minLength={6}
               />
               <button 
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors" 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors" 
                 onClick={() => setShowPassword(!showPassword)} 
                 type="button"
               >
@@ -113,11 +113,11 @@ function SignUpForm() {
             </div>
           </div>
           <div className="flex flex-col gap-1 relative">
-            <label className="text-xs font-semibold text-white/60 ml-1" htmlFor="confirm_password">CONFIRM PASSWORD</label>
+            <label className="text-xs font-semibold text-muted-foreground ml-1" htmlFor="confirm_password">CONFIRM PASSWORD</label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 w-5 h-5 group-focus-within:text-[#46eae5] transition-colors" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 group-focus-within:text-primary transition-colors" />
               <input 
-                className="w-full bg-[#050510] border border-white/10 rounded-lg py-2 pl-12 pr-12 text-white focus:outline-none focus:ring-0 focus:border-[#46eae5] input-glow transition-all" 
+                className="w-full bg-input border border-border rounded-lg py-2 pl-12 pr-12 text-foreground focus:outline-none focus:ring-0 focus:border-primary input-glow transition-all" 
                 id="confirm_password" 
                 name="confirm_password"
                 placeholder="••••••••" 
@@ -126,7 +126,7 @@ function SignUpForm() {
                 minLength={6}
               />
               <button 
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors" 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors" 
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
                 type="button"
               >
@@ -140,15 +140,15 @@ function SignUpForm() {
         <div className="flex flex-col gap-4 mt-2">
           <button 
             disabled={isPending}
-            className="primary-gradient w-full py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-70" 
+            className="w-full py-3 rounded-lg text-primary-foreground bg-primary hover:bg-primary/90 font-semibold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-70" 
             type="submit"
           >
             <span>{isPending ? 'Signing Up...' : 'Sign Up'}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
-          <p className="text-center text-sm text-white/60">
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link className="text-[#46eae5] font-bold hover:underline decoration-[#46eae5]/30" href="/login">
+            <Link className="text-primary font-bold hover:underline decoration-primary/30" href="/login">
               Log In
             </Link>
           </p>

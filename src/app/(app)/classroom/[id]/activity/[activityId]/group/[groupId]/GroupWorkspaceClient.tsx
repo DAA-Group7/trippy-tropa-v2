@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Layout, Table } from 'lucide-react'
+import { ArrowLeft, Layout, Table, Crown } from 'lucide-react'
 import EstimationMatrix from '@/components/tasks/EstimationMatrix'
 import KanbanBoard from '@/components/tasks/KanbanBoard'
 
@@ -26,32 +26,32 @@ export default function GroupWorkspaceClient({
         <div className="flex flex-col gap-6">
           <Link 
             href={`/classroom/${activity.classroom_id}/activity/${activity.id}`} 
-            className="text-[#c6bfff] text-sm hover:underline font-semibold flex items-center gap-2 w-fit transition-colors"
+            className="text-muted-foreground text-sm hover:underline font-semibold flex items-center gap-2 w-fit transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Activity
           </Link>
           
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-black tracking-tight text-[#e5e0ed]">{group.name}</h1>
-              <span className="px-3 py-1 rounded-full bg-surface-container-highest border border-white/10 text-xs font-bold text-[rgba(200,196,215,0.6)] uppercase tracking-wider">
-                Group Workspace
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-3xl font-bold text-foreground">{group.name}</h1>
+              <span className="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                <Crown className="w-3 h-3" /> Group Workspace
               </span>
             </div>
-            <p className="text-[rgba(200,196,215,0.6)] text-lg">Activity: <span className="font-semibold text-[#e5e0ed]">{activity.title}</span></p>
+            <p className="text-muted-foreground text-lg">Activity: <span className="font-semibold text-foreground">{activity.title}</span></p>
           </div>
         </div>
 
       {/* Tabs (Only if tasks are assigned) */}
       {activity.tasks_assigned && (
-        <div className="flex border-b border-white/10 mb-8">
+        <div className="flex border-b border-border mb-8">
           <button 
             onClick={() => setActiveTab('kanban')}
             className={`px-6 py-4 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${
               activeTab === 'kanban' 
-                ? 'border-[#c6bfff] text-[#c6bfff] bg-[#c6bfff]/5' 
-                : 'border-transparent text-[rgba(200,196,215,0.6)] hover:text-[#e5e0ed] hover:bg-white/5'
+                ? 'border-primary text-primary bg-primary/5' 
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-accent/50'
             }`}
           >
             <Layout className="w-4 h-4" />
@@ -61,8 +61,8 @@ export default function GroupWorkspaceClient({
             onClick={() => setActiveTab('matrix')}
             className={`px-6 py-4 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${
               activeTab === 'matrix' 
-                ? 'border-[#c6bfff] text-[#c6bfff] bg-[#c6bfff]/5' 
-                : 'border-transparent text-[rgba(200,196,215,0.6)] hover:text-[#e5e0ed] hover:bg-white/5'
+                ? 'border-primary text-primary bg-primary/5' 
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-accent/50'
             }`}
           >
             <Table className="w-4 h-4" />

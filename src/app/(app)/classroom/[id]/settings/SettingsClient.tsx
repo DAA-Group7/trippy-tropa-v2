@@ -177,23 +177,23 @@ export default function SettingsClient({ classroom, initialSkills, isOwner, user
             
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Classroom Name</label>
-                <div className="border border-white/10 rounded-lg bg-[#1c1b23] p-1 transition-colors focus-within:border-white/30">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Classroom Name</label>
+                <div className="border border-border rounded-lg bg-input p-1 transition-colors focus-within:border-border/80">
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 outline-none text-[#e5e0ed]" 
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 outline-none text-foreground" 
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Description</label>
-                <div className="border border-white/10 rounded-lg bg-[#1c1b23] p-1 transition-colors focus-within:border-white/30">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Description</label>
+                <div className="border border-border rounded-lg bg-input p-1 transition-colors focus-within:border-border/80">
                   <textarea 
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 resize-none outline-none text-[#e5e0ed]" 
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 px-3 resize-none outline-none text-foreground" 
                     rows={4}
                   />
                 </div>

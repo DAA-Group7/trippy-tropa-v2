@@ -26,7 +26,7 @@ interface Props {
 function StatusBadge({ dueDate, isSubmitted }: { dueDate: string | null; isSubmitted?: boolean }) {
   if (isSubmitted) {
     return (
-      <span className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full border bg-[#46eae5]/10 text-[#46eae5] border-[#46eae5]/30">
+      <span className="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full border bg-secondary/10 text-secondary border-secondary/30">
         <CheckCircle className="w-3 h-3" />
         Submitted
       </span>
@@ -126,8 +126,8 @@ export default function ActivityDetailClient({
               <h1 className="text-3xl md:text-4xl font-bold text-[#e5e0ed]">{activity.title}</h1>
               <span className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 ${
                 isGroup
-                  ? 'bg-[#46eae5]/10 text-[#46eae5] border-[#46eae5]/30'
-                  : 'bg-[#c6bfff]/10 text-[#c6bfff] border-[#c6bfff]/30'
+                  ? 'bg-secondary/10 text-secondary border-secondary/30'
+                  : 'bg-primary/10 text-primary border-primary/30'
               }`}>
                 {isGroup ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
                 {isGroup ? 'Group Activity' : 'Individual'}

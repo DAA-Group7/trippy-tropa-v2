@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Join the next generation of smart classrooms.",
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,9 +23,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} dark antialiased`}
+      className={`${inter.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#0a0a1a] overflow-x-hidden text-white">{children}</body>
+      <body className="min-h-screen flex flex-col font-sans bg-background text-foreground overflow-x-hidden transition-colors duration-300">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

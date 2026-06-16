@@ -23,16 +23,16 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
 
   if (findError || !classroom) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center p-6 text-center">
-        <div className="glass-card max-w-md p-8 rounded-2xl border border-white/10 space-y-6">
-          <div className="w-16 h-16 bg-error/20 rounded-full flex items-center justify-center mx-auto">
-            <AlertTriangle className="w-8 h-8 text-error" />
+      <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
+        <div className="bg-card max-w-md p-8 rounded-2xl border border-border space-y-6">
+          <div className="w-16 h-16 bg-destructive/20 rounded-full flex items-center justify-center mx-auto">
+            <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
-          <h1 className="text-2xl font-bold text-on-surface">Invalid Invite Code</h1>
-          <p className="text-on-surface-variant">
+          <h1 className="text-2xl font-bold text-foreground">Invalid Invite Code</h1>
+          <p className="text-muted-foreground">
             The invite code <strong>{code}</strong> is invalid or the classroom does not exist.
           </p>
-          <Link href="/dashboard" className="bg-primary text-on-primary px-6 py-3 rounded-lg font-bold w-full flex justify-center mt-4 hover:opacity-90">
+          <Link href="/dashboard" className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-bold w-full flex justify-center mt-4 hover:opacity-90">
             <Home className="w-5 h-5 mr-2" />
             Go to Dashboard
           </Link>
@@ -51,10 +51,10 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
 
   if (memErr) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center p-6 text-center">
-        <div className="glass-card max-w-md p-8 rounded-2xl border border-white/10 space-y-4">
-          <h1 className="text-xl font-bold text-error">Database Error</h1>
-          <p className="text-on-surface-variant">Could not verify membership. Please try again later.</p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
+        <div className="bg-card max-w-md p-8 rounded-2xl border border-border space-y-4">
+          <h1 className="text-xl font-bold text-destructive">Database Error</h1>
+          <p className="text-muted-foreground">Could not verify membership. Please try again later.</p>
           <Link href="/dashboard" className="text-secondary font-bold hover:underline">
             Back to Dashboard
           </Link>
@@ -78,10 +78,10 @@ export default async function JoinClassroomPage({ params }: { params: Promise<{ 
 
   if (joinError) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center p-6 text-center">
-        <div className="glass-card max-w-md p-8 rounded-2xl border border-white/10 space-y-4">
-          <h1 className="text-xl font-bold text-error">Failed to Join</h1>
-          <p className="text-on-surface-variant">{joinError.message}</p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
+        <div className="bg-card max-w-md p-8 rounded-2xl border border-border space-y-4">
+          <h1 className="text-xl font-bold text-destructive">Failed to Join</h1>
+          <p className="text-muted-foreground">{joinError.message}</p>
           <Link href="/dashboard" className="text-secondary font-bold hover:underline">
             Back to Dashboard
           </Link>
