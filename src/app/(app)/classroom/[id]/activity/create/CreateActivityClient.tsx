@@ -15,7 +15,7 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
   const router = useRouter()
 
   const [activityType, setActivityType] = useState<'individual' | 'group'>('individual')
-  const [numGroups, setNumGroups] = useState(2)
+  const [numGroups, setNumGroups] = useState<number | ''>(2)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -221,17 +221,16 @@ export default function CreateActivityClient({ classroomId, studentCount }: Prop
                 name="num_groups"
                 type="number"
                 min={2}
-                max={studentCount > 0 ? studentCount : undefined}
                 value={numGroups}
                 onChange={(e) => {
-                  const val = Math.max(2, parseInt(e.target.value, 10) || 2)
-                  setNumGroups(val)
+                  const val = e.target.value;
+                  setNumGroups(val === '' ? '' : parseInt(val, 10));
                 }}
                 className={`${inputClass} max-w-[120px]`}
               />
-              {studentCount > 0 && (
+              {studentCount > 0 && typeof numGroups === 'number' && numGroups > 0 && (
                 <p className="text-xs text-secondary/80">
-                  ≈ {studentsPerGroup} student{studentsPerGroup !== 1 ? 's' : ''} per group
+                  ≈ {Math.ceil(studentCount / numGroups)} student{Math.ceil(studentCount / numGroups) !== 1 ? 's' : ''} per group
                   <span className="text-foreground/60 ml-1">({studentCount} students total)</span>
                 </p>
               )}
