@@ -101,7 +101,9 @@ export default function ActivityDetailClient({
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'No due date'
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const dt = new Date(dateStr)
+    if (isNaN(dt.getTime())) return 'No due date'
+    return dt.toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric',
       hour: '2-digit', minute: '2-digit'
     })
@@ -176,7 +178,11 @@ export default function ActivityDetailClient({
                     <div key={sub.id} className="p-4 bg-card border border-border rounded-xl flex items-center justify-between">
                       <div>
                         <p className="font-bold text-foreground">{sub.profiles?.full_name || (sub.profiles?.email ? sub.profiles.email.split('@')[0] : 'Unknown')}</p>
-                        <p className="text-xs text-foreground/60">Submitted: {new Date(sub.submitted_at).toLocaleString()}</p>
+                        <p className="text-xs text-foreground/60">
+                          Submitted: {sub.submitted_at && !isNaN(new Date(sub.submitted_at).getTime()) 
+                            ? new Date(sub.submitted_at).toLocaleString() 
+                            : 'Unknown Date'}
+                        </p>
                         {sub.is_late && <span className="text-xs text-error font-bold mt-1 block">LATE</span>}
                       </div>
                       <div className="flex items-center gap-4">

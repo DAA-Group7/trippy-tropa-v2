@@ -97,7 +97,7 @@ export function NotificationsPopup() {
                     <h4 className="text-sm font-semibold text-foreground mb-1">{notif.title}</h4>
                     <p className="text-xs text-muted-foreground leading-snug mb-1.5">{notif.message}</p>
                     <p className={`text-[10px] font-bold ${notif.is_read ? 'text-muted-foreground/40' : iconColor}`}>
-                      {new Date(notif.created_at).toLocaleDateString()}
+                      {notif.created_at && !isNaN(new Date(notif.created_at).getTime()) ? new Date(notif.created_at).toLocaleDateString() : ''}
                     </p>
                   </div>
 

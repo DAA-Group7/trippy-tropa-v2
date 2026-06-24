@@ -26,6 +26,8 @@ function getStatusInfo(activity: Activity) {
   if (!due_date) return { label: 'No Due Date', textColor: 'text-muted-foreground', bgClass: 'bg-muted/50', borderClass: 'border-border/50' }
 
   const due = new Date(due_date)
+  if (isNaN(due.getTime())) return { label: 'No Due Date', textColor: 'text-muted-foreground', bgClass: 'bg-muted/50', borderClass: 'border-border/50' }
+
   const now = new Date()
 
   if (activity.isSubmitted) {
@@ -51,6 +53,7 @@ function getStatusInfo(activity: Activity) {
 function formatDueDate(dateStr?: string) {
   if (!dateStr) return null
   const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return null
   if (isToday(d)) return 'Today'
   if (isTomorrow(d)) return 'Tomorrow'
   return format(d, 'MMM d, yyyy · h:mm a')
@@ -196,9 +199,9 @@ type FilterStatus = 'all' | 'overdue' | 'upcoming'
 export default function ActivitiesClient({ activities, userId, userRoleMap, isGlobalTeacher }: { activities: Activity[]; userId: string; userRoleMap?: Record<string, string>; isGlobalTeacher?: boolean }) {
   const now = new Date()
 
-  // Split by status for summary
-  const overdue = activities.filter(a => a.due_date && isPast(new Date(a.due_date)))
-  const upcoming = activities.filter(a => !a.due_date || !isPast(new Date(a.due_date)))
+  const isValidDate = (d?: string | null) => d ? !isNaN(new Date(d).getTime()) : false
+  const overdue = activities.filter(a => isValidDate(a.due_date) && isPast(new Date(a.due_date!)))
+  const upcoming = activities.filter(a => !isValidDate(a.due_date) || !isPast(new Date(a.due_date!)))
   const groupActs = activities.filter(a => a.type === 'group')
   const individualActs = activities.filter(a => a.type === 'individual')
 

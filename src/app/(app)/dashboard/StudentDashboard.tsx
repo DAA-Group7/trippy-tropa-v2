@@ -106,7 +106,7 @@ function ActivityItem({ activity }: { activity: Activity }) {
   if (isOverdue) statusLabel = 'Overdue'
   else if (isSoon) statusLabel = 'Due Soon'
 
-  const dateLabel = isOverdue
+  const dateLabel = isNaN(dueDate.getTime()) ? 'No Due Date' : isOverdue
     ? `Due ${format(dueDate, 'MMM d')}`
     : diffDays === 0
     ? 'Today'
@@ -305,7 +305,7 @@ export default function StudentDashboard({ classrooms, profile, upcomingActiviti
                             {statusLabel}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
-                            {format(due, 'MMM d')}
+                            {isNaN(due.getTime()) ? 'No Due Date' : format(due, 'MMM d')}
                           </p>
                         </div>
                         <h4 className="text-sm font-semibold leading-snug text-foreground">

@@ -13,8 +13,10 @@ function ActivityCard({ activity, classroomId }: { activity: any; classroomId: s
   const isGroup = activity.type === 'group'
   const isOverdue = activity.due_date && new Date(activity.due_date) < new Date()
 
-  const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const formatDate = (d: string) => {
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? 'No Due Date' : dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
 
   return (
     <Link href={`/classroom/${classroomId}/activity/${activity.id}`} className="block h-full">
